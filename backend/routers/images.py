@@ -61,7 +61,9 @@ def get_image_info(image_id: int, db: Session = Depends(get_db), current_user: U
     if not image:
         raise HTTPException(status_code=404, detail="Image not found")
     result = ImageInfo.model_validate(image)
-    result.has_result = db.query(DetectionResultModel).filter(DetectionResultModel.image_id == image_id).first() is not None
+    detection = db.query(DetectionResultModel).filter(DetectionResultModel.image_id == image_id).first()
+    result.has_result = detection is not None
+    result.result_id = detection.id if detection else None
     return result
 
 

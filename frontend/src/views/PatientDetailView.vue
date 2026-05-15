@@ -12,7 +12,7 @@
           <el-descriptions :column="2" border class="info-card">
             <el-descriptions-item label="姓名">{{ patient.name }}</el-descriptions-item>
             <el-descriptions-item label="性别">{{ patient.gender }}</el-descriptions-item>
-            <el-descriptions-item label="年龄(月)">{{ patient.age_months }}</el-descriptions-item>
+            <el-descriptions-item label="年龄(月)">{{ patient.age }}</el-descriptions-item>
             <el-descriptions-item label="病历号">{{ patient.medical_record_no }}</el-descriptions-item>
             <el-descriptions-item label="临床症状" :span="2">{{ patient.clinical_symptoms }}</el-descriptions-item>
             <el-descriptions-item label="创建时间" :span="2">{{ patient.created_at }}</el-descriptions-item>

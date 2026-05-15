@@ -23,7 +23,7 @@
         <el-table-column prop="name" label="姓名" width="120" />
         <el-table-column prop="gender" label="性别" width="80" />
         <el-table-column label="年龄(月)" width="100">
-          <template #default="{ row }">{{ row.age_months }}</template>
+          <template #default="{ row }">{{ row.age }}</template>
         </el-table-column>
         <el-table-column prop="medical_record_no" label="病历号" min-width="140" />
         <el-table-column label="操作" width="220" fixed="right">
@@ -68,8 +68,8 @@
               <el-option label="女" value="女" />
             </el-select>
           </el-form-item>
-          <el-form-item label="年龄(月)" prop="age_months">
-            <el-input-number v-model="dialogForm.age_months" :min="0" :max="144" style="width: 100%" />
+          <el-form-item label="年龄(月)" prop="age">
+            <el-input-number v-model="dialogForm.age" :min="0" :max="144" style="width: 100%" />
           </el-form-item>
           <el-form-item label="病历号" prop="medical_record_no">
             <el-input v-model="dialogForm.medical_record_no" />
@@ -112,7 +112,7 @@ const dialogFormRef = ref(null)
 const dialogForm = reactive({
   name: '',
   gender: '',
-  age_months: null,
+  age: null,
   medical_record_no: '',
   clinical_symptoms: '',
 })
@@ -120,13 +120,13 @@ const dialogForm = reactive({
 const dialogRules = {
   name: [{ required: true, message: '请输入姓名', trigger: 'blur' }],
   gender: [{ required: true, message: '请选择性别', trigger: 'change' }],
-  age_months: [{ required: true, message: '请输入年龄', trigger: 'blur' }],
+  age: [{ required: true, message: '请输入年龄', trigger: 'blur' }],
 }
 
 function resetDialogForm() {
   dialogForm.name = ''
   dialogForm.gender = ''
-  dialogForm.age_months = null
+  dialogForm.age = null
   dialogForm.medical_record_no = ''
   dialogForm.clinical_symptoms = ''
 }
@@ -157,7 +157,7 @@ function openEdit(row) {
   editingId.value = row.id
   dialogForm.name = row.name
   dialogForm.gender = row.gender
-  dialogForm.age_months = row.age_months
+  dialogForm.age = row.age
   dialogForm.medical_record_no = row.medical_record_no ?? ''
   dialogForm.clinical_symptoms = row.clinical_symptoms ?? ''
   dialogVisible.value = true

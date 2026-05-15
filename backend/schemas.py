@@ -62,6 +62,7 @@ class ImageOut(BaseModel):
 
 class ImageInfo(ImageOut):
     has_result: bool = False
+    result_id: Optional[int] = None
 
 
 class PatientDetail(PatientOut):
