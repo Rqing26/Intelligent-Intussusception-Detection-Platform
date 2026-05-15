@@ -1,6 +1,6 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from routers import auth, patients
+from routers import auth, patients, images
 
 app = FastAPI(title="Intussusception Detection Platform")
 
@@ -14,3 +14,4 @@ app.add_middleware(
 
 app.include_router(auth.router)
 app.include_router(patients.router)
+app.include_router(images.router)
