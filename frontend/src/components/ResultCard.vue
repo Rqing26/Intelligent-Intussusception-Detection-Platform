@@ -1,84 +1,91 @@
 <template>
   <div class="result-card">
-    <div class="result-section">
-      <span class="result-label">诊断分类</span>
-      <span :class="['seal-tag', classificationClass]">
-        {{ result.classification }}
-      </span>
-    </div>
-
-    <div class="result-section">
-      <span class="result-label">置信度</span>
-      <div class="progress-wrap">
-        <div class="progress-track">
-          <div
-            class="progress-fill"
-            :style="{ width: confidencePercent + '%', background: progressColor }"
-          />
-        </div>
-        <span class="progress-text">{{ confidencePercent }}%</span>
+    <!-- 诊断分类大卡片 -->
+    <div class="diag-hero" :class="heroClass">
+      <div class="hero-icon">
+        <el-icon :size="32">
+          <CircleCheck v-if="result.classification === '肠套叠阴性'" />
+          <WarningFilled v-else-if="result.classification === '肠套叠阳性'" />
+          <Picture v-else />
+        </el-icon>
+      </div>
+      <div class="hero-body">
+        <div class="hero-label">诊断分类</div>
+        <div class="hero-value">{{ result.classification }}</div>
       </div>
     </div>
 
+    <!-- 置信度 -->
+    <div class="result-section">
+      <div class="section-header">
+        <span class="section-label">置信度</span>
+        <span class="section-value" :style="{ color: progressColor }">{{ confidencePercent }}%</span>
+      </div>
+      <div class="progress-track">
+        <div class="progress-fill" :style="{ width: confidencePercent + '%', background: progressColor }"></div>
+      </div>
+    </div>
+
+    <!-- 诊断等级 -->
     <div v-if="result.severity" class="result-section">
-      <span class="result-label">诊断等级</span>
-      <span :class="['seal-tag', severityClass]">
-        {{ result.severity }}
-      </span>
-    </div>
-
-    <div v-if="result.severity" class="result-section highlight">
-      <span class="result-label">治疗成功率</span>
-      <div class="success-rate-box">
-        <div class="success-rate-main">
-          <span class="success-rate-value" :style="{ color: rateColor }">{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
-          <span class="success-rate-desc">灌肠成功率</span>
-        </div>
-        <div class="progress-track large">
-          <div
-            class="progress-fill"
-            :style="{ width: Math.round(result.treatment_success_rate * 100) + '%', background: rateColor }"
-          />
-        </div>
+      <div class="section-header">
+        <span class="section-label">诊断等级</span>
+        <span class="severity-pill" :class="severityClass">{{ result.severity }}</span>
       </div>
     </div>
 
-    <div v-if="result.treatment_advice" class="result-section highlight">
-      <span class="result-label">治疗建议</span>
-      <div class="advice-card">
-        <el-icon class="advice-icon"><WarningFilled /></el-icon>
-        <span class="advice-text">{{ result.treatment_advice }}</span>
+    <!-- 治疗成功率 -->
+    <div v-if="result.severity" class="result-section rate-section">
+      <div class="rate-header">
+        <div class="rate-title">
+          <el-icon :size="18"><FirstAidKit /></el-icon>
+          治疗成功率
+        </div>
+        <div class="rate-value" :style="{ color: rateColor }">{{ (result.treatment_success_rate * 100).toFixed(0) }}%</div>
       </div>
+      <div class="progress-track large">
+        <div
+          class="progress-fill"
+          :style="{ width: Math.round(result.treatment_success_rate * 100) + '%', background: rateColor }"></div>
+      </div>
+      <p class="rate-desc">灌肠复位成功率预测</p>
+    </div>
+
+    <!-- 治疗建议 -->
+    <div v-if="result.treatment_advice" class="result-section advice-section">
+      <div class="advice-header">
+        <el-icon :size="18"><InfoFilled /></el-icon>
+        治疗建议
+      </div>
+      <div class="advice-body">{{ result.treatment_advice }}</div>
     </div>
   </div>
 </template>
 
 <script setup>
 import { computed } from 'vue'
+import { CircleCheck, WarningFilled, Picture, FirstAidKit, InfoFilled } from '@element-plus/icons-vue'
 
 const props = defineProps({
-  result: {
-    type: Object,
-    required: true,
-  },
+  result: { type: Object, required: true },
 })
 
-const classificationClass = computed(() => {
+const heroClass = computed(() => {
   const map = {
-    '肠套叠阳性': 'seal-vermillion',
-    '肠套叠阴性': 'seal-malachite',
-    '图像质量不佳': 'seal-gold',
+    '肠套叠阳性': 'hero-danger',
+    '肠套叠阴性': 'hero-success',
+    '图像质量不佳': 'hero-warning',
   }
-  return map[props.result.classification] || 'seal-ink'
+  return map[props.result.classification] || 'hero-default'
 })
 
 const severityClass = computed(() => {
   const map = {
-    '轻度': 'seal-malachite',
-    '中度': 'seal-gold',
-    '重度': 'seal-vermillion',
+    '轻度': 'pill-success',
+    '中度': 'pill-warning',
+    '重度': 'pill-danger',
   }
-  return map[props.result.severity] || 'seal-ink'
+  return map[props.result.severity] || 'pill-default'
 })
 
 const confidencePercent = computed(() => {
@@ -104,118 +111,175 @@ const rateColor = computed(() => {
 
 <style scoped>
 .result-card {
-  padding: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
 }
 
-.result-section {
-  margin-bottom: 22px;
-}
-.result-section:last-child {
-  margin-bottom: 0;
-}
-.result-section.highlight {
-  background: var(--bg-detail-item);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
-  margin-left: -4px;
-  margin-right: -4px;
-}
-
-.result-label {
-  display: block;
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-bottom: 8px;
-  font-family: var(--font-display);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.seal-tag {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 4px 12px;
-  border-radius: 2px;
-  font-size: 13px;
-  font-weight: 700;
-  letter-spacing: 0.04em;
-  border: 1px solid;
-}
-.seal-vermillion { background: var(--bg-tag-danger); color: var(--danger); border-color: rgba(139, 38, 53, 0.3); }
-.seal-malachite { background: var(--bg-tag-success); color: var(--success); border-color: rgba(45, 90, 63, 0.3); }
-.seal-gold { background: var(--bg-tag-warning); color: var(--warning); border-color: rgba(166, 93, 58, 0.3); }
-.seal-ink { background: rgba(44, 36, 27, 0.06); color: var(--text-secondary); border-color: rgba(44, 36, 27, 0.2); }
-
-.progress-wrap {
+/* 诊断大卡片 */
+.diag-hero {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 16px;
+  padding: 20px;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
 }
+.diag-hero.hero-success {
+  background: var(--bg-tag-success);
+  border-color: rgba(5, 150, 105, 0.2);
+}
+.diag-hero.hero-danger {
+  background: var(--bg-tag-danger);
+  border-color: rgba(220, 38, 38, 0.2);
+}
+.diag-hero.hero-warning {
+  background: var(--bg-tag-warning);
+  border-color: rgba(234, 88, 12, 0.2);
+}
+.diag-hero.hero-default {
+  background: var(--bg-tag-info);
+  border-color: rgba(37, 99, 235, 0.2);
+}
+
+.hero-icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.hero-success .hero-icon { color: var(--success); }
+.hero-danger .hero-icon { color: var(--danger); }
+.hero-warning .hero-icon { color: var(--warning); }
+.hero-default .hero-icon { color: var(--primary); }
+
+.hero-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  margin-bottom: 4px;
+  letter-spacing: 0.04em;
+}
+.hero-value {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+/* 通用 section */
+.result-section {
+  padding: 0 4px;
+}
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.section-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  font-weight: 600;
+  letter-spacing: 0.04em;
+}
+.section-value {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+/* 进度条 */
 .progress-track {
-  flex: 1;
   height: 8px;
-  background: var(--border-color);
+  background: var(--border-light);
   border-radius: 4px;
   overflow: hidden;
 }
 .progress-track.large {
-  height: 12px;
-  border-radius: 6px;
+  height: 10px;
+  border-radius: 5px;
 }
 .progress-fill {
   height: 100%;
   border-radius: 4px;
-  transition: width 0.6s ease;
+  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
-.progress-text {
-  font-family: var(--font-display);
-  font-size: 13px;
-  font-weight: 700;
-  color: var(--text-primary);
-  min-width: 90px;
-  text-align: right;
+.progress-track.large .progress-fill {
+  border-radius: 5px;
 }
 
-.success-rate-box {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+/* 等级 pill */
+.severity-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 3px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 700;
 }
-.success-rate-main {
-  display: flex;
-  align-items: baseline;
-  gap: 10px;
+.pill-success { background: var(--bg-tag-success); color: var(--success); }
+.pill-warning { background: var(--bg-tag-warning); color: var(--warning); }
+.pill-danger { background: var(--bg-tag-danger); color: var(--danger); }
+.pill-default { background: var(--bg-tag-info); color: var(--primary); }
+
+/* 治疗成功率 */
+.rate-section {
+  background: var(--bg-hover);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
 }
-.success-rate-value {
+.rate-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+.rate-title {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-secondary);
+}
+.rate-value {
   font-family: var(--font-display);
-  font-size: 32px;
+  font-size: 26px;
   font-weight: 700;
   line-height: 1;
 }
-.success-rate-desc {
-  font-size: 13px;
+.rate-desc {
+  font-size: 12px;
   color: var(--text-muted);
-  font-weight: 600;
+  margin: 8px 0 0;
 }
 
-.advice-card {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  padding: 4px 2px;
+/* 治疗建议 */
+.advice-section {
+  background: var(--bg-advice);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: 16px;
 }
-.advice-icon {
-  font-size: 22px;
+.advice-header {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 700;
   color: var(--warning);
-  flex-shrink: 0;
-  margin-top: 2px;
+  margin-bottom: 10px;
 }
-.advice-text {
-  font-size: 15px;
+.advice-body {
+  font-size: 14px;
   color: var(--text-primary);
-  line-height: 1.7;
-  font-weight: 600;
+  line-height: 1.8;
+  font-weight: 500;
 }
 </style>

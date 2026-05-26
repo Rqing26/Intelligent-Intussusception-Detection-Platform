@@ -17,16 +17,12 @@
       <div class="report-page">
         <!-- 医院页眉 -->
         <div class="hospital-header">
-          <div class="hospital-logo">
-            <div class="logo-circle">
-              <span class="logo-cross">+</span>
-            </div>
-          </div>
+          <img src="/newlogo.png" class="hospital-logo" alt="hospital logo" />
           <div class="hospital-brand">
             <div class="hospital-name-main">
               <span class="name-part">皖南医学院</span>
-              <span class="name-part highlight">第一附属医院</span>
-              <span class="name-part sub">弋矶山医院</span>
+              <span class="name-part sub">第一附属医院</span>
+              <span class="name-part sub2">弋矶山医院</span>
             </div>
             <div class="hospital-name-en">
               THE FIRST AFFILIATED HOSPITAL OF WANNAN MEDICAL COLLEGE
@@ -99,10 +95,16 @@
         </div>
 
         <!-- 超声影像 -->
-        <div class="report-section" v-if="imageUrl">
+        <div class="report-section" v-if="resolvedImageUrl">
           <div class="section-title">超声影像</div>
           <div class="image-wrapper">
-            <img :src="imageUrl" alt="超声影像" class="report-image" @load="imageLoaded = true" />
+            <img
+              :src="resolvedImageUrl"
+              alt="超声影像"
+              class="report-image"
+              @load="imageLoaded = true"
+              @error="imageLoaded = true"
+            />
           </div>
         </div>
 
@@ -176,11 +178,12 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from 'vue'
+import { ref, computed, nextTick, watch, onUnmounted } from 'vue'
 import { ElMessage } from 'element-plus'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
 import { useSettingsStore } from '../stores/settings'
+import api from '../api/index'
 
 const props = defineProps({
   modelValue: { type: Boolean, default: false },
@@ -195,6 +198,39 @@ const settings = useSettingsStore()
 const reportRef = ref(null)
 const printing = ref(false)
 const imageLoaded = ref(false)
+const logoLoaded = ref(false)
+
+const resolvedImageUrl = ref('')
+let objectUrl = null
+
+watch(() => props.imageUrl, async (newVal) => {
+  if (objectUrl) {
+    URL.revokeObjectURL(objectUrl)
+    objectUrl = null
+  }
+  resolvedImageUrl.value = ''
+  
+  if (!newVal) return
+  
+  if (newVal.startsWith('/api/')) {
+    try {
+      const requestUrl = newVal.replace(/^\/api/, '')
+      const response = await api.get(requestUrl, { responseType: 'blob' })
+      objectUrl = URL.createObjectURL(response.data)
+      resolvedImageUrl.value = objectUrl
+    } catch {
+      resolvedImageUrl.value = ''
+    }
+  } else {
+    resolvedImageUrl.value = newVal
+  }
+}, { immediate: true })
+
+onUnmounted(() => {
+  if (objectUrl) {
+    URL.revokeObjectURL(objectUrl)
+  }
+})
 
 const visible = computed({
   get: () => props.modelValue,
@@ -257,12 +293,29 @@ async function onPreviewOpened() {
   await settings.fetchSettings()
 }
 
+function waitForImages(container) {
+  const imgs = container.querySelectorAll('img')
+  const promises = []
+  imgs.forEach((img) => {
+    if (img.complete) return
+    promises.push(
+      new Promise((resolve) => {
+        img.addEventListener('load', resolve, { once: true })
+        img.addEventListener('error', resolve, { once: true })
+      })
+    )
+  })
+  return Promise.all(promises)
+}
+
 async function handlePrint() {
   if (!reportRef.value) return
   printing.value = true
   try {
     await nextTick()
-    const canvas = await html2canvas(reportRef.value.querySelector('.report-page'), {
+    const page = reportRef.value.querySelector('.report-page')
+    await waitForImages(page)
+    const canvas = await html2canvas(page, {
       scale: 2,
       useCORS: true,
       backgroundColor: '#ffffff',
@@ -328,70 +381,63 @@ async function handlePrint() {
 .hospital-header {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 8px;
+  justify-content: center;
+  gap: 20px;
+  margin-bottom: 10px;
+  padding-bottom: 10px;
 }
 
 .hospital-logo {
   flex-shrink: 0;
-}
-
-.logo-circle {
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  border: 2px solid #2d8c3f;
-  background: #fff;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-}
-
-.logo-cross {
-  font-size: 28px;
-  font-weight: 700;
-  color: #2d8c3f;
-  font-family: 'Times New Roman', serif;
+  width: 72px;
+  height: 72px;
+  object-fit: contain;
 }
 
 .hospital-brand {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: 4px;
+  align-items: center;
 }
 
 .hospital-name-main {
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
-  color: #2d8c3f;
-  letter-spacing: 2px;
+  color: #006838;
+  letter-spacing: 3px;
   font-family: 'SimHei', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+  text-align: center;
 }
 
 .hospital-name-main .name-part {
-  margin-right: 4px;
-}
-
-.hospital-name-main .highlight {
-  color: #2d8c3f;
+  margin-right: 6px;
 }
 
 .hospital-name-main .sub {
-  font-size: 18px;
-  color: #2d8c3f;
+  font-size: 20px;
+  color: #006838;
+  font-weight: 700;
+}
+
+.hospital-name-main .sub2 {
+  font-size: 20px;
+  color: #006838;
+  font-weight: 700;
 }
 
 .hospital-name-en {
   font-size: 10px;
-  color: #666;
-  letter-spacing: 0.5px;
+  color: #006838;
+  letter-spacing: 1px;
   font-family: 'Times New Roman', serif;
+  text-align: center;
+  opacity: 0.85;
 }
 
 .header-line {
   height: 1px;
-  background: #2d8c3f;
+  background: #000;
   margin: 10px 0 16px;
 }
 
@@ -508,24 +554,27 @@ async function handlePrint() {
   border-radius: 2px;
   font-weight: 600;
   font-size: 13px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .badge-danger {
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .badge-success {
-  background: #f0fdf4;
-  color: #16a34a;
-  border: 1px solid #bbf7d0;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .badge-warning {
-  background: #fffbeb;
-  color: #d97706;
-  border: 1px solid #fde68a;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .severity-badge {
@@ -534,32 +583,35 @@ async function handlePrint() {
   border-radius: 2px;
   font-weight: 600;
   font-size: 13px;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .severity-mild {
-  background: #eff6ff;
-  color: #2563eb;
-  border: 1px solid #bfdbfe;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .severity-moderate {
-  background: #fefce8;
-  color: #ca8a04;
-  border: 1px solid #fef08a;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .severity-severe {
-  background: #fef2f2;
-  color: #dc2626;
-  border: 1px solid #fecaca;
+  background: #fff;
+  color: #000;
+  border: 1px solid #000;
 }
 
 .advice-box {
-  background: #fffbeb;
-  border: 1px solid #fde68a;
+  background: #f9f9f9;
+  border: 1px solid #ccc;
   border-radius: 2px;
   padding: 10px 14px;
-  color: #78350f;
+  color: #000;
   font-size: 14px;
   line-height: 1.8;
 }

@@ -2,8 +2,8 @@
   <el-container class="app-layout">
     <el-header class="app-header">
       <div class="header-brand">
-        <span class="brand-icon">+</span>
-        <span class="brand-title">肠套叠AI辅助诊断平台</span>
+        <img src="/newlogo.png" alt="logo" class="brand-icon" />
+        <span class="brand-title">皖南医学院第一附属医院 肠套叠AI辅助诊断平台</span>
       </div>
       <div class="header-actions">
         <button class="theme-toggle" @click="handleToggleTheme" :title="currentTheme === 'modern' ? '切换至中世纪风格' : '切换至现代风格'">
@@ -44,6 +44,9 @@
         <div class="hospital-watermark">
           <div class="watermark-text">皖南医学院第一附属医院</div>
           <div class="watermark-sub">弋矶山医院</div>
+        </div>
+        <div class="app-background-logo">
+          <img src="/newlogo.png" alt="decorative logo" />
         </div>
         <slot />
       </el-main>
@@ -109,14 +112,7 @@ onMounted(() => {
 .brand-icon {
   width: 28px;
   height: 28px;
-  border: 1.5px solid var(--gold);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--primary);
-  border-radius: var(--radius-sm);
+  object-fit: contain;
 }
 
 .brand-title {
@@ -219,6 +215,26 @@ onMounted(() => {
   padding: 24px 28px;
   overflow-y: auto;
   position: relative;
+}
+
+.app-background-logo {
+  position: fixed;
+  bottom: 40px;
+  right: 40px;
+  width: 120px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 1;
+  opacity: 0.08;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.app-background-logo img {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .hospital-watermark {

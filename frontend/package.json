@@ -10,11 +10,13 @@
   "dependencies": {
     "@element-plus/icons-vue": "^2.3.0",
     "axios": "^1.7.0",
+    "echarts": "^6.1.0",
     "element-plus": "^2.8.0",
     "html2canvas": "^1.4.1",
     "jspdf": "^4.2.1",
     "pinia": "^2.1.0",
     "vue": "^3.4.0",
+    "vue-echarts": "^8.0.1",
     "vue-router": "^4.3.0"
   },
   "devDependencies": {

@@ -1,91 +1,173 @@
 <template>
   <AppLayout>
-    <div class="page-header-row">
-      <div>
-        <h2 class="page-title">患者详情</h2>
-        <div class="breadcrumb">首页 / 患者管理 / {{ patient?.name || '...' }}</div>
+    <!-- 页面头部 -->
+    <div class="page-header">
+      <div class="page-header-main">
+        <h1 class="page-title">患者详情</h1>
+        <p class="page-desc">查看患者信息、超声影像及检测结果</p>
       </div>
-      <el-button type="primary" @click="printVisible = true" v-if="patient">
-        <el-icon><Printer /></el-icon>打印报告
-      </el-button>
+      <div class="page-header-actions">
+        <el-button type="primary" @click="printVisible = true" v-if="patient">
+          <el-icon><Printer /></el-icon>
+          打印报告
+        </el-button>
+      </div>
     </div>
 
     <div v-loading="loading">
       <template v-if="patient">
-        <div class="patient-profile">
-          <div class="profile-card">
-            <div class="profile-avatar">{{ patient.name?.charAt(0) }}</div>
-            <div class="profile-name">{{ patient.name }}</div>
-            <div class="profile-id">病历号 {{ patient.medical_record_no }}</div>
-            <div class="profile-meta">
-              <div class="profile-meta-row">
-                <span class="label">性别</span>
-                <span class="value">{{ patient.gender }}</span>
+        <div class="detail-layout">
+          <!-- 左侧患者卡片 -->
+          <div class="profile-panel">
+            <div class="profile-card">
+              <div class="profile-avatar" :style="{ background: stringToColor(patient.name) }">
+                {{ patient.name?.charAt(0) || '?' }}
               </div>
-              <div class="profile-meta-row">
-                <span class="label">年龄</span>
-                <span class="value">{{ patient.age }} 个月</span>
+              <div class="profile-name">{{ patient.name }}</div>
+              <div class="profile-id">病历号 {{ patient.medical_record_no || '—' }}</div>
+
+              <div class="profile-divider"></div>
+
+              <div class="profile-meta">
+                <div class="meta-row">
+                  <span class="meta-label"><el-icon><User /></el-icon>性别</span>
+                  <span class="meta-value">{{ patient.gender }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label"><el-icon><Calendar /></el-icon>年龄</span>
+                  <span class="meta-value">{{ patient.age }} 个月</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label"><el-icon><FirstAidKit /></el-icon>临床诊断</span>
+                  <span class="meta-value">{{ patient.clinical_symptoms || '—' }}</span>
+                </div>
+                <div class="meta-row">
+                  <span class="meta-label"><el-icon><Clock /></el-icon>录入时间</span>
+                  <span class="meta-value">{{ patient.created_at }}</span>
+                </div>
               </div>
-              <div class="profile-meta-row">
-                <span class="label">临床诊断</span>
-                <span class="value">{{ patient.clinical_symptoms || '—' }}</span>
+
+              <div class="profile-actions">
+                <el-button
+                  type="primary"
+                  :icon="Upload"
+                  @click="$router.push(`/patients/${patient.id}/upload`)"
+                >
+                  上传影像
+                </el-button>
               </div>
-              <div class="profile-meta-row">
-                <span class="label">录入时间</span>
-                <span class="value">{{ patient.created_at }}</span>
-              </div>
-            </div>
-            <div class="profile-actions">
-              <button class="btn-main" @click="$router.push(`/patients/${patient.id}/upload`)">上传影像</button>
-              <button class="btn-sub">编辑信息</button>
             </div>
           </div>
 
+          <!-- 右侧内容 -->
           <div class="detail-main">
-            <div class="detail-grid">
-              <div class="detail-item">
-                <div class="label">影像数量</div>
-                <div class="value">{{ images.length }} 张</div>
+            <!-- 统计网格 -->
+            <div class="stats-grid">
+              <div class="mini-stat">
+                <div class="mini-stat-icon" style="--accent: var(--primary)">
+                  <el-icon><Picture /></el-icon>
+                </div>
+                <div class="mini-stat-body">
+                  <div class="mini-stat-value">{{ images.length }}</div>
+                  <div class="mini-stat-label">影像数量</div>
+                </div>
               </div>
-              <div class="detail-item">
-                <div class="label">检测次数</div>
-                <div class="value">{{ images.filter(i => i.has_result).length }} 次</div>
+              <div class="mini-stat">
+                <div class="mini-stat-icon" style="--accent: var(--success)">
+                  <el-icon><Select /></el-icon>
+                </div>
+                <div class="mini-stat-body">
+                  <div class="mini-stat-value">{{ images.filter((i) => i.has_result).length }}</div>
+                  <div class="mini-stat-label">检测次数</div>
+                </div>
               </div>
-              <div class="detail-item">
-                <div class="label">最新结果</div>
-                <div class="value" :style="latestResultStyle">{{ latestResultText }}</div>
+              <div class="mini-stat">
+                <div class="mini-stat-icon" style="--accent: var(--warning)">
+                  <el-icon><DataLine /></el-icon>
+                </div>
+                <div class="mini-stat-body">
+                  <div class="mini-stat-value" :style="latestResultStyle">{{ latestResultText }}</div>
+                  <div class="mini-stat-label">最新结果</div>
+                </div>
               </div>
             </div>
 
-            <div class="card">
+            <!-- 影像列表 -->
+            <div class="data-card">
               <div class="card-header">
-                <h3>超声影像列表</h3>
-                <el-button type="primary" @click="$router.push(`/patients/${patient.id}/upload`)">+ 上传新影像</el-button>
+                <div class="card-header-left">
+                  <div class="card-icon">
+                    <el-icon><Picture /></el-icon>
+                  </div>
+                  <h3>超声影像列表</h3>
+                </div>
+                <el-button type="primary" @click="$router.push(`/patients/${patient.id}/upload`)">
+                  + 上传新影像
+                </el-button>
               </div>
-              <div class="card-body">
-                <el-table :data="images" style="width: 100%">
+              <div class="table-wrap">
+                <el-table :data="images" class="image-table">
                   <template #empty>
-                    <div class="empty-state">暂无超声影像数据</div>
+                    <div class="empty-state">
+                      <div class="empty-icon">
+                        <el-icon :size="48"><Picture /></el-icon>
+                      </div>
+                      <p class="empty-title">暂无超声影像</p>
+                      <p class="empty-desc">点击右上角按钮上传影像</p>
+                    </div>
                   </template>
-                  <el-table-column prop="id" label="ID" width="60" />
-                  <el-table-column prop="filename" label="文件名" min-width="180" />
-                  <el-table-column label="上传时间" width="170">
-                    <template #default="{ row }">{{ row.uploaded_at }}</template>
+
+                  <el-table-column type="index" width="56" align="center">
+                    <template #header>#</template>
                   </el-table-column>
-                  <el-table-column label="状态" width="100">
+
+                  <el-table-column prop="filename" label="文件名" min-width="180">
                     <template #default="{ row }">
-                      <span :class="['seal-tag', row.has_result ? 'seal-malachite' : 'seal-gold']">
+                      <span class="filename-text">{{ row.filename }}</span>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="上传时间" width="170">
+                    <template #default="{ row }">
+                      <div class="detect-time">
+                        <el-icon><Clock /></el-icon>
+                        <span>{{ row.uploaded_at }}</span>
+                      </div>
+                    </template>
+                  </el-table-column>
+
+                  <el-table-column label="状态" width="120" align="center">
+                    <template #default="{ row }">
+                      <span class="status-pill" :class="row.has_result ? 'status-success' : 'status-warning'">
+                        <span class="status-dot"></span>
                         {{ row.has_result ? '已检测' : '待检测' }}
                       </span>
                     </template>
                   </el-table-column>
-                  <el-table-column label="操作" width="240" fixed="right">
+
+                  <el-table-column label="操作" width="180" fixed="right" align="center">
                     <template #default="{ row }">
                       <div class="action-group">
-                        <span class="action-btn" @click="previewImage(row)">预览</span>
-                        <span v-if="!row.has_result" class="action-btn warn" @click="handleDetect(row)">检测</span>
-                        <span v-if="row.has_result" class="action-btn" @click="$router.push(`/results/${row.result_id}`)">查看结果</span>
-                        <span v-if="row.has_result" class="action-btn" @click="printForImage(row)">打印</span>
+                        <el-tooltip content="预览" placement="top">
+                          <button class="icon-btn" @click="previewImage(row)">
+                            <el-icon><View /></el-icon>
+                          </button>
+                        </el-tooltip>
+                        <el-tooltip v-if="!row.has_result" content="检测" placement="top">
+                          <button class="icon-btn warn" @click="handleDetect(row)">
+                            <el-icon><VideoPlay /></el-icon>
+                          </button>
+                        </el-tooltip>
+                        <el-tooltip v-if="row.has_result" content="查看结果" placement="top">
+                          <button class="icon-btn" @click="$router.push(`/results/${row.result_id}`)">
+                            <el-icon><DataLine /></el-icon>
+                          </button>
+                        </el-tooltip>
+                        <el-tooltip v-if="row.has_result" content="打印报告" placement="top">
+                          <button class="icon-btn" @click="printForImage(row)">
+                            <el-icon><Printer /></el-icon>
+                          </button>
+                        </el-tooltip>
                       </div>
                     </template>
                   </el-table-column>
@@ -97,16 +179,13 @@
       </template>
     </div>
 
-    <el-dialog v-model="previewVisible" title="影像预览" width="700px" append-to-body>
+    <!-- 影像预览 -->
+    <el-dialog v-model="previewVisible" title="影像预览" width="700px" append-to-body class="preview-dialog">
       <ImageViewer v-if="previewSrc" :src="previewSrc" />
     </el-dialog>
 
-    <ReportPrint
-      v-model="printVisible"
-      :patient="patient"
-      :result="printResult"
-      :image-url="printImageUrl"
-    />
+    <!-- 打印报告 -->
+    <ReportPrint v-model="printVisible" :patient="patient" :result="printResult" :image-url="printImageUrl" />
   </AppLayout>
 </template>
 
@@ -114,6 +193,19 @@
 import { ref, onMounted, computed } from 'vue'
 import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus'
+import {
+  Printer,
+  Upload,
+  User,
+  Calendar,
+  Clock,
+  FirstAidKit,
+  Picture,
+  Select,
+  DataLine,
+  View,
+  VideoPlay,
+} from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import ImageViewer from '../components/ImageViewer.vue'
 import ReportPrint from '../components/ReportPrint.vue'
@@ -132,16 +224,26 @@ const printResult = ref(null)
 const printImageUrl = ref('')
 
 const latestResultText = computed(() => {
-  const detected = images.value.filter(i => i.has_result)
+  const detected = images.value.filter((i) => i.has_result)
   if (detected.length === 0) return '—'
   return '已检测'
 })
 
 const latestResultStyle = computed(() => {
-  const detected = images.value.filter(i => i.has_result)
+  const detected = images.value.filter((i) => i.has_result)
   if (detected.length === 0) return {}
   return { color: 'var(--success)' }
 })
+
+function stringToColor(str) {
+  if (!str) return 'var(--text-muted)'
+  let hash = 0
+  for (let i = 0; i < str.length; i++) {
+    hash = str.charCodeAt(i) + ((hash << 5) - hash)
+  }
+  const colors = ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#be185d', '#4338ca']
+  return colors[Math.abs(hash) % colors.length]
+}
 
 async function fetchPatient() {
   loading.value = true
@@ -179,7 +281,8 @@ async function handleDetect(row) {
     const resultId = res.data.id ?? res.data.result_id
     if (resultId) {
       ElMessage.success('检测完成')
-      ;(await import('vue-router')).useRouter().push(`/results/${resultId}`)
+      const router = (await import('vue-router')).useRouter()
+      router.push(`/results/${resultId}`)
     }
   } catch {
     ElMessage.error('检测失败')
@@ -201,258 +304,364 @@ onMounted(fetchPatient)
 </script>
 
 <style scoped>
-.page-header-row {
+.page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 20px;
-  padding-bottom: 14px;
-  border-bottom: 1px solid var(--border-color);
+  margin-bottom: 24px;
 }
 .page-title {
   font-family: var(--font-display);
-  font-size: 22px;
+  font-size: 26px;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.04em;
+  letter-spacing: 0.02em;
+  margin: 0 0 4px;
+}
+.page-desc {
+  font-size: 13px;
+  color: var(--text-muted);
   margin: 0;
 }
-.breadcrumb {
-  font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 4px;
-  font-style: italic;
+.page-header-actions {
+  display: flex;
+  gap: 10px;
 }
 
-.patient-profile {
+/* 布局 */
+.detail-layout {
   display: grid;
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: 280px 1fr;
   gap: 20px;
 }
+
+/* 左侧患者卡片 */
+.profile-panel {
+  position: sticky;
+  top: 20px;
+  align-self: start;
+}
 .profile-card {
-  background: var(--bg-profile);
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
   padding: 28px 20px;
   text-align: center;
-  position: relative;
-  height: fit-content;
-}
-.profile-card::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 60px;
-  height: 2px;
-  background: var(--gold);
 }
 .profile-avatar {
-  width: 72px;
-  height: 72px;
-  margin: 0 auto 16px;
-  border: 2px solid var(--gold-dim);
+  width: 80px;
+  height: 80px;
   border-radius: 50%;
-  background: var(--primary);
-  color: var(--text-inverse);
+  margin: 0 auto 16px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24px;
+  color: #fff;
+  font-size: 28px;
   font-weight: 700;
   font-family: var(--font-display);
+  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .profile-name {
   font-family: var(--font-display);
-  font-size: 18px;
+  font-size: 20px;
   font-weight: 700;
-  margin-bottom: 4px;
   color: var(--text-primary);
+  margin-bottom: 4px;
 }
 .profile-id {
   font-size: 12px;
   color: var(--text-muted);
-  font-style: italic;
-  margin-bottom: 20px;
+  font-family: var(--font-display);
+  letter-spacing: 0.02em;
+}
+.profile-divider {
+  height: 1px;
+  background: var(--border-color);
+  margin: 20px 0;
 }
 .profile-meta {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
   text-align: left;
 }
-.profile-meta-row {
+.meta-row {
   display: flex;
   justify-content: space-between;
+  align-items: center;
   font-size: 13px;
-  padding-bottom: 10px;
-  border-bottom: 1px solid var(--border-color);
 }
-.profile-meta-row:last-child {
-  border-bottom: none;
-}
-.profile-meta-row .label {
+.meta-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--text-muted);
+  font-weight: 500;
 }
-.profile-meta-row .value {
-  font-weight: 700;
+.meta-label .el-icon {
+  font-size: 14px;
+}
+.meta-value {
+  font-weight: 600;
   color: var(--text-primary);
+  text-align: right;
+  max-width: 140px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 .profile-actions {
-  display: flex;
-  gap: 8px;
   margin-top: 20px;
 }
-.profile-actions button {
-  flex: 1;
-  padding: 8px;
-  font-size: 13px;
-  font-weight: 700;
-  cursor: pointer;
-  border: none;
-  font-family: var(--font-sans);
-}
-.btn-main {
-  background: var(--primary);
-  color: var(--text-inverse);
-}
-.btn-sub {
-  background: transparent;
-  color: var(--text-secondary);
-  border: 1px solid var(--border-color) !important;
+.profile-actions .el-button {
+  width: 100%;
 }
 
+/* 右侧主内容 */
 .detail-main {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
-.detail-grid {
+
+/* 迷你统计 */
+.stats-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 14px;
 }
-.detail-item {
-  background: var(--bg-detail-item);
-  border: 1px solid var(--border-color);
-  padding: 16px;
-  position: relative;
-}
-.detail-item::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 16px;
-  width: 32px;
-  height: 2px;
-  background: var(--primary);
-}
-.detail-item .label {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin-bottom: 6px;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  font-family: var(--font-display);
-}
-.detail-item .value {
-  font-family: var(--font-display);
-  font-size: 18px;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.card {
+.mini-stat {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  position: relative;
+  border-radius: var(--radius-md);
+  padding: 16px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
-.card::before {
-  content: '';
-  position: absolute;
-  top: -1px;
-  left: 20px;
+.mini-stat:hover {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-sm);
+}
+.mini-stat-icon {
   width: 40px;
-  height: 2px;
-  background: var(--gold);
+  height: 40px;
+  border-radius: var(--radius-sm);
+  background: var(--accent);
+  opacity: 0.1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.mini-stat-icon .el-icon {
+  color: var(--accent);
+  font-size: 20px;
+}
+.mini-stat-value {
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--text-primary);
+  line-height: 1.2;
+}
+.mini-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+/* 数据卡片 */
+.data-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
 }
 .card-header {
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  padding: 14px 18px;
+  justify-content: space-between;
+  padding: 16px 20px;
   border-bottom: 1px solid var(--border-color);
+}
+.card-header-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-icon {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  background: var(--primary-glow);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--primary);
 }
 .card-header h3 {
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.06em;
   margin: 0;
+  letter-spacing: 0.02em;
 }
 
-.seal-tag {
+/* 表格 */
+.table-wrap {
+  padding: 0 4px;
+}
+.image-table :deep(.el-table__header-wrapper th.el-table__cell) {
+  background: var(--bg-page) !important;
+  color: var(--text-secondary) !important;
+  font-weight: 600 !important;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-color);
+  padding: 12px 0;
+}
+.image-table :deep(.el-table__row:hover > td.el-table__cell) {
+  background: var(--bg-hover) !important;
+}
+.image-table :deep(td.el-table__cell) {
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border-light);
+}
+
+.filename-text {
+  font-size: 13px;
+  color: var(--text-primary);
+  font-weight: 500;
+}
+
+.detect-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+.detect-time .el-icon {
+  color: var(--text-muted);
+  font-size: 14px;
+}
+
+/* 状态 pill */
+.status-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.status-success {
+  background: var(--bg-tag-success);
+  color: var(--success);
+}
+.status-success .status-dot {
+  background: var(--success);
+}
+.status-warning {
+  background: var(--bg-tag-warning);
+  color: var(--warning);
+}
+.status-warning .status-dot {
+  background: var(--warning);
+}
+
+/* 操作按钮 */
+.action-group {
   display: inline-flex;
   align-items: center;
   gap: 4px;
-  padding: 3px 10px;
-  border-radius: 2px;
-  font-size: 12px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  border: 1px solid;
 }
-.seal-malachite {
-  background: var(--bg-tag-success);
-  color: var(--success);
-  border-color: rgba(45, 90, 63, 0.3);
+.icon-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: var(--radius-sm);
+  border: none;
+  background: transparent;
+  color: var(--text-muted);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 15px;
 }
-.seal-gold {
+.icon-btn:hover {
+  background: var(--bg-hover);
+  color: var(--primary);
+}
+.icon-btn.warn:hover {
   background: var(--bg-tag-warning);
   color: var(--warning);
-  border-color: rgba(166, 93, 58, 0.3);
 }
 
-.action-group {
-  display: flex;
-  gap: 4px;
-}
-.action-btn {
-  padding: 4px 10px;
-  font-size: 12px;
-  background: transparent;
-  border: 1px solid transparent;
-  color: var(--primary);
-  cursor: pointer;
-  font-family: var(--font-sans);
-  transition: all 0.2s;
-  border-radius: var(--radius-sm);
-}
-.action-btn:hover {
-  border-color: var(--primary);
-  background: rgba(30, 58, 95, 0.04);
-}
-.action-btn.warn {
-  color: var(--warning);
-}
-.action-btn.warn:hover {
-  border-color: var(--warning);
-  background: rgba(166, 93, 58, 0.04);
-}
-
+/* 空状态 */
 .empty-state {
   padding: 50px 0;
-  color: var(--text-muted);
   text-align: center;
+}
+.empty-icon {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  background: var(--bg-hover);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-muted);
+  margin-bottom: 16px;
+}
+.empty-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 4px;
+}
+.empty-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* 预览弹窗 */
+.preview-dialog :deep(.el-dialog__body) {
+  padding: 0;
 }
 
 @media (max-width: 1100px) {
-  .patient-profile {
+  .detail-layout {
     grid-template-columns: 1fr;
   }
-  .detail-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .profile-panel {
+    position: static;
+  }
+  .stats-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+@media (max-width: 768px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
   }
 }
 </style>
