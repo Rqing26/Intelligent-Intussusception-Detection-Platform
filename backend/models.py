@@ -60,8 +60,18 @@ class DetectionResult(Base):
     image_id = Column(Integer, ForeignKey("images.id"), unique=True, nullable=False)
     classification = Column(String(50), nullable=False)
     confidence = Column(Float, nullable=False)
+    severity = Column(String(20), nullable=True)
+    treatment_success_rate = Column(Float, nullable=True)
     treatment_advice = Column(Text, nullable=True)
     detected_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     created_at = Column(DateTime, default=datetime.utcnow)
 
     image = relationship("Image", back_populates="detection_result")
+
+
+class SystemSetting(Base):
+    __tablename__ = "system_settings"
+
+    id = Column(Integer, primary_key=True, index=True)
+    key = Column(String(100), unique=True, nullable=False, index=True)
+    value = Column(Text, nullable=False)

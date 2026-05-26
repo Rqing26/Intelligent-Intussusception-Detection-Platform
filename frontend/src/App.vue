@@ -2,9 +2,16 @@
 <script setup>
 import { onMounted } from 'vue'
 import { useAuthStore } from './stores/auth'
+import { syncThemeFromBackend } from './utils/theme'
+import { useSettingsStore } from './stores/settings'
+
 const auth = useAuthStore()
-onMounted(() => auth.fetchUser())
+const settings = useSettingsStore()
+
+onMounted(async () => {
+  await auth.fetchUser()
+  if (auth.user) {
+    await syncThemeFromBackend(settings)
+  }
+})
 </script>
-<style>
-body { margin: 0; font-family: 'PingFang SC','Microsoft YaHei',sans-serif; background: #f0f2f5; }
-</style>

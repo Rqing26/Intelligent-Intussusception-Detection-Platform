@@ -1,26 +1,37 @@
 <template>
   <AppLayout>
-    <div class="image-upload">
-      <el-page-header icon="" @back="$router.push(`/patients/${patientId}`)">
-        <template #content>
-          <span class="page-title">上传影像</span>
-        </template>
-      </el-page-header>
-
-      <div class="content-wrapper">
-        <UploadZone @file-selected="onFileSelected" />
-
-        <div class="action-bar">
-          <el-button
-            type="primary"
-            size="large"
-            :disabled="!file"
-            :loading="uploading"
-            @click="handleUpload"
-          >
-            确认上传并检测
-          </el-button>
+    <div class="page-header-row">
+      <div>
+        <h2 class="page-title">上传影像</h2>
+        <div class="breadcrumb">
+          <span class="breadcrumb-link" @click="$router.push('/patients')">患者管理</span>
+          <span class="breadcrumb-sep">/</span>
+          <span class="breadcrumb-link" @click="$router.push(`/patients/${patientId}`)">{{ patientName || '患者详情' }}</span>
+          <span class="breadcrumb-sep">/</span>
+          <span>上传影像</span>
         </div>
+      </div>
+    </div>
+
+    <div class="upload-card">
+      <div class="card-header">
+        <h3>超声影像上传</h3>
+        <p class="card-sub">请上传患儿腹部超声影像，系统将自动进行肠套叠检测分析</p>
+      </div>
+      <div class="card-body">
+        <UploadZone @file-selected="onFileSelected" />
+      </div>
+      <div class="action-bar">
+        <el-button
+          type="primary"
+          size="large"
+          :disabled="!file"
+          :loading="uploading"
+          @click="handleUpload"
+        >
+          确认上传并检测
+        </el-button>
+        <el-button size="large" @click="$router.push(`/patients/${patientId}`)">取消</el-button>
       </div>
     </div>
   </AppLayout>
@@ -38,6 +49,7 @@ const route = useRoute()
 const router = useRouter()
 
 const patientId = computed(() => route.params.id)
+const patientName = computed(() => route.query.name || '')
 const file = ref(null)
 const uploading = ref(false)
 
@@ -72,25 +84,82 @@ async function handleUpload() {
 </script>
 
 <style scoped>
-.image-upload {
-  background: #fff;
-  padding: 20px;
-  border-radius: 4px;
+.page-header-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  margin-bottom: 20px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--border-color);
 }
-
 .page-title {
-  font-size: 18px;
-  font-weight: 600;
-  color: #303133;
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.04em;
+  margin: 0;
+}
+.breadcrumb {
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-top: 4px;
+  font-style: italic;
+}
+.breadcrumb-link {
+  cursor: pointer;
+  transition: color 0.2s;
+}
+.breadcrumb-link:hover {
+  color: var(--primary);
+}
+.breadcrumb-sep {
+  margin: 0 6px;
+  opacity: 0.5;
 }
 
-.content-wrapper {
-  margin-top: 20px;
-  max-width: 600px;
+.upload-card {
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  position: relative;
+  max-width: 720px;
+  margin: 0 auto;
 }
-
+.upload-card::before {
+  content: '';
+  position: absolute;
+  top: -1px;
+  left: 24px;
+  width: 48px;
+  height: 2px;
+  background: var(--gold);
+}
+.card-header {
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-color);
+}
+.card-header h3 {
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 0.06em;
+  margin: 0 0 6px;
+}
+.card-sub {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+  font-style: italic;
+}
+.card-body {
+  padding: 24px;
+}
 .action-bar {
-  margin-top: 24px;
-  text-align: center;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  padding: 20px 24px;
+  border-top: 1px solid var(--border-color);
 }
 </style>

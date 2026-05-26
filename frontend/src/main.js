@@ -6,6 +6,10 @@ import zhCn from 'element-plus/es/locale/lang/zh-cn'
 import * as Icons from '@element-plus/icons-vue'
 import App from './App.vue'
 import router from './router'
+import './styles/theme.css'
+import { initTheme } from './utils/theme'
+
+initTheme()
 
 const app = createApp(App)
 app.use(createPinia())

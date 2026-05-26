@@ -101,52 +101,57 @@ function clearFile() {
 
 <style scoped>
 .upload-zone {
-  border: 2px dashed #dcdfe6;
-  border-radius: 8px;
-  padding: 40px 20px;
+  border: 2px dashed var(--border-color);
+  border-radius: var(--radius-lg);
+  padding: 48px 24px;
   text-align: center;
   cursor: pointer;
   transition: border-color 0.3s, background-color 0.3s;
-  min-height: 200px;
+  min-height: 240px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  background: var(--bg-detail-item);
 }
 
 .upload-zone:hover,
 .upload-zone.is-dragover {
-  border-color: #409EFF;
-  background: #ecf5ff;
+  border-color: var(--gold);
+  background: var(--bg-profile);
 }
 
 .upload-icon {
   font-size: 48px;
-  color: #c0c4cc;
+  color: var(--text-muted);
 }
 
 .upload-text {
-  margin: 12px 0 4px;
+  margin: 14px 0 6px;
   font-size: 15px;
-  color: #606266;
+  color: var(--text-secondary);
+  font-weight: 600;
 }
 
 .upload-hint {
   margin: 0;
   font-size: 13px;
-  color: #909399;
+  color: var(--text-muted);
+  font-style: italic;
 }
 
 .preview-image {
   max-width: 100%;
   max-height: 300px;
-  border-radius: 8px;
-  margin-bottom: 8px;
+  border-radius: var(--radius-lg);
+  margin-bottom: 10px;
+  border: 1px solid var(--border-color);
 }
 
 .preview-filename {
-  margin: 4px 0;
+  margin: 6px 0;
   font-size: 14px;
-  color: #303133;
+  color: var(--text-primary);
+  font-weight: 600;
 }
 </style>

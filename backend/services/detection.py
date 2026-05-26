@@ -16,6 +16,8 @@ class DetectionService:
             image_id=image.id,
             classification=result.classification,
             confidence=result.confidence,
+            severity=result.severity,
+            treatment_success_rate=result.treatment_success_rate,
             treatment_advice=result.treatment_advice,
             detected_by=image.uploaded_by,
         )

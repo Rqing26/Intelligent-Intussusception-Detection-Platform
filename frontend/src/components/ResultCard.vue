@@ -1,24 +1,43 @@
 <template>
   <div class="result-card">
     <div class="result-section">
-      <span class="result-label">诊断结果</span>
-      <el-tag
-        size="large"
-        effect="dark"
-        :type="tagType"
-        class="result-tag"
-      >
+      <span class="result-label">诊断分类</span>
+      <span :class="['seal-tag', classificationClass]">
         {{ result.classification }}
-      </el-tag>
+      </span>
     </div>
 
     <div class="result-section">
       <span class="result-label">置信度</span>
-      <el-progress
-        :percentage="confidencePercent"
-        :stroke-width="16"
-        :color="progressColor"
-      />
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            :style="{ width: confidencePercent + '%', background: progressColor }"
+          />
+        </div>
+        <span class="progress-text">{{ confidencePercent }}%</span>
+      </div>
+    </div>
+
+    <div v-if="result.severity" class="result-section">
+      <span class="result-label">诊断等级</span>
+      <span :class="['seal-tag', severityClass]">
+        {{ result.severity }}
+      </span>
+    </div>
+
+    <div v-if="result.severity" class="result-section">
+      <span class="result-label">治疗成功率</span>
+      <div class="progress-wrap">
+        <div class="progress-track">
+          <div
+            class="progress-fill"
+            :style="{ width: Math.round(result.treatment_success_rate * 100) + '%', background: rateColor }"
+          />
+        </div>
+        <span class="progress-text">灌肠成功率{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
+      </div>
     </div>
 
     <div v-if="result.treatment_advice" class="result-section">
@@ -41,13 +60,22 @@ const props = defineProps({
   },
 })
 
-const tagType = computed(() => {
+const classificationClass = computed(() => {
   const map = {
-    '肠套叠阳性': 'danger',
-    '肠套叠阴性': 'success',
-    '图像质量不佳': 'warning',
+    '肠套叠阳性': 'seal-vermillion',
+    '肠套叠阴性': 'seal-malachite',
+    '图像质量不佳': 'seal-gold',
   }
-  return map[props.result.classification] || 'info'
+  return map[props.result.classification] || 'seal-ink'
+})
+
+const severityClass = computed(() => {
+  const map = {
+    '轻度': 'seal-malachite',
+    '中度': 'seal-gold',
+    '重度': 'seal-vermillion',
+  }
+  return map[props.result.severity] || 'seal-ink'
 })
 
 const confidencePercent = computed(() => {
@@ -58,51 +86,101 @@ const confidencePercent = computed(() => {
 
 const progressColor = computed(() => {
   const val = props.result.confidence
-  if (val >= 0.9) return '#67c23a'
-  if (val >= 0.75) return '#e6a23c'
-  return '#f56c6c'
+  if (val >= 0.9) return 'var(--success)'
+  if (val >= 0.75) return 'var(--warning)'
+  return 'var(--danger)'
+})
+
+const rateColor = computed(() => {
+  const rate = props.result.treatment_success_rate
+  if (rate >= 0.9) return 'var(--success)'
+  if (rate >= 0.8) return 'var(--warning)'
+  return 'var(--danger)'
 })
 </script>
 
 <style scoped>
 .result-card {
-  padding: 20px;
+  padding: 4px;
 }
 
 .result-section {
-  margin-bottom: 24px;
+  margin-bottom: 22px;
+}
+.result-section:last-child {
+  margin-bottom: 0;
 }
 
 .result-label {
   display: block;
-  font-size: 14px;
-  color: #909399;
-  margin-bottom: 10px;
+  font-size: 12px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+  font-family: var(--font-display);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }
 
-.result-tag {
-  font-size: 16px;
+.seal-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 12px;
+  border-radius: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  border: 1px solid;
+}
+.seal-vermillion { background: var(--bg-tag-danger); color: var(--danger); border-color: rgba(139, 38, 53, 0.3); }
+.seal-malachite { background: var(--bg-tag-success); color: var(--success); border-color: rgba(45, 90, 63, 0.3); }
+.seal-gold { background: var(--bg-tag-warning); color: var(--warning); border-color: rgba(166, 93, 58, 0.3); }
+.seal-ink { background: rgba(44, 36, 27, 0.06); color: var(--text-secondary); border-color: rgba(44, 36, 27, 0.2); }
+
+.progress-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+.progress-track {
+  flex: 1;
+  height: 8px;
+  background: var(--border-color);
+  border-radius: 4px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.6s ease;
+}
+.progress-text {
+  font-family: var(--font-display);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-primary);
+  min-width: 90px;
+  text-align: right;
 }
 
 .advice-card {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: #f5f7fa;
-  border-radius: 6px;
+  background: var(--bg-detail-item);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
   padding: 14px 16px;
 }
-
 .advice-icon {
   font-size: 20px;
-  color: #e6a23c;
+  color: var(--warning);
   flex-shrink: 0;
   margin-top: 1px;
 }
-
 .advice-text {
   font-size: 14px;
-  color: #606266;
+  color: var(--text-secondary);
   line-height: 1.6;
 }
 </style>

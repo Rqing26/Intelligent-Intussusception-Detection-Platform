@@ -2,14 +2,20 @@
   "name": "intussusception-frontend",
   "version": "1.0.0",
   "private": true,
-  "scripts": { "dev": "vite", "build": "vite build", "preview": "vite preview" },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
   "dependencies": {
-    "vue": "^3.4.0",
-    "vue-router": "^4.3.0",
-    "pinia": "^2.1.0",
+    "@element-plus/icons-vue": "^2.3.0",
     "axios": "^1.7.0",
     "element-plus": "^2.8.0",
-    "@element-plus/icons-vue": "^2.3.0"
+    "html2canvas": "^1.4.1",
+    "jspdf": "^4.2.1",
+    "pinia": "^2.1.0",
+    "vue": "^3.4.0",
+    "vue-router": "^4.3.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^5.1.0",

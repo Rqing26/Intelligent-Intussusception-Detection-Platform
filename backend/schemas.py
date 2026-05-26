@@ -74,11 +74,24 @@ class DetectionResultOut(BaseModel):
     image_id: int
     classification: str
     confidence: float
+    severity: Optional[str] = None
+    treatment_success_rate: Optional[float] = None
     treatment_advice: Optional[str] = None
     created_at: datetime
     image: Optional[ImageInfo] = None
 
     model_config = {"from_attributes": True}
+
+
+class SettingItem(BaseModel):
+    key: str
+    value: str
+
+    model_config = {"from_attributes": True}
+
+
+class SettingsUpdate(BaseModel):
+    settings: List[SettingItem]
 
 
 class PaginatedResponse(BaseModel):

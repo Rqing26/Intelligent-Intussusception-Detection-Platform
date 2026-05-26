@@ -1,0 +1,345 @@
+/* ============================================================
+   Theme System — Dual Theme: Modern & Medieval
+   ============================================================ */
+
+/* ---------- Modern Theme (方案 D: 医疗专业版) ---------- */
+:root[data-theme="modern"] {
+  /* Backgrounds */
+  --bg-page: #f1f5f9;
+  --bg-card: #ffffff;
+  --bg-sidebar: #0f172a;
+  --bg-sidebar-hover: #1e293b;
+  --bg-header: #ffffff;
+  --bg-main: #f1f5f9;
+  --bg-input: #ffffff;
+  --bg-hover: #f8fafc;
+  --bg-table-header: #1e3a5f;
+  --bg-table-row-hover: #f8fafc;
+  --bg-table-row: transparent;
+  --bg-toolbar: #fafafa;
+  --bg-upload: #fafafa;
+  --bg-upload-hover: rgba(37, 99, 235, 0.03);
+  --bg-dialog: #ffffff;
+  --bg-tag-success: rgba(5, 150, 105, 0.08);
+  --bg-tag-danger: rgba(220, 38, 38, 0.08);
+  --bg-tag-warning: rgba(234, 88, 12, 0.08);
+  --bg-tag-info: rgba(37, 99, 235, 0.08);
+  --bg-stat-card: #ffffff;
+  --bg-profile: #ffffff;
+  --bg-detail-item: #ffffff;
+  --bg-report-card: #ffffff;
+  --bg-advice: #f8fafc;
+  --bg-image-placeholder: #f1f5f9;
+  --bg-file-preview: #ffffff;
+  --bg-pagination: transparent;
+  --lapis-deep: #1e3a5f;
+
+  /* Text */
+  --text-primary: #0f172a;
+  --text-secondary: #475569;
+  --text-muted: #94a3b8;
+  --text-inverse: #ffffff;
+  --text-sidebar: #94a3b8;
+  --text-sidebar-active: #fbbf24;
+  --text-link: #2563eb;
+
+  /* Borders */
+  --border-color: #e2e8f0;
+  --border-strong: #cbd5e1;
+  --border-light: #f1f5f9;
+  --border-card-top: #2563eb;
+  --border-sidebar: transparent;
+
+  /* Accent colors */
+  --primary: #2563eb;
+  --primary-light: #dbeafe;
+  --primary-hover: #1d4ed8;
+  --primary-glow: rgba(37, 99, 235, 0.15);
+  --success: #059669;
+  --success-light: #d1fae5;
+  --warning: #ea580c;
+  --warning-light: #ffedd5;
+  --danger: #dc2626;
+  --danger-light: #fee2e2;
+  --gold: #b8941f;
+  --gold-light: #d4b04a;
+  --gold-dim: #8a6d2f;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
+  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
+  --shadow-book: 0 12px 40px rgba(15, 23, 42, 0.15);
+  --shadow-inner: inset 0 1px 3px rgba(15, 23, 42, 0.04);
+
+  /* Radius */
+  --radius-sm: 8px;
+  --radius-md: 12px;
+  --radius-lg: 16px;
+
+  /* Typography */
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+  --font-display: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+
+  /* Element Plus overrides */
+  --el-color-primary: #2563eb;
+  --el-color-primary-light-3: #3b82f6;
+  --el-color-primary-light-5: #60a5fa;
+  --el-color-primary-light-7: #93c5fd;
+  --el-color-primary-light-8: #bfdbfe;
+  --el-color-primary-light-9: #dbeafe;
+  --el-color-primary-dark-2: #1d4ed8;
+  --el-border-radius-base: 8px;
+  --el-border-radius-small: 6px;
+  --el-border-radius-round: 20px;
+}
+
+/* ---------- Medieval Theme (方案 E: 中世纪手稿) ---------- */
+:root[data-theme="medieval"] {
+  /* Backgrounds */
+  --bg-page: #d8d0c0;
+  --bg-card: #f3efe6;
+  --bg-sidebar: #14263d;
+  --bg-sidebar-hover: #1e3a5f;
+  --bg-header: #f3efe6;
+  --bg-main: #d8d0c0;
+  --bg-input: #faf7f0;
+  --bg-hover: rgba(232, 224, 208, 0.4);
+  --bg-table-header: #1e3a5f;
+  --bg-table-row-hover: rgba(232, 224, 208, 0.4);
+  --bg-table-row: transparent;
+  --bg-toolbar: #faf7f0;
+  --bg-upload: #faf7f0;
+  --bg-upload-hover: rgba(184, 148, 31, 0.03);
+  --bg-dialog: #f3efe6;
+  --bg-tag-success: rgba(45, 90, 63, 0.08);
+  --bg-tag-danger: rgba(139, 38, 53, 0.08);
+  --bg-tag-warning: rgba(166, 93, 58, 0.08);
+  --bg-tag-info: rgba(30, 58, 95, 0.08);
+  --bg-stat-card: #f3efe6;
+  --bg-profile: #f3efe6;
+  --bg-detail-item: #f3efe6;
+  --bg-report-card: #f3efe6;
+  --bg-advice: #faf7f0;
+  --bg-image-placeholder: #e2d8c8;
+  --bg-file-preview: #f3efe6;
+  --bg-pagination: transparent;
+  --lapis-deep: #1e3a5f;
+
+  /* Text */
+  --text-primary: #2c241b;
+  --text-secondary: #5a4d3b;
+  --text-muted: #8c7e6a;
+  --text-inverse: #f3efe6;
+  --text-sidebar: rgba(243, 239, 230, 0.6);
+  --text-sidebar-active: #b8941f;
+  --text-link: #1e3a5f;
+
+  /* Borders */
+  --border-color: #d4c8b0;
+  --border-strong: #c4b8a0;
+  --border-light: #e8e0d0;
+  --border-card-top: #b8941f;
+  --border-sidebar: transparent;
+
+  /* Accent colors */
+  --primary: #1e3a5f;
+  --primary-light: #e0e8f0;
+  --primary-hover: #14263d;
+  --primary-glow: rgba(30, 58, 95, 0.15);
+  --success: #2d5a3f;
+  --success-light: #d1e8d8;
+  --warning: #a65d3a;
+  --warning-light: #f5e0d4;
+  --danger: #8b2635;
+  --danger-light: #f0d4d8;
+  --gold: #b8941f;
+  --gold-light: #d4b04a;
+  --gold-dim: #8a6d2f;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(44, 36, 27, 0.06);
+  --shadow-md: 0 4px 16px rgba(44, 36, 27, 0.08);
+  --shadow-lg: 0 12px 32px rgba(44, 36, 27, 0.12);
+  --shadow-book: 0 12px 40px rgba(44, 36, 27, 0.18);
+  --shadow-inner: inset 0 1px 3px rgba(44, 36, 27, 0.04);
+
+  /* Radius */
+  --radius-sm: 2px;
+  --radius-md: 4px;
+  --radius-lg: 8px;
+
+  /* Typography */
+  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
+  --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
+
+  /* Element Plus overrides */
+  --el-color-primary: #1e3a5f;
+  --el-color-primary-light-3: #2a5080;
+  --el-color-primary-light-5: #3d6a9f;
+  --el-color-primary-light-7: #5a8ab8;
+  --el-color-primary-light-8: #8ab0d0;
+  --el-color-primary-light-9: #c8dce8;
+  --el-color-primary-dark-2: #14263d;
+  --el-border-radius-base: 4px;
+  --el-border-radius-small: 2px;
+  --el-border-radius-round: 20px;
+}
+
+/* ============================================================
+   Global styles that adapt to theme variables
+   ============================================================ */
+
+body {
+  margin: 0;
+  font-family: var(--font-sans);
+  background: var(--bg-page);
+  min-height: 100vh;
+  color: var(--text-primary);
+  transition: background 0.4s ease, color 0.4s ease;
+}
+
+/* Element Plus overrides using CSS variables */
+.el-button--primary:not(.is-text):not(.is-link):not(.el-button--text) {
+  background: var(--primary) !important;
+  border: none !important;
+  color: var(--text-inverse) !important;
+  font-weight: 600 !important;
+  box-shadow: var(--shadow-sm) !important;
+  transition: transform 0.15s, box-shadow 0.2s !important;
+}
+.el-button--primary:not(.is-text):not(.is-link):not(.el-button--text):hover {
+  background: var(--primary-hover) !important;
+  transform: translateY(-1px) !important;
+  box-shadow: var(--shadow-md) !important;
+}
+
+.el-table {
+  background: transparent !important;
+  --el-table-border-color: var(--border-color);
+  --el-table-header-bg-color: var(--bg-table-header);
+  --el-table-row-hover-bg-color: var(--bg-hover);
+  --el-table-tr-bg-color: var(--bg-table-row);
+}
+.el-table th.el-table__cell {
+  background: var(--bg-table-header) !important;
+  color: var(--text-inverse) !important;
+  font-weight: 700 !important;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-size: 11px;
+  border-bottom: 2px solid var(--gold-dim);
+}
+.el-table td.el-table__cell {
+  background: transparent !important;
+  color: var(--text-primary);
+}
+
+.el-pagination .el-pager li {
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--text-secondary);
+  font-weight: 500;
+  transition: all 0.2s;
+}
+.el-pagination .el-pager li.is-active {
+  background: var(--primary) !important;
+  color: var(--text-inverse) !important;
+  border-color: var(--primary) !important;
+  font-weight: 700;
+}
+.el-pagination button {
+  border-radius: var(--radius-sm);
+  background: var(--bg-card);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+}
+
+.el-dialog {
+  background: var(--bg-dialog) !important;
+  border-radius: var(--radius-lg) !important;
+  box-shadow: var(--shadow-book) !important;
+  border: 1px solid var(--border-color) !important;
+}
+.el-dialog__header {
+  font-weight: 700 !important;
+  color: var(--text-primary) !important;
+  padding-bottom: 16px !important;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.el-input__wrapper {
+  box-shadow: 0 0 0 1px var(--border-strong) inset !important;
+  border-radius: var(--radius-sm) !important;
+  background: var(--bg-input) !important;
+}
+.el-input__wrapper.is-focus {
+  box-shadow: 0 0 0 1px var(--primary) inset, 0 0 0 3px var(--primary-glow) !important;
+}
+
+.el-tag--success { background: var(--bg-tag-success) !important; color: var(--success) !important; border: 1px solid rgba(5,150,105,0.2) !important; }
+.el-tag--danger { background: var(--bg-tag-danger) !important; color: var(--danger) !important; border: 1px solid rgba(220,38,38,0.2) !important; }
+.el-tag--warning { background: var(--bg-tag-warning) !important; color: var(--warning) !important; border: 1px solid rgba(234,88,12,0.2) !important; }
+.el-tag--info { background: var(--bg-tag-info) !important; color: var(--primary) !important; border: 1px solid rgba(37,99,235,0.2) !important; }
+
+.el-page-header__content { font-size: 18px; font-weight: 700; color: var(--text-primary); }
+
+.el-menu {
+  background: transparent !important;
+  border-right: none !important;
+}
+
+.el-descriptions__body {
+  background: var(--bg-card) !important;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--border-color);
+}
+.el-descriptions__cell {
+  background: transparent !important;
+}
+
+.el-popover, .el-popconfirm__main {
+  border-radius: var(--radius-md) !important;
+  background: var(--bg-dialog) !important;
+  border: 1px solid var(--border-color) !important;
+  box-shadow: var(--shadow-lg) !important;
+}
+
+/* Form items */
+.el-form-item__label {
+  color: var(--text-secondary) !important;
+  font-weight: 600;
+}
+
+/* Select dropdown */
+.el-select-dropdown {
+  background: var(--bg-card) !important;
+  border: 1px solid var(--border-color) !important;
+}
+.el-select-dropdown__item {
+  color: var(--text-primary) !important;
+}
+.el-select-dropdown__item.hover,
+.el-select-dropdown__item:hover {
+  background: var(--bg-hover) !important;
+}
+
+/* Loading mask */
+.el-loading-mask {
+  background: rgba(255,255,255,0.6) !important;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+/* Theme transition for all themed elements */
+.theme-transition,
+.theme-transition * {
+  transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
