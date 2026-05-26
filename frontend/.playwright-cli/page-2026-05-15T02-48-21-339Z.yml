@@ -1,0 +1,167 @@
+- generic [ref=e29]:
+  - generic [ref=e30]:
+    - generic [ref=e31]: 肠套叠AI辅助诊断平台
+    - generic [ref=e32]:
+      - generic [ref=e33]: doctor
+      - button "退出登录" [ref=e34] [cursor=pointer]:
+        - generic [ref=e35]: 退出登录
+  - generic [ref=e36]:
+    - complementary [ref=e37]:
+      - menubar [ref=e38]:
+        - menuitem "患者管理" [ref=e39] [cursor=pointer]:
+          - img [ref=e41]
+          - generic [ref=e43]: 患者管理
+        - menuitem "检测记录" [ref=e44] [cursor=pointer]:
+          - img [ref=e46]
+          - generic [ref=e50]: 检测记录
+    - main [ref=e51]:
+      - generic [ref=e52]:
+        - generic [ref=e53]:
+          - textbox "搜索患者姓名或病历号" [ref=e56]
+          - button "新增患者" [ref=e58] [cursor=pointer]:
+            - img [ref=e60]
+            - generic [ref=e62]: 新增患者
+        - generic [ref=e64]:
+          - table [ref=e66]:
+            - rowgroup [ref=e74]:
+              - row "ID 姓名 性别 年龄(月) 病历号 操作" [ref=e75]:
+                - columnheader "ID" [ref=e76]:
+                  - generic [ref=e77]: ID
+                - columnheader "姓名" [ref=e78]:
+                  - generic [ref=e79]: 姓名
+                - columnheader "性别" [ref=e80]:
+                  - generic [ref=e81]: 性别
+                - columnheader "年龄(月)" [ref=e82]:
+                  - generic [ref=e83]: 年龄(月)
+                - columnheader "病历号" [ref=e84]:
+                  - generic [ref=e85]: 病历号
+                - columnheader "操作" [ref=e86]:
+                  - generic [ref=e87]: 操作
+          - table [ref=e92]:
+            - rowgroup [ref=e100]:
+              - row "5 3 男 9 120 详情 编辑 删除" [ref=e101]:
+                - cell "5" [ref=e102]:
+                  - generic [ref=e103]: "5"
+                - cell "3" [ref=e104]:
+                  - generic [ref=e105]: "3"
+                - cell "男" [ref=e106]:
+                  - generic [ref=e107]: 男
+                - cell "9" [ref=e108]:
+                  - generic [ref=e109]: "9"
+                - cell "120" [ref=e110]:
+                  - generic [ref=e111]: "120"
+                - cell "详情 编辑 删除" [ref=e112]:
+                  - generic [ref=e113]:
+                    - generic [ref=e115] [cursor=pointer]: 详情
+                    - generic [ref=e117] [cursor=pointer]: 编辑
+                    - generic [ref=e119] [cursor=pointer]: 删除
+              - row "4 man4-正常 男 15 004 详情 编辑 删除" [ref=e120]:
+                - cell "4" [ref=e121]:
+                  - generic [ref=e122]: "4"
+                - cell "man4-正常" [ref=e123]:
+                  - generic [ref=e124]: man4-正常
+                - cell "男" [ref=e125]:
+                  - generic [ref=e126]: 男
+                - cell "15" [ref=e127]:
+                  - generic [ref=e128]: "15"
+                - cell "004" [ref=e129]:
+                  - generic [ref=e130]: "004"
+                - cell "详情 编辑 删除" [ref=e131]:
+                  - generic [ref=e132]:
+                    - generic [ref=e134] [cursor=pointer]: 详情
+                    - generic [ref=e136] [cursor=pointer]: 编辑
+                    - generic [ref=e138] [cursor=pointer]: 删除
+              - row "3 man3 男 12 003 详情 编辑 删除" [ref=e139]:
+                - cell "3" [ref=e140]:
+                  - generic [ref=e141]: "3"
+                - cell "man3" [ref=e142]:
+                  - generic [ref=e143]: man3
+                - cell "男" [ref=e144]:
+                  - generic [ref=e145]: 男
+                - cell "12" [ref=e146]:
+                  - generic [ref=e147]: "12"
+                - cell "003" [ref=e148]:
+                  - generic [ref=e149]: "003"
+                - cell "详情 编辑 删除" [ref=e150]:
+                  - generic [ref=e151]:
+                    - generic [ref=e153] [cursor=pointer]: 详情
+                    - generic [ref=e155] [cursor=pointer]: 编辑
+                    - generic [ref=e157] [cursor=pointer]: 删除
+              - row "2 woman2 女 10 002 详情 编辑 删除" [ref=e158]:
+                - cell "2" [ref=e159]:
+                  - generic [ref=e160]: "2"
+                - cell "woman2" [ref=e161]:
+                  - generic [ref=e162]: woman2
+                - cell "女" [ref=e163]:
+                  - generic [ref=e164]: 女
+                - cell "10" [ref=e165]:
+                  - generic [ref=e166]: "10"
+                - cell "002" [ref=e167]:
+                  - generic [ref=e168]: "002"
+                - cell "详情 编辑 删除" [ref=e169]:
+                  - generic [ref=e170]:
+                    - generic [ref=e172] [cursor=pointer]: 详情
+                    - generic [ref=e174] [cursor=pointer]: 编辑
+                    - generic [ref=e176] [cursor=pointer]: 删除
+              - row "1 man1 男 9 001 详情 编辑 删除" [ref=e177]:
+                - cell "1" [ref=e178]:
+                  - generic [ref=e179]: "1"
+                - cell "man1" [ref=e180]:
+                  - generic [ref=e181]: man1
+                - cell "男" [ref=e182]:
+                  - generic [ref=e183]: 男
+                - cell "9" [ref=e184]:
+                  - generic [ref=e185]: "9"
+                - cell "001" [ref=e186]:
+                  - generic [ref=e187]: "001"
+                - cell "详情 编辑 删除" [ref=e188]:
+                  - generic [ref=e189]:
+                    - generic [ref=e191] [cursor=pointer]: 详情
+                    - generic [ref=e193] [cursor=pointer]: 编辑
+                    - generic [ref=e195] [cursor=pointer]: 删除
+        - generic [ref=e198]:
+          - generic [ref=e199]: 共 5 条
+          - button "上一页" [disabled] [ref=e200]:
+            - generic:
+              - img
+          - list [ref=e201]:
+            - listitem "第 1 页" [ref=e202]: "1"
+          - button "下一页" [disabled] [ref=e203]:
+            - generic:
+              - img
+        - dialog "新增患者" [ref=e210]:
+          - generic [active] [ref=e211]:
+            - generic [ref=e212]:
+              - heading "新增患者" [level=2] [ref=e213]
+              - button "关闭此对话框" [ref=e214] [cursor=pointer]:
+                - img [ref=e216]
+            - generic [ref=e219]:
+              - generic [ref=e220]:
+                - generic [ref=e221]: "* 姓名"
+                - textbox "* 姓名" [ref=e225]
+              - generic [ref=e226]:
+                - generic [ref=e227]: "* 性别"
+                - generic [ref=e230] [cursor=pointer]:
+                  - generic:
+                    - combobox "* 性别" [ref=e232]
+                    - generic [ref=e233]: 请选择
+                  - img [ref=e236]
+              - generic [ref=e238]:
+                - generic [ref=e239]: "* 年龄(月)"
+                - generic [ref=e241]:
+                  - button "减少数值" [ref=e242] [cursor=pointer]:
+                    - img [ref=e244]
+                  - button "增加数值" [ref=e246] [cursor=pointer]:
+                    - img [ref=e248]
+                  - spinbutton "* 年龄(月)" [ref=e252]
+              - generic [ref=e253]:
+                - generic [ref=e254]: 病历号
+                - textbox "病历号" [ref=e258]
+              - generic [ref=e259]:
+                - generic [ref=e260]: 临床症状
+                - textbox "临床症状" [ref=e263]
+            - generic [ref=e264]:
+              - button "取消" [ref=e265] [cursor=pointer]:
+                - generic [ref=e266]: 取消
+              - button "确定" [ref=e267] [cursor=pointer]:
+                - generic [ref=e268]: 确定

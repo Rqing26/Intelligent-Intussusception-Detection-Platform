@@ -1,0 +1,125 @@
+- generic [ref=e522]:
+  - generic [ref=e523]:
+    - generic [ref=e524]: 肠套叠AI辅助诊断平台
+    - generic [ref=e525]:
+      - generic [ref=e526]: doctor
+      - button "退出登录" [ref=e527] [cursor=pointer]:
+        - generic [ref=e528]: 退出登录
+  - generic [ref=e529]:
+    - complementary [ref=e530]:
+      - menubar [ref=e531]:
+        - menuitem "患者管理" [ref=e532] [cursor=pointer]:
+          - img [ref=e534]
+          - generic [ref=e536]: 患者管理
+        - menuitem "检测记录" [ref=e537] [cursor=pointer]:
+          - img [ref=e539]
+          - generic [ref=e543]: 检测记录
+    - main [ref=e544]:
+      - generic [ref=e545]:
+        - heading "检测记录" [level=3] [ref=e546]
+        - generic [ref=e548]:
+          - table [ref=e550]:
+            - rowgroup [ref=e558]:
+              - row "ID 诊断结果 置信度 治疗建议 检测时间 操作" [ref=e559]:
+                - columnheader "ID" [ref=e560]:
+                  - generic [ref=e561]: ID
+                - columnheader "诊断结果" [ref=e562]:
+                  - generic [ref=e563]: 诊断结果
+                - columnheader "置信度" [ref=e564]:
+                  - generic [ref=e565]: 置信度
+                - columnheader "治疗建议" [ref=e566]:
+                  - generic [ref=e567]: 治疗建议
+                - columnheader "检测时间" [ref=e568]:
+                  - generic [ref=e569]: 检测时间
+                - columnheader "操作" [ref=e570]:
+                  - generic [ref=e571]: 操作
+          - table [ref=e576]:
+            - rowgroup [ref=e584]:
+              - row "6 肠套叠阴性 97% 超声未见肠套叠征象。建议结合临床观察。 2026-05-15T02:51:41.306172 查看详情" [ref=e585]:
+                - cell "6" [ref=e586]:
+                  - generic [ref=e587]: "6"
+                - cell "肠套叠阴性" [ref=e588]:
+                  - generic [ref=e591]: 肠套叠阴性
+                - cell "97%" [ref=e592]:
+                  - generic [ref=e593]: 97%
+                - cell "超声未见肠套叠征象。建议结合临床观察。" [ref=e594]:
+                  - generic [ref=e595]: 超声未见肠套叠征象。建议结合临床观察。
+                - cell "2026-05-15T02:51:41.306172" [ref=e596]:
+                  - generic [ref=e597]: 2026-05-15T02:51:41.306172
+                - cell "查看详情" [ref=e598]:
+                  - generic [ref=e601] [cursor=pointer]: 查看详情
+              - row "5 肠套叠阳性 96% 建议立即行空气灌肠复位术。复位失败需急诊手术。 2026-05-15T02:20:35.843144 查看详情" [ref=e602]:
+                - cell "5" [ref=e603]:
+                  - generic [ref=e604]: "5"
+                - cell "肠套叠阳性" [ref=e605]:
+                  - generic [ref=e608]: 肠套叠阳性
+                - cell "96%" [ref=e609]:
+                  - generic [ref=e610]: 96%
+                - cell "建议立即行空气灌肠复位术。复位失败需急诊手术。" [ref=e611]:
+                  - generic [ref=e612]: 建议立即行空气灌肠复位术。复位失败需急诊手术。
+                - cell "2026-05-15T02:20:35.843144" [ref=e613]:
+                  - generic [ref=e614]: 2026-05-15T02:20:35.843144
+                - cell "查看详情" [ref=e615]:
+                  - generic [ref=e618] [cursor=pointer]: 查看详情
+              - row "4 肠套叠阴性 95% 超声未见肠套叠征象。建议结合临床观察。 2026-05-15T01:44:00.937751 查看详情" [ref=e619]:
+                - cell "4" [ref=e620]:
+                  - generic [ref=e621]: "4"
+                - cell "肠套叠阴性" [ref=e622]:
+                  - generic [ref=e625]: 肠套叠阴性
+                - cell "95%" [ref=e626]:
+                  - generic [ref=e627]: 95%
+                - cell "超声未见肠套叠征象。建议结合临床观察。" [ref=e628]:
+                  - generic [ref=e629]: 超声未见肠套叠征象。建议结合临床观察。
+                - cell "2026-05-15T01:44:00.937751" [ref=e630]:
+                  - generic [ref=e631]: 2026-05-15T01:44:00.937751
+                - cell "查看详情" [ref=e632]:
+                  - generic [ref=e635] [cursor=pointer]: 查看详情
+              - row "3 肠套叠阴性 97% 超声未见肠套叠征象。建议结合临床观察。 2026-05-15T01:43:11.327532 查看详情" [ref=e636]:
+                - cell "3" [ref=e637]:
+                  - generic [ref=e638]: "3"
+                - cell "肠套叠阴性" [ref=e639]:
+                  - generic [ref=e642]: 肠套叠阴性
+                - cell "97%" [ref=e643]:
+                  - generic [ref=e644]: 97%
+                - cell "超声未见肠套叠征象。建议结合临床观察。" [ref=e645]:
+                  - generic [ref=e646]: 超声未见肠套叠征象。建议结合临床观察。
+                - cell "2026-05-15T01:43:11.327532" [ref=e647]:
+                  - generic [ref=e648]: 2026-05-15T01:43:11.327532
+                - cell "查看详情" [ref=e649]:
+                  - generic [ref=e652] [cursor=pointer]: 查看详情
+              - row "2 肠套叠阳性 76% 建议立即行空气灌肠复位术。复位失败需急诊手术。 2026-05-15T01:30:20.555428 查看详情" [ref=e653]:
+                - cell "2" [ref=e654]:
+                  - generic [ref=e655]: "2"
+                - cell "肠套叠阳性" [ref=e656]:
+                  - generic [ref=e659]: 肠套叠阳性
+                - cell "76%" [ref=e660]:
+                  - generic [ref=e661]: 76%
+                - cell "建议立即行空气灌肠复位术。复位失败需急诊手术。" [ref=e662]:
+                  - generic [ref=e663]: 建议立即行空气灌肠复位术。复位失败需急诊手术。
+                - cell "2026-05-15T01:30:20.555428" [ref=e664]:
+                  - generic [ref=e665]: 2026-05-15T01:30:20.555428
+                - cell "查看详情" [ref=e666]:
+                  - generic [ref=e669] [cursor=pointer]: 查看详情
+              - row "1 肠套叠阳性 76% 建议立即行空气灌肠复位术。复位失败需急诊手术。 2026-05-15T01:29:05.329159 查看详情" [ref=e670]:
+                - cell "1" [ref=e671]:
+                  - generic [ref=e672]: "1"
+                - cell "肠套叠阳性" [ref=e673]:
+                  - generic [ref=e676]: 肠套叠阳性
+                - cell "76%" [ref=e677]:
+                  - generic [ref=e678]: 76%
+                - cell "建议立即行空气灌肠复位术。复位失败需急诊手术。" [ref=e679]:
+                  - generic [ref=e680]: 建议立即行空气灌肠复位术。复位失败需急诊手术。
+                - cell "2026-05-15T01:29:05.329159" [ref=e681]:
+                  - generic [ref=e682]: 2026-05-15T01:29:05.329159
+                - cell "查看详情" [ref=e683]:
+                  - generic [ref=e686] [cursor=pointer]: 查看详情
+        - generic [ref=e689]:
+          - generic [ref=e690]: 共 6 条
+          - button "上一页" [disabled] [ref=e691]:
+            - generic:
+              - img
+          - list [ref=e692]:
+            - listitem "第 1 页" [ref=e693]: "1"
+          - button "下一页" [disabled] [ref=e694]:
+            - generic:
+              - img

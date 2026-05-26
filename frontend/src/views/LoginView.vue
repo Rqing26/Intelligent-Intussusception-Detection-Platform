@@ -6,6 +6,13 @@
     </div>
     <div class="login-wrap">
       <div class="login-visual">
+        <div class="login-hospital-brand">
+          <div class="login-logo-circle"><span>+</span></div>
+          <div class="login-hospital-name">
+            <div>皖南医学院</div>
+            <div class="login-hospital-sub">第一附属医院（弋矶山医院）</div>
+          </div>
+        </div>
         <div class="brand-mark">+</div>
         <h3>肠套叠 AI<br>辅助诊断平台</h3>
         <div class="divider" />
@@ -183,6 +190,41 @@ onMounted(() => {
   left: 40px;
   border: 1px solid rgba(212,176,74,0.15);
   pointer-events: none;
+}
+
+.login-hospital-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 24px;
+  z-index: 1;
+  position: relative;
+}
+.login-logo-circle {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  border: 2px solid var(--gold);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  font-weight: 700;
+  color: var(--gold);
+  flex-shrink: 0;
+}
+.login-hospital-name {
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text-inverse);
+  line-height: 1.4;
+  font-family: var(--font-display);
+  letter-spacing: 1px;
+}
+.login-hospital-sub {
+  font-size: 12px;
+  opacity: 0.8;
+  font-weight: 600;
 }
 
 .login-visual .brand-mark {

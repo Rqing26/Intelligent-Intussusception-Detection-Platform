@@ -34,8 +34,17 @@
             <span>检测记录</span>
           </el-menu-item>
         </el-menu>
+        <div class="hospital-sidebar-brand">
+          <div class="sidebar-brand-line" />
+          <div class="sidebar-brand-name">皖南医学院</div>
+          <div class="sidebar-brand-sub">第一附属医院（弋矶山医院）</div>
+        </div>
       </el-aside>
       <el-main class="app-main">
+        <div class="hospital-watermark">
+          <div class="watermark-text">皖南医学院第一附属医院</div>
+          <div class="watermark-sub">弋矶山医院</div>
+        </div>
         <slot />
       </el-main>
     </el-container>
@@ -209,5 +218,64 @@ onMounted(() => {
   background: var(--bg-main);
   padding: 24px 28px;
   overflow-y: auto;
+  position: relative;
+}
+
+.hospital-watermark {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) rotate(-30deg);
+  pointer-events: none;
+  z-index: 0;
+  opacity: 0.04;
+  text-align: center;
+  user-select: none;
+}
+.watermark-text {
+  font-size: 48px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 8px;
+  white-space: nowrap;
+  font-family: var(--font-display);
+}
+.watermark-sub {
+  font-size: 32px;
+  font-weight: 700;
+  color: var(--text-primary);
+  letter-spacing: 6px;
+  margin-top: 8px;
+  font-family: var(--font-display);
+}
+
+.hospital-sidebar-brand {
+  position: absolute;
+  bottom: 20px;
+  left: 16px;
+  right: 16px;
+  text-align: center;
+  padding-top: 12px;
+}
+.sidebar-brand-line {
+  height: 1px;
+  background: var(--gold-dim);
+  opacity: 0.4;
+  margin-bottom: 10px;
+}
+.sidebar-brand-name {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text-inverse);
+  opacity: 0.7;
+  letter-spacing: 1px;
+  font-family: var(--font-display);
+}
+.sidebar-brand-sub {
+  font-size: 11px;
+  color: var(--text-inverse);
+  opacity: 0.5;
+  margin-top: 2px;
+  letter-spacing: 0.5px;
 }
 </style>

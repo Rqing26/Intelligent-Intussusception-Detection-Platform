@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>方案 A - 医疗极简白</title>
+<style>
+  :root {
+    --bg-base: #f8fafc;
+    --bg-card: #ffffff;
+    --bg-sidebar: #ffffff;
+    --border: #e2e8f0;
+    --border-light: #f1f5f9;
+    --text-primary: #0f172a;
+    --text-secondary: #64748b;
+    --text-muted: #94a3b8;
+    --primary: #0d9488;
+    --primary-light: #ccfbf1;
+    --primary-hover: #0f766e;
+    --danger: #e11d48;
+    --success: #059669;
+    --warning: #d97706;
+    --radius-sm: 6px;
+    --radius-md: 10px;
+    --radius-lg: 14px;
+    --shadow-sm: 0 1px 2px rgba(15,23,42,0.04);
+    --shadow-md: 0 4px 12px rgba(15,23,42,0.06);
+    --font: 'PingFang SC','Microsoft YaHei','Noto Sans SC',system-ui,sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: var(--font);
+    background: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.6;
+  }
+
+  /* Design Tokens Panel */
+  .tokens-bar {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    background: #fff;
+    border-bottom: 1px solid var(--border);
+    padding: 12px 24px;
+    display: flex;
+    gap: 24px;
+    align-items: center;
+    z-index: 100;
+    font-size: 13px;
+  }
+  .tokens-bar h2 { font-size: 14px; margin-right: 12px; }
+  .token-chip {
+    display: flex; align-items: center; gap: 6px;
+    padding: 4px 10px; border-radius: 20px;
+    background: var(--border-light);
+  }
+  .token-swatch { width: 14px; height: 14px; border-radius: 4px; border: 1px solid var(--border); }
+
+  .page-section {
+    padding: 80px 24px 48px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .section-label {
+    font-size: 12px; text-transform: uppercase; letter-spacing: 0.08em;
+    color: var(--text-muted); margin-bottom: 24px;
+  }
+
+  /* Login */
+  .login-wrap {
+    display: grid; grid-template-columns: 1fr 420px; gap: 0;
+    min-height: 640px; background: var(--bg-card);
+    border-radius: var(--radius-lg); border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .login-visual {
+    background: linear-gradient(160deg, #f0fdfa 0%, #ecfeff 60%, #f8fafc 100%);
+    display: flex; flex-direction: column; justify-content: center; align-items: center;
+    padding: 48px; position: relative;
+  }
+  .login-visual::before {
+    content: ''; position: absolute; width: 320px; height: 320px;
+    background: radial-gradient(circle, rgba(13,148,136,0.08) 0%, transparent 70%);
+    top: 10%; left: 10%;
+  }
+  .login-visual h3 {
+    font-size: 28px; font-weight: 600; color: var(--text-primary);
+    margin-bottom: 12px; z-index: 1;
+  }
+  .login-visual p {
+    color: var(--text-secondary); font-size: 15px; max-width: 320px; text-align: center; z-index: 1;
+  }
+  .login-visual .brand-mark {
+    width: 64px; height: 64px; border-radius: var(--radius-md);
+    background: var(--primary); display: flex; align-items: center; justify-content: center;
+    color: #fff; font-size: 28px; font-weight: 700; margin-bottom: 24px; z-index: 1;
+  }
+  .login-form-area {
+    padding: 56px 48px; display: flex; flex-direction: column; justify-content: center;
+  }
+  .login-form-area h4 { font-size: 22px; margin-bottom: 6px; }
+  .login-form-area .sub { color: var(--text-secondary); font-size: 14px; margin-bottom: 32px; }
+  .field { margin-bottom: 20px; }
+  .field label { display: block; font-size: 13px; font-weight: 500; margin-bottom: 6px; color: var(--text-primary); }
+  .field input {
+    width: 100%; padding: 10px 14px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 14px; background: #fff; outline: none; transition: border-color .2s, box-shadow .2s;
+  }
+  .field input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px var(--primary-light); }
+  .btn-primary {
+    width: 100%; padding: 12px; border: none; border-radius: var(--radius-sm);
+    background: var(--primary); color: #fff; font-size: 15px; font-weight: 500;
+    cursor: pointer; transition: background .2s;
+  }
+  .btn-primary:hover { background: var(--primary-hover); }
+
+  /* Layout */
+  .layout-wrap {
+    display: grid; grid-template-columns: 220px 1fr; grid-template-rows: 64px 1fr;
+    min-height: 720px; background: var(--bg-card);
+    border-radius: var(--radius-lg); border: 1px solid var(--border);
+    overflow: hidden;
+  }
+  .layout-header {
+    grid-column: 1 / -1; background: #fff; border-bottom: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between; padding: 0 28px;
+  }
+  .layout-header .brand { font-size: 16px; font-weight: 600; }
+  .layout-header .user { font-size: 13px; color: var(--text-secondary); }
+  .layout-sidebar {
+    background: var(--bg-sidebar); border-right: 1px solid var(--border);
+    padding: 16px 12px; display: flex; flex-direction: column; gap: 4px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 10px;
+    padding: 10px 14px; border-radius: var(--radius-sm);
+    font-size: 14px; color: var(--text-secondary); cursor: pointer; transition: all .15s;
+  }
+  .nav-item:hover { background: var(--bg-base); color: var(--text-primary); }
+  .nav-item.active { background: var(--primary-light); color: var(--primary); font-weight: 500; }
+  .layout-main { padding: 28px; background: var(--bg-base); }
+  .page-title { font-size: 20px; font-weight: 600; margin-bottom: 20px; }
+  .toolbar {
+    display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px;
+  }
+  .toolbar input {
+    width: 260px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm);
+    font-size: 13px; outline: none;
+  }
+  .toolbar button {
+    padding: 8px 16px; border: none; border-radius: var(--radius-sm);
+    background: var(--primary); color: #fff; font-size: 13px; cursor: pointer;
+  }
+  .table-card {
+    background: #fff; border: 1px solid var(--border); border-radius: var(--radius-md); overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th, td { padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border-light); }
+  th { background: #fafbfc; color: var(--text-secondary); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
+  .tag {
+    display: inline-block; padding: 2px 10px; border-radius: 20px; font-size: 12px; font-weight: 500;
+  }
+  .tag-success { background: #d1fae5; color: var(--success); }
+  .tag-danger { background: #ffe4e6; color: var(--danger); }
+  .tag-warn { background: #fef3c7; color: var(--warning); }
+  .link { color: var(--primary); text-decoration: none; font-size: 13px; cursor: pointer; }
+  .link:hover { text-decoration: underline; }
+  .pagination { display: flex; justify-content: flex-end; margin-top: 16px; gap: 4px; }
+  .pagination span { padding: 6px 12px; border-radius: var(--radius-sm); font-size: 13px; border: 1px solid var(--border); background: #fff; cursor: pointer; }
+  .pagination span.active { background: var(--primary); color: #fff; border-color: var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="tokens-bar">
+  <h2>方案 A：医疗极简白</h2>
+  <div class="token-chip"><span class="token-swatch" style="background:#0d9488"></span>主色 teal-600</div>
+  <div class="token-chip"><span class="token-swatch" style="background:#f8fafc"></span>背景 slate-50</div>
+  <div class="token-chip"><span class="token-swatch" style="background:#ffffff;border-color:#e2e8f0"></span>卡片纯白</div>
+  <div class="token-chip">圆角 10px / 14px</div>
+  <div class="token-chip">无阴影，边框分隔</div>
+</div>
+
+<div class="page-section">
+  <div class="section-label">01 登录页</div>
+  <div class="login-wrap">
+    <div class="login-visual">
+      <div class="brand-mark">+</div>
+      <h3>肠套叠 AI 辅助诊断平台</h3>
+      <p>基于深度学习的超声影像智能分析，辅助医生快速、准确完成诊断决策</p>
+    </div>
+    <div class="login-form-area">
+      <h4>医生登录</h4>
+      <p class="sub">请使用您的院内账号登录系统</p>
+      <div class="field">
+        <label>用户名</label>
+        <input type="text" placeholder="请输入用户名" value="zhangwei" />
+      </div>
+      <div class="field">
+        <label>密码</label>
+        <input type="password" placeholder="请输入密码" value="password" />
+      </div>
+      <button class="btn-primary">登 录</button>
+    </div>
+  </div>
+</div>
+
+<div class="page-section">
+  <div class="section-label">02 主布局 - 患者管理</div>
+  <div class="layout-wrap">
+    <div class="layout-header">
+      <span class="brand">肠套叠 AI 辅助诊断平台</span>
+      <span class="user">张伟医生 &nbsp;|&nbsp; 退出</span>
+    </div>
+    <div class="layout-sidebar">
+      <div class="nav-item active">患者管理</div>
+      <div class="nav-item">检测记录</div>
+      <div class="nav-item">系统设置</div>
+    </div>
+    <div class="layout-main">
+      <div class="page-title">患者管理</div>
+      <div class="toolbar">
+        <input type="text" placeholder="搜索患者姓名或病历号" />
+        <button>新增患者</button>
+      </div>
+      <div class="table-card">
+        <table>
+          <thead>
+            <tr>
+              <th>ID</th><th>姓名</th><th>性别</th><th>年龄(月)</th><th>病历号</th><th>状态</th><th>操作</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>101</td><td>李小明</td><td>男</td><td>8</td><td>MR202405001</td>
+              <td><span class="tag tag-success">已检测</span></td>
+              <td><span class="link">详情</span> &nbsp; <span class="link">编辑</span></td>
+            </tr>
+            <tr>
+              <td>102</td><td>王小花</td><td>女</td><td>14</td><td>MR202405002</td>
+              <td><span class="tag tag-warn">待检测</span></td>
+              <td><span class="link">详情</span> &nbsp; <span class="link">编辑</span></td>
+            </tr>
+            <tr>
+              <td>103</td><td>张二宝</td><td>男</td><td>6</td><td>MR202405003</td>
+              <td><span class="tag tag-danger">阳性</span></td>
+              <td><span class="link">详情</span> &nbsp; <span class="link">编辑</span></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="pagination">
+        <span>上一页</span><span class="active">1</span><span>2</span><span>3</span><span>下一页</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>

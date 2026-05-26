@@ -10,33 +10,29 @@
     <div class="stats-row">
       <div class="stat-card">
         <div>
-          <div class="stat-value">128</div>
+          <div class="stat-value">{{ stats.total_patients }}</div>
           <div class="stat-label">总患者数</div>
-          <div class="stat-delta up">↑ 较上月 +12</div>
         </div>
         <div class="stat-icon">👤</div>
       </div>
       <div class="stat-card">
         <div>
-          <div class="stat-value">8</div>
+          <div class="stat-value">{{ stats.today_new }}</div>
           <div class="stat-label">今日新增</div>
-          <div class="stat-delta up">↑ 较昨日 +3</div>
         </div>
         <div class="stat-icon">+</div>
       </div>
       <div class="stat-card">
         <div>
-          <div class="stat-value">15</div>
+          <div class="stat-value">{{ stats.pending }}</div>
           <div class="stat-label">待检测</div>
-          <div class="stat-delta warn">需尽快处理</div>
         </div>
         <div class="stat-icon">!</div>
       </div>
       <div class="stat-card">
         <div>
-          <div class="stat-value">3</div>
+          <div class="stat-value">{{ stats.positive }}</div>
           <div class="stat-label">阳性病例</div>
-          <div class="stat-delta danger">重点关注</div>
         </div>
         <div class="stat-icon">⚠</div>
       </div>
@@ -75,10 +71,10 @@
           <template #default="{ row }">{{ row.age }} 个月</template>
         </el-table-column>
         <el-table-column prop="medical_record_no" label="病历号" min-width="150" />
-        <el-table-column label="最近检测" width="120">
-          <template #default="{ row }">{{ row.last_detect || '—' }}</template>
+        <el-table-column label="最近检测" width="160">
+          <template #default="{ row }">{{ formatDateTime(row.last_detect) }}</template>
         </el-table-column>
-        <el-table-column label="状态" width="110">
+        <el-table-column label="状态" width="140">
           <template #default="{ row }">
             <span :class="['seal-tag', statusClass(row)]">{{ statusText(row) }}</span>
           </template>
@@ -150,7 +146,7 @@ import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
-import { getPatients, createPatient, updatePatient, deletePatient } from '../api/patients'
+import { getPatients, getPatientStats, createPatient, updatePatient, deletePatient } from '../api/patients'
 
 const router = useRouter()
 
@@ -160,6 +156,13 @@ const tableLoading = ref(false)
 const page = ref(1)
 const size = ref(10)
 const total = ref(0)
+
+const stats = ref({
+  total_patients: 0,
+  today_new: 0,
+  pending: 0,
+  positive: 0,
+})
 
 const dialogVisible = ref(false)
 const editingId = ref(null)
@@ -181,17 +184,33 @@ const dialogRules = {
 }
 
 function statusClass(row) {
-  if (row.status === 'positive') return 'seal-vermillion'
-  if (row.status === 'pending') return 'seal-gold'
-  if (row.status === 'detected') return 'seal-malachite'
+  const s = row.status || ''
+  if (s.startsWith('positive')) return 'seal-vermillion'
+  if (s === 'negative') return 'seal-malachite'
+  if (s === 'poor_quality') return 'seal-gold'
   return 'seal-ink'
 }
 
 function statusText(row) {
-  if (row.status === 'positive') return '阳性'
-  if (row.status === 'pending') return '待检测'
-  if (row.status === 'detected') return '已检测'
-  return '新录入'
+  const s = row.status || ''
+  if (s.startsWith('positive:')) {
+    const sev = s.split(':')[1]
+    return sev ? `阳性：${sev}` : '阳性'
+  }
+  if (s === 'negative') return '阴性'
+  if (s === 'poor_quality') return '图像质量不佳'
+  return '未检测'
+}
+
+function formatDateTime(iso) {
+  if (!iso) return '—'
+  const d = new Date(iso)
+  const y = d.getFullYear()
+  const m = String(d.getMonth() + 1).padStart(2, '0')
+  const day = String(d.getDate()).padStart(2, '0')
+  const h = String(d.getHours()).padStart(2, '0')
+  const min = String(d.getMinutes()).padStart(2, '0')
+  return `${y}-${m}-${day} ${h}:${min}`
 }
 
 function resetDialogForm() {
@@ -210,6 +229,15 @@ async function fetchData() {
     total.value = res.data.total ?? 0
   } finally {
     tableLoading.value = false
+  }
+}
+
+async function fetchStats() {
+  try {
+    const res = await getPatientStats()
+    stats.value = res.data
+  } catch {
+    // ignore
   }
 }
 
@@ -249,6 +277,7 @@ async function handleSubmit() {
     }
     dialogVisible.value = false
     fetchData()
+    fetchStats()
   } catch {
     ElMessage.error('操作失败')
   } finally {
@@ -261,6 +290,7 @@ async function handleDelete(id) {
     await deletePatient(id)
     ElMessage.success('删除成功')
     fetchData()
+    fetchStats()
   } catch {
     ElMessage.error('删除失败')
   }
@@ -276,6 +306,7 @@ function handleExport() {
 
 onMounted(() => {
   fetchData()
+  fetchStats()
 })
 </script>
 
@@ -344,15 +375,6 @@ onMounted(() => {
   color: var(--text-secondary);
   margin-top: 6px;
 }
-.stat-delta {
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 8px;
-  font-family: var(--font-display);
-}
-.stat-delta.up { color: var(--success); }
-.stat-delta.warn { color: var(--warning); }
-.stat-delta.danger { color: var(--danger); }
 .stat-icon {
   position: absolute;
   top: 16px;

@@ -1,0 +1,64 @@
+- generic [ref=e329]:
+  - generic [ref=e330]:
+    - generic [ref=e331]: 肠套叠AI辅助诊断平台
+    - generic [ref=e332]:
+      - generic [ref=e333]: doctor
+      - button "退出登录" [ref=e334] [cursor=pointer]:
+        - generic [ref=e335]: 退出登录
+  - generic [ref=e336]:
+    - complementary [ref=e337]:
+      - menubar [ref=e338]:
+        - menuitem "患者管理" [ref=e339] [cursor=pointer]:
+          - img [ref=e341]
+          - generic [ref=e343]: 患者管理
+        - menuitem "检测记录" [ref=e344] [cursor=pointer]:
+          - img [ref=e346]
+          - generic [ref=e350]: 检测记录
+    - main [ref=e351]:
+      - generic [ref=e352]:
+        - generic [ref=e355]:
+          - button "返回" [ref=e356] [cursor=pointer]:
+            - generic [ref=e357]: 返回
+          - separator [ref=e358]
+          - generic [ref=e359]: 患者详情
+        - generic [ref=e360]:
+          - table [ref=e363]:
+            - rowgroup [ref=e364]:
+              - row "姓名 王小明 性别 男" [ref=e365]:
+                - cell "姓名" [ref=e366]
+                - cell "王小明" [ref=e367]
+                - cell "性别" [ref=e368]
+                - cell "男" [ref=e369]
+              - row "年龄(月) 24 病历号 P20240501" [ref=e370]:
+                - cell "年龄(月)" [ref=e371]
+                - cell "24" [ref=e372]
+                - cell "病历号" [ref=e373]
+                - cell "P20240501" [ref=e374]
+              - row "临床症状 腹痛呕吐2天" [ref=e375]:
+                - cell "临床症状" [ref=e376]
+                - cell "腹痛呕吐2天" [ref=e377]
+              - row "创建时间 2026-05-15T02:50:03.653145" [ref=e378]:
+                - cell "创建时间" [ref=e379]
+                - cell "2026-05-15T02:50:03.653145" [ref=e380]
+          - generic [ref=e381]:
+            - heading "超声影像" [level=3] [ref=e382]
+            - button "上传新影像" [ref=e383] [cursor=pointer]:
+              - generic [ref=e384]: 上传新影像
+          - generic [ref=e386]:
+            - table [ref=e388]:
+              - rowgroup [ref=e395]:
+                - row "ID 文件名 上传时间 状态 操作" [ref=e396]:
+                  - columnheader "ID" [ref=e397]:
+                    - generic [ref=e398]: ID
+                  - columnheader "文件名" [ref=e399]:
+                    - generic [ref=e400]: 文件名
+                  - columnheader "上传时间" [ref=e401]:
+                    - generic [ref=e402]: 上传时间
+                  - columnheader "状态" [ref=e403]:
+                    - generic [ref=e404]: 状态
+                  - columnheader "操作" [ref=e405]:
+                    - generic [ref=e406]: 操作
+            - generic [ref=e410]:
+              - table:
+                - rowgroup
+              - generic [ref=e413]: 暂无超声影像数据

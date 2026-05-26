@@ -1,0 +1,30 @@
+- generic [ref=e415]:
+  - generic [ref=e416]:
+    - generic [ref=e417]: 肠套叠AI辅助诊断平台
+    - generic [ref=e418]:
+      - generic [ref=e419]: doctor
+      - button "退出登录" [ref=e420] [cursor=pointer]:
+        - generic [ref=e421]: 退出登录
+  - generic [ref=e422]:
+    - complementary [ref=e423]:
+      - menubar [ref=e424]:
+        - menuitem "患者管理" [ref=e425] [cursor=pointer]:
+          - img [ref=e427]
+          - generic [ref=e429]: 患者管理
+        - menuitem "检测记录" [ref=e430] [cursor=pointer]:
+          - img [ref=e432]
+          - generic [ref=e436]: 检测记录
+    - main [ref=e437]:
+      - generic [ref=e438]:
+        - generic [ref=e441]:
+          - button "返回" [ref=e442] [cursor=pointer]:
+            - generic [ref=e443]: 返回
+          - separator [ref=e444]
+          - generic [ref=e445]: 上传影像
+        - generic [ref=e446]:
+          - generic [ref=e447] [cursor=pointer]:
+            - img [ref=e449]
+            - paragraph [ref=e451]: 拖拽超声影像到此处，或点击选择文件
+            - paragraph [ref=e452]: 支持 JPG/PNG/BMP/DICOM，不超过20MB
+          - button "确认上传并检测" [disabled] [ref=e454]:
+            - generic [ref=e455]: 确认上传并检测

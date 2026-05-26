@@ -1,0 +1,569 @@
+[     235ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/favicon.ico:0
+[     244ms] [ERROR] Failed to load resource: the server responded with a status of 404 (Not Found) @ http://localhost:5173/favicon.ico:0
+[ 1894190ms] [LOG] [vite] server connection lost. Polling for restart... @ http://localhost:5173/@vite/client:559
+[ 1896576ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1899927ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1903251ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1906616ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1909979ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1913328ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1916684ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1920044ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1923406ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1926765ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1930108ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1933459ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1936817ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1940159ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1943509ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1946842ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1950183ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1953541ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1956894ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 1960243ms] [ERROR] Failed to load resource: net::ERR_CONNECTION_REFUSED @ http://localhost:5173/:0
+[ 2404884ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404887ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404890ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404892ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404892ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404894ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404896ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404896ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404898ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404899ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404900ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404901ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404904ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404905ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2404906ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2530513ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2530515ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2530519ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2644821ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2644825ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2644828ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2644831ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2644835ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2644839ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674725ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674727ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674729ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674732ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674733ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674736ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674740ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674741ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674744ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674747ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674748ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674752ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674755ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674756ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674759ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674763ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674764ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085
+[ 2674770ms] [WARNING] ElementPlusError: [el-link] [API] The underline option (boolean) is about to be deprecated in version 3.0.0, please use 'always' | 'hover' | 'never' instead.
+For more detail, please visit: https://element-plus.org/en-US/component/link.html#underline
+
+    at debugWarn (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085:37)
+    at watch.immediate (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10179:14)
+    at callWithErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2372:19)
+    at callWithAsyncErrorHandling (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2379:17)
+    at baseWatchOptions.call (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3064:47)
+    at job (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2102:18)
+    at watch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:2137:7)
+    at doWatch (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3092:23)
+    at watch2 (http://localhost:5173/node_modules/.vite/deps/chunk-UC4PQXLF.js?v=17a54cf0:3025:10)
+    at useDeprecated (http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:10178:3) @ http://localhost:5173/node_modules/.vite/deps/element-plus.js?v=17a54cf0:9085

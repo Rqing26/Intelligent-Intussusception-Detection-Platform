@@ -1,0 +1,147 @@
+- generic [ref=e695]:
+  - generic [ref=e696]:
+    - generic [ref=e697]: 肠套叠AI辅助诊断平台
+    - generic [ref=e698]:
+      - generic [ref=e699]: doctor
+      - button "退出登录" [ref=e700] [cursor=pointer]:
+        - generic [ref=e701]: 退出登录
+  - generic [ref=e702]:
+    - complementary [ref=e703]:
+      - menubar [ref=e704]:
+        - menuitem "患者管理" [ref=e705] [cursor=pointer]:
+          - img [ref=e707]
+          - generic [ref=e709]: 患者管理
+        - menuitem "检测记录" [ref=e710] [cursor=pointer]:
+          - img [ref=e712]
+          - generic [ref=e716]: 检测记录
+    - main [ref=e717]:
+      - generic [ref=e718]:
+        - generic [ref=e719]:
+          - textbox "搜索患者姓名或病历号" [ref=e722]
+          - button "新增患者" [ref=e724] [cursor=pointer]:
+            - img [ref=e726]
+            - generic [ref=e728]: 新增患者
+        - generic [ref=e730]:
+          - table [ref=e732]:
+            - rowgroup [ref=e740]:
+              - row "ID 姓名 性别 年龄(月) 病历号 操作" [ref=e741]:
+                - columnheader "ID" [ref=e742]:
+                  - generic [ref=e743]: ID
+                - columnheader "姓名" [ref=e744]:
+                  - generic [ref=e745]: 姓名
+                - columnheader "性别" [ref=e746]:
+                  - generic [ref=e747]: 性别
+                - columnheader "年龄(月)" [ref=e748]:
+                  - generic [ref=e749]: 年龄(月)
+                - columnheader "病历号" [ref=e750]:
+                  - generic [ref=e751]: 病历号
+                - columnheader "操作" [ref=e752]:
+                  - generic [ref=e753]: 操作
+          - table [ref=e758]:
+            - rowgroup [ref=e766]:
+              - row "6 王小明 男 24 P20240501 详情 编辑 删除" [ref=e767]:
+                - cell "6" [ref=e768]:
+                  - generic [ref=e769]: "6"
+                - cell "王小明" [ref=e770]:
+                  - generic [ref=e771]: 王小明
+                - cell "男" [ref=e772]:
+                  - generic [ref=e773]: 男
+                - cell "24" [ref=e774]:
+                  - generic [ref=e775]: "24"
+                - cell "P20240501" [ref=e776]:
+                  - generic [ref=e777]: P20240501
+                - cell "详情 编辑 删除" [ref=e778]:
+                  - generic [ref=e779]:
+                    - generic [ref=e781] [cursor=pointer]: 详情
+                    - generic [ref=e783] [cursor=pointer]: 编辑
+                    - generic [ref=e785] [cursor=pointer]: 删除
+              - row "5 3 男 9 120 详情 编辑 删除" [ref=e786]:
+                - cell "5" [ref=e787]:
+                  - generic [ref=e788]: "5"
+                - cell "3" [ref=e789]:
+                  - generic [ref=e790]: "3"
+                - cell "男" [ref=e791]:
+                  - generic [ref=e792]: 男
+                - cell "9" [ref=e793]:
+                  - generic [ref=e794]: "9"
+                - cell "120" [ref=e795]:
+                  - generic [ref=e796]: "120"
+                - cell "详情 编辑 删除" [ref=e797]:
+                  - generic [ref=e798]:
+                    - generic [ref=e800] [cursor=pointer]: 详情
+                    - generic [ref=e802] [cursor=pointer]: 编辑
+                    - generic [ref=e804] [cursor=pointer]: 删除
+              - row "4 man4-正常 男 15 004 详情 编辑 删除" [ref=e805]:
+                - cell "4" [ref=e806]:
+                  - generic [ref=e807]: "4"
+                - cell "man4-正常" [ref=e808]:
+                  - generic [ref=e809]: man4-正常
+                - cell "男" [ref=e810]:
+                  - generic [ref=e811]: 男
+                - cell "15" [ref=e812]:
+                  - generic [ref=e813]: "15"
+                - cell "004" [ref=e814]:
+                  - generic [ref=e815]: "004"
+                - cell "详情 编辑 删除" [ref=e816]:
+                  - generic [ref=e817]:
+                    - generic [ref=e819] [cursor=pointer]: 详情
+                    - generic [ref=e821] [cursor=pointer]: 编辑
+                    - generic [ref=e823] [cursor=pointer]: 删除
+              - row "3 man3 男 12 003 详情 编辑 删除" [ref=e824]:
+                - cell "3" [ref=e825]:
+                  - generic [ref=e826]: "3"
+                - cell "man3" [ref=e827]:
+                  - generic [ref=e828]: man3
+                - cell "男" [ref=e829]:
+                  - generic [ref=e830]: 男
+                - cell "12" [ref=e831]:
+                  - generic [ref=e832]: "12"
+                - cell "003" [ref=e833]:
+                  - generic [ref=e834]: "003"
+                - cell "详情 编辑 删除" [ref=e835]:
+                  - generic [ref=e836]:
+                    - generic [ref=e838] [cursor=pointer]: 详情
+                    - generic [ref=e840] [cursor=pointer]: 编辑
+                    - generic [ref=e842] [cursor=pointer]: 删除
+              - row "2 woman2 女 10 002 详情 编辑 删除" [ref=e843]:
+                - cell "2" [ref=e844]:
+                  - generic [ref=e845]: "2"
+                - cell "woman2" [ref=e846]:
+                  - generic [ref=e847]: woman2
+                - cell "女" [ref=e848]:
+                  - generic [ref=e849]: 女
+                - cell "10" [ref=e850]:
+                  - generic [ref=e851]: "10"
+                - cell "002" [ref=e852]:
+                  - generic [ref=e853]: "002"
+                - cell "详情 编辑 删除" [ref=e854]:
+                  - generic [ref=e855]:
+                    - generic [ref=e857] [cursor=pointer]: 详情
+                    - generic [ref=e859] [cursor=pointer]: 编辑
+                    - generic [ref=e861] [cursor=pointer]: 删除
+              - row "1 man1 男 9 001 详情 编辑 删除" [ref=e862]:
+                - cell "1" [ref=e863]:
+                  - generic [ref=e864]: "1"
+                - cell "man1" [ref=e865]:
+                  - generic [ref=e866]: man1
+                - cell "男" [ref=e867]:
+                  - generic [ref=e868]: 男
+                - cell "9" [ref=e869]:
+                  - generic [ref=e870]: "9"
+                - cell "001" [ref=e871]:
+                  - generic [ref=e872]: "001"
+                - cell "详情 编辑 删除" [ref=e873]:
+                  - generic [ref=e874]:
+                    - generic [ref=e876] [cursor=pointer]: 详情
+                    - generic [ref=e878] [cursor=pointer]: 编辑
+                    - generic [ref=e880] [cursor=pointer]: 删除
+        - generic [ref=e883]:
+          - generic [ref=e884]: 共 6 条
+          - button "上一页" [disabled] [ref=e885]:
+            - generic:
+              - img
+          - list [ref=e886]:
+            - listitem "第 1 页" [ref=e887]: "1"
+          - button "下一页" [disabled] [ref=e888]:
+            - generic:
+              - img

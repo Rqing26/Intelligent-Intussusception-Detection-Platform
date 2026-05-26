@@ -27,20 +27,23 @@
       </span>
     </div>
 
-    <div v-if="result.severity" class="result-section">
+    <div v-if="result.severity" class="result-section highlight">
       <span class="result-label">治疗成功率</span>
-      <div class="progress-wrap">
-        <div class="progress-track">
+      <div class="success-rate-box">
+        <div class="success-rate-main">
+          <span class="success-rate-value" :style="{ color: rateColor }">{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
+          <span class="success-rate-desc">灌肠成功率</span>
+        </div>
+        <div class="progress-track large">
           <div
             class="progress-fill"
             :style="{ width: Math.round(result.treatment_success_rate * 100) + '%', background: rateColor }"
           />
         </div>
-        <span class="progress-text">灌肠成功率{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
       </div>
     </div>
 
-    <div v-if="result.treatment_advice" class="result-section">
+    <div v-if="result.treatment_advice" class="result-section highlight">
       <span class="result-label">治疗建议</span>
       <div class="advice-card">
         <el-icon class="advice-icon"><WarningFilled /></el-icon>
@@ -110,6 +113,14 @@ const rateColor = computed(() => {
 .result-section:last-child {
   margin-bottom: 0;
 }
+.result-section.highlight {
+  background: var(--bg-detail-item);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-sm);
+  padding: 14px 16px;
+  margin-left: -4px;
+  margin-right: -4px;
+}
 
 .result-label {
   display: block;
@@ -149,6 +160,10 @@ const rateColor = computed(() => {
   border-radius: 4px;
   overflow: hidden;
 }
+.progress-track.large {
+  height: 12px;
+  border-radius: 6px;
+}
 .progress-fill {
   height: 100%;
   border-radius: 4px;
@@ -163,24 +178,44 @@ const rateColor = computed(() => {
   text-align: right;
 }
 
+.success-rate-box {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.success-rate-main {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+}
+.success-rate-value {
+  font-family: var(--font-display);
+  font-size: 32px;
+  font-weight: 700;
+  line-height: 1;
+}
+.success-rate-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  font-weight: 600;
+}
+
 .advice-card {
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  background: var(--bg-detail-item);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-  padding: 14px 16px;
+  padding: 4px 2px;
 }
 .advice-icon {
-  font-size: 20px;
+  font-size: 22px;
   color: var(--warning);
   flex-shrink: 0;
-  margin-top: 1px;
+  margin-top: 2px;
 }
 .advice-text {
-  font-size: 14px;
-  color: var(--text-secondary);
-  line-height: 1.6;
+  font-size: 15px;
+  color: var(--text-primary);
+  line-height: 1.7;
+  font-weight: 600;
 }
 </style>

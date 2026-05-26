@@ -1,0 +1,44 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e460]:
+    - generic [ref=e461]:
+      - generic [ref=e462]: 肠套叠AI辅助诊断平台
+      - generic [ref=e463]:
+        - generic [ref=e464]: doctor
+        - button "退出登录" [ref=e465] [cursor=pointer]:
+          - generic [ref=e466]: 退出登录
+    - generic [ref=e467]:
+      - complementary [ref=e468]:
+        - menubar [ref=e469]:
+          - menuitem "患者管理" [ref=e470] [cursor=pointer]:
+            - img [ref=e472]
+            - generic [ref=e474]: 患者管理
+          - menuitem "检测记录" [ref=e475] [cursor=pointer]:
+            - img [ref=e477]
+            - generic [ref=e481]: 检测记录
+      - main [ref=e482]:
+        - generic [ref=e483]:
+          - generic [ref=e486]:
+            - button "返回" [ref=e487] [cursor=pointer]:
+              - generic [ref=e488]: 返回
+            - separator [ref=e489]
+            - generic [ref=e490]: 检测结果
+          - generic [ref=e491]:
+            - paragraph [ref=e492]: 检测时间：2026-05-15T02:51:41.306172
+            - generic [ref=e493]:
+              - img "超声影像" [ref=e496]
+              - generic [ref=e498]:
+                - generic [ref=e499]:
+                  - generic [ref=e500]: 诊断结果
+                  - generic [ref=e502]: 肠套叠阴性
+                - generic [ref=e503]:
+                  - generic [ref=e504]: 置信度
+                  - progressbar [ref=e505]:
+                    - generic [ref=e509]: 97%
+                - generic [ref=e510]:
+                  - generic [ref=e511]: 治疗建议
+                  - generic [ref=e512]:
+                    - img [ref=e514]
+                    - generic [ref=e516]: 超声未见肠套叠征象。建议结合临床观察。
+  - alert [ref=e517]:
+    - img [ref=e519]
+    - paragraph [ref=e521]: 上传并检测成功

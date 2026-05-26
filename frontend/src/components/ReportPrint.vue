@@ -2,7 +2,7 @@
   <el-dialog
     v-model="visible"
     title="打印预览"
-    width="840px"
+    width="900px"
     append-to-body
     @opened="onPreviewOpened"
   >
@@ -15,50 +15,82 @@
 
     <div ref="reportRef" class="report-container" v-loading="printing">
       <div class="report-page">
-        <div class="report-header">
-          <div class="hospital-name-cn">{{ settings.hospitalName }}</div>
-          <div class="hospital-name-en">{{ settings.hospitalNameEn }}</div>
-          <div class="header-divider"></div>
-          <div class="report-title">彩色多普勒超声检查报告</div>
+        <!-- 医院页眉 -->
+        <div class="hospital-header">
+          <div class="hospital-logo">
+            <div class="logo-circle">
+              <span class="logo-cross">+</span>
+            </div>
+          </div>
+          <div class="hospital-brand">
+            <div class="hospital-name-main">
+              <span class="name-part">皖南医学院</span>
+              <span class="name-part highlight">第一附属医院</span>
+              <span class="name-part sub">弋矶山医院</span>
+            </div>
+            <div class="hospital-name-en">
+              THE FIRST AFFILIATED HOSPITAL OF WANNAN MEDICAL COLLEGE
+            </div>
+          </div>
+        </div>
+        <div class="header-line"></div>
+
+        <!-- 报告标题 -->
+        <div class="report-title">彩色多普勒超声检查报告</div>
+
+        <!-- 患者信息 -->
+        <div class="patient-info">
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-label">姓　　名：</span>
+              <span class="info-value">{{ patient?.name || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">性　　别：</span>
+              <span class="info-value">{{ patient?.gender || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">年　　龄：</span>
+              <span class="info-value">{{ patient?.age != null ? patient.age + ' 个月' : '-' }}</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-label">申请科室：</span>
+              <span class="info-value">小儿外科</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">病 历 号：</span>
+              <span class="info-value">{{ patient?.medical_record_no || '-' }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">床　　号：</span>
+              <span class="info-value">-</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-item">
+              <span class="info-label">检查日期：</span>
+              <span class="info-value">{{ examDate }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">报告日期：</span>
+              <span class="info-value">{{ reportDate }}</span>
+            </div>
+            <div class="info-item">
+              <span class="info-label">检查系统：</span>
+              <span class="info-value">IVSP-2</span>
+            </div>
+          </div>
+          <div class="info-row">
+            <div class="info-item wide">
+              <span class="info-label">送检医院：</span>
+              <span class="info-value">皖南医学院第一附属医院（弋矶山医院）</span>
+            </div>
+          </div>
         </div>
 
-        <table class="info-table">
-          <colgroup>
-            <col style="width:15%" />
-            <col style="width:35%" />
-            <col style="width:15%" />
-            <col style="width:35%" />
-          </colgroup>
-          <tr>
-            <td class="info-label">姓名</td>
-            <td>{{ patient?.name || '-' }}</td>
-            <td class="info-label">性别</td>
-            <td>{{ patient?.gender || '-' }}</td>
-          </tr>
-          <tr>
-            <td class="info-label">年龄(月)</td>
-            <td>{{ patient?.age || '-' }}</td>
-            <td class="info-label">病历号</td>
-            <td>{{ patient?.medical_record_no || '-' }}</td>
-          </tr>
-          <tr>
-            <td class="info-label">检查项目</td>
-            <td>{{ examItem }}</td>
-            <td class="info-label">检查日期</td>
-            <td>{{ examDate }}</td>
-          </tr>
-          <tr>
-            <td class="info-label">临床症状</td>
-            <td colspan="3">{{ patient?.clinical_symptoms || '-' }}</td>
-          </tr>
-          <tr>
-            <td class="info-label">超声系统</td>
-            <td>IVSP-2</td>
-            <td class="info-label">报告日期</td>
-            <td>{{ reportDate }}</td>
-          </tr>
-        </table>
-
+        <!-- 检查所见 -->
         <div class="report-section" v-if="result">
           <div class="section-title">检查所见</div>
           <div class="section-content">
@@ -66,6 +98,7 @@
           </div>
         </div>
 
+        <!-- 超声影像 -->
         <div class="report-section" v-if="imageUrl">
           <div class="section-title">超声影像</div>
           <div class="image-wrapper">
@@ -73,66 +106,69 @@
           </div>
         </div>
 
+        <!-- AI 辅助诊断结果 -->
         <div class="report-section" v-if="result">
           <div class="section-title">AI 辅助诊断结果</div>
-          <table class="diag-table">
-            <tr>
-              <td class="info-label">诊断分类</td>
-              <td>
-                <span class="diag-badge" :class="classificationClass">
-                  {{ result.classification }}
-                </span>
-              </td>
-              <td class="info-label">置信度</td>
-              <td>{{ confidencePercent }}%</td>
-            </tr>
-            <tr v-if="result.severity">
-              <td class="info-label">诊断等级</td>
-              <td>
-                <span class="severity-badge" :class="severityClass">
-                  {{ result.severity }}
-                </span>
-              </td>
-              <td class="info-label">治疗成功率</td>
-              <td>
-                <span v-if="result.treatment_success_rate != null">
-                  灌肠成功率{{ (result.treatment_success_rate * 100).toFixed(0) }}%
-                </span>
-                <span v-else>-</span>
-              </td>
-            </tr>
-          </table>
+          <div class="diag-grid">
+            <div class="diag-item">
+              <span class="diag-label">诊断分类：</span>
+              <span class="diag-badge" :class="classificationClass">{{ result.classification }}</span>
+            </div>
+            <div class="diag-item">
+              <span class="diag-label">置 信 度：</span>
+              <span class="diag-value">{{ confidencePercent }}%</span>
+            </div>
+            <div class="diag-item" v-if="result.severity">
+              <span class="diag-label">诊断等级：</span>
+              <span class="severity-badge" :class="severityClass">{{ result.severity }}</span>
+            </div>
+            <div class="diag-item" v-if="result.treatment_success_rate != null">
+              <span class="diag-label">治疗成功率：</span>
+              <span class="diag-value">灌肠成功率{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
+            </div>
+          </div>
         </div>
 
+        <!-- 治疗建议 -->
         <div class="report-section" v-if="result?.treatment_advice">
           <div class="section-title">治疗建议</div>
           <div class="advice-box">{{ result.treatment_advice }}</div>
         </div>
 
+        <!-- 声明 -->
         <div class="report-section">
-          <div class="section-title">声明</div>
+          <div class="section-title">免责声明</div>
           <div class="disclaimer">
-            本报告由AI辅助生成，仅供临床参考，不具备法律效力。请结合临床症状及其他检查结果综合判断。
+            1. 本报告由AI辅助生成，仅供临床参考，不作法律依据。<br>
+            2. 请结合临床症状及其他检查结果综合判断。
           </div>
         </div>
 
+        <!-- 签名区域 -->
         <div class="signature-area">
           <div class="signature-item">
-            <div class="signature-label">报告医生：_______________</div>
+            <span class="signature-label">报　告：</span>
+            <span class="signature-line">_______________</span>
           </div>
           <div class="signature-item">
-            <div class="signature-label">审核医生：_______________</div>
+            <span class="signature-label">审　核：</span>
+            <span class="signature-line">_______________</span>
           </div>
         </div>
 
-        <div class="report-footer">
-          <div class="footer-divider"></div>
-          <div class="footer-info">
-            <span>{{ settings.hospitalAddress }}</span>
-            <span class="footer-sep">|</span>
-            <span>电话：{{ settings.hospitalPhone }}</span>
+        <!-- 底部固定栏 -->
+        <div class="page-footer">
+          <div class="footer-line"></div>
+          <div class="footer-main">
+            <div class="footer-left">
+              <span>地址：芜湖市镜湖区赭山西路2号</span>
+              <span class="footer-gap"></span>
+              <span>电话：0553-5739114</span>
+              <span>0553-5739184</span>
+            </div>
+            <div class="footer-page">1</div>
           </div>
-          <div class="footer-disclaimer">* 医生签名有效，仅供临床参考，不具备法律效力 *</div>
+          <div class="footer-disclaimer">此报告签章有效，仅供临床参考，不作法律依据。</div>
         </div>
       </div>
     </div>
@@ -140,7 +176,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, nextTick } from 'vue'
+import { ref, computed, nextTick } from 'vue'
 import { ElMessage } from 'element-plus'
 import html2canvas from 'html2canvas'
 import { jsPDF } from 'jspdf'
@@ -276,114 +312,202 @@ async function handlePrint() {
 }
 
 .report-page {
-  width: 720px;
+  width: 210mm;
+  min-height: 297mm;
   background: #fff;
-  padding: 36px 40px;
-  font-size: 13px;
-  color: #1e293b;
-  line-height: 1.7;
-  border: 1px solid #e2e8f0;
+  padding: 20mm 20mm 15mm 20mm;
+  font-size: 14px;
+  color: #000;
+  line-height: 1.8;
+  font-family: 'SimSun', 'STSong', 'FangSong', 'Noto Serif SC', serif;
+  box-sizing: border-box;
+  position: relative;
 }
 
-.report-header {
-  text-align: center;
-  margin-bottom: 20px;
+/* 医院页眉 */
+.hospital-header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 8px;
 }
 
-.hospital-name-cn {
-  font-size: 18px;
+.hospital-logo {
+  flex-shrink: 0;
+}
+
+.logo-circle {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  border: 2px solid #2d8c3f;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.logo-cross {
+  font-size: 28px;
   font-weight: 700;
-  color: #0f172a;
+  color: #2d8c3f;
+  font-family: 'Times New Roman', serif;
+}
+
+.hospital-brand {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.hospital-name-main {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2d8c3f;
   letter-spacing: 2px;
+  font-family: 'SimHei', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
+}
+
+.hospital-name-main .name-part {
+  margin-right: 4px;
+}
+
+.hospital-name-main .highlight {
+  color: #2d8c3f;
+}
+
+.hospital-name-main .sub {
+  font-size: 18px;
+  color: #2d8c3f;
 }
 
 .hospital-name-en {
   font-size: 10px;
-  color: #64748b;
+  color: #666;
   letter-spacing: 0.5px;
-  margin-top: 2px;
+  font-family: 'Times New Roman', serif;
 }
 
-.header-divider {
-  height: 2px;
-  background: #1e293b;
-  margin: 12px auto;
-  width: 80%;
+.header-line {
+  height: 1px;
+  background: #2d8c3f;
+  margin: 10px 0 16px;
 }
 
+/* 报告标题 */
 .report-title {
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 700;
-  color: #1e293b;
-  letter-spacing: 4px;
-  margin-top: 8px;
+  color: #000;
+  text-align: center;
+  letter-spacing: 6px;
+  margin-bottom: 20px;
+  font-family: 'SimHei', 'Microsoft YaHei', 'Noto Sans SC', sans-serif;
 }
 
-.info-table {
-  width: 100%;
-  border-collapse: collapse;
-  margin-bottom: 16px;
+/* 患者信息 */
+.patient-info {
+  margin-bottom: 20px;
 }
 
-.info-table td {
-  border: 1px solid #cbd5e1;
-  padding: 5px 8px;
+.info-row {
+  display: flex;
+  gap: 24px;
+  margin-bottom: 4px;
+}
+
+.info-item {
+  display: flex;
+  align-items: baseline;
+  min-width: 180px;
+  flex: 1;
+}
+
+.info-item.wide {
+  flex: 3;
 }
 
 .info-label {
-  background: #f1f5f9;
+  font-size: 14px;
+  color: #333;
   font-weight: 600;
-  color: #334155;
+  white-space: pre;
+  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
 }
 
+.info-value {
+  font-size: 14px;
+  color: #000;
+  border-bottom: 1px solid #000;
+  padding: 0 8px;
+  min-width: 60px;
+  flex: 1;
+}
+
+/* 报告区块 */
 .report-section {
-  margin-bottom: 14px;
+  margin-bottom: 16px;
 }
 
 .section-title {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 700;
-  color: #1e293b;
-  border-left: 3px solid #1e293b;
-  padding-left: 8px;
+  color: #000;
   margin-bottom: 8px;
+  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
 }
 
 .section-content p {
   margin: 0;
   text-indent: 2em;
+  font-size: 14px;
 }
 
 .image-wrapper {
   text-align: center;
   padding: 8px;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-  background: #f8fafc;
+  border: 1px solid #ccc;
+  background: #fafafa;
 }
 
 .report-image {
   max-width: 100%;
-  max-height: 320px;
+  max-height: 280px;
   object-fit: contain;
 }
 
-.diag-table {
-  width: 100%;
-  border-collapse: collapse;
+/* 诊断结果网格 */
+.diag-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px 24px;
 }
 
-.diag-table td {
-  border: 1px solid #cbd5e1;
-  padding: 5px 8px;
+.diag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.diag-label {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+}
+
+.diag-value {
+  font-size: 14px;
+  color: #000;
 }
 
 .diag-badge {
   display: inline-block;
   padding: 2px 10px;
-  border-radius: 3px;
+  border-radius: 2px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .badge-danger {
@@ -407,9 +531,9 @@ async function handlePrint() {
 .severity-badge {
   display: inline-block;
   padding: 2px 10px;
-  border-radius: 3px;
+  border-radius: 2px;
   font-weight: 600;
-  font-size: 12px;
+  font-size: 13px;
 }
 
 .severity-mild {
@@ -433,55 +557,89 @@ async function handlePrint() {
 .advice-box {
   background: #fffbeb;
   border: 1px solid #fde68a;
-  border-radius: 4px;
+  border-radius: 2px;
   padding: 10px 14px;
   color: #78350f;
+  font-size: 14px;
+  line-height: 1.8;
 }
 
 .disclaimer {
-  color: #94a3b8;
-  font-size: 12px;
+  color: #666;
+  font-size: 13px;
+  line-height: 1.8;
 }
 
+/* 签名区域 */
 .signature-area {
   display: flex;
-  justify-content: space-between;
-  margin-top: 24px;
+  justify-content: space-around;
+  margin-top: 30px;
   margin-bottom: 20px;
-  padding: 0 20px;
+  padding: 0 40px;
 }
 
 .signature-item {
-  text-align: center;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
 }
 
 .signature-label {
-  font-size: 13px;
-  color: #475569;
+  color: #333;
+  font-weight: 600;
+  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
 }
 
-.report-footer {
-  text-align: center;
+.signature-line {
+  display: inline-block;
+  min-width: 120px;
+  border-bottom: 1px solid #000;
+  height: 20px;
 }
 
-.footer-divider {
+/* 页脚 */
+.page-footer {
+  margin-top: 20px;
+  padding-top: 8px;
+}
+
+.footer-line {
   height: 1px;
-  background: #cbd5e1;
-  margin-bottom: 8px;
+  background: #000;
+  margin-bottom: 6px;
 }
 
-.footer-info {
-  font-size: 11px;
-  color: #64748b;
+.footer-main {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 12px;
+  color: #333;
 }
 
-.footer-sep {
-  margin: 0 8px;
+.footer-left {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.footer-gap {
+  display: inline-block;
+  width: 16px;
+}
+
+.footer-page {
+  font-size: 12px;
+  color: #333;
+  font-weight: 600;
 }
 
 .footer-disclaimer {
-  font-size: 10px;
-  color: #94a3b8;
-  margin-top: 2px;
+  font-size: 11px;
+  color: #666;
+  text-align: center;
+  margin-top: 4px;
 }
 </style>

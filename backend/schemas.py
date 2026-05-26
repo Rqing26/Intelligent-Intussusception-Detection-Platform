@@ -50,6 +50,20 @@ class PatientOut(BaseModel):
     model_config = {"from_attributes": True}
 
 
+class PatientListItem(PatientOut):
+    status: str = ""
+    last_detect: Optional[str] = None
+
+    model_config = {"from_attributes": True}
+
+
+class PatientStats(BaseModel):
+    total_patients: int = 0
+    today_new: int = 0
+    pending: int = 0
+    positive: int = 0
+
+
 class ImageOut(BaseModel):
     id: int
     patient_id: int

@@ -1,0 +1,14 @@
+- generic [ref=e4]:
+  - heading "肠套叠AI辅助诊断平台" [level=1] [ref=e5]
+  - paragraph [ref=e6]: 请使用您的医生账号登录
+  - generic [ref=e7]:
+    - generic [ref=e8]:
+      - generic [ref=e9]: "*用户名"
+      - textbox "*用户名" [ref=e13]:
+        - /placeholder: 请输入用户名
+    - generic [ref=e14]:
+      - generic [ref=e15]: "*密码"
+      - textbox "*密码" [ref=e19]:
+        - /placeholder: 请输入密码
+    - button "登 录" [ref=e22] [cursor=pointer]:
+      - generic [ref=e23]: 登 录

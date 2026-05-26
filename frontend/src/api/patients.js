@@ -4,6 +4,10 @@ export function getPatients(params) {
   return api.get('/patients', { params })
 }
 
+export function getPatientStats() {
+  return api.get('/patients/stats')
+}
+
 export function createPatient(data) {
   return api.post('/patients', data)
 }
