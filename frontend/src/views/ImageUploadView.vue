@@ -1,11 +1,19 @@
 <template>
   <AppLayout>
+    <el-button class="page-back-link" text :icon="Back" :disabled="uploading" @click="$router.push(`/patients/${patientId}`)">返回患者档案</el-button>
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="page-header-main">
+        <span class="page-eyebrow">IMAGING WORKSPACE</span>
         <h1 class="page-title">上传影像</h1>
-        <p class="page-desc">上传患儿腹部超声影像，系统将自动进行肠套叠检测分析</p>
+        <p class="page-desc">从一张清晰的超声影像，开始本次辅助检测。</p>
       </div>
+    </div>
+
+    <div class="workflow-strip" aria-label="影像检测流程">
+      <div class="workflow-step" :class="{ current: !uploading }"><span class="step-number">01</span><div><strong>选择影像</strong><span>支持多张文件上传</span></div></div>
+      <div class="workflow-step" :class="{ current: uploading }"><span class="step-number">02</span><div><strong>智能检测</strong><span>自动分析超声影像</span></div></div>
+      <div class="workflow-step"><span class="step-number">03</span><div><strong>查看结果</strong><span>查看分析与打印报告</span></div></div>
     </div>
 
     <!-- 上传卡片 -->
@@ -17,34 +25,18 @@
           </div>
           <div class="header-text">
             <h3>超声影像上传</h3>
-            <p>支持 JPG、PNG、DICOM 格式，单文件不超过 20MB</p>
+            <p>选择本次检查的影像，确认后开始分析</p>
           </div>
         </div>
 
         <div class="card-body">
-          <UploadZone @file-selected="onFileSelected" />
-        </div>
-
-        <div class="action-bar">
-          <el-button size="large" @click="$router.push(`/patients/${patientId}`)">
-            取消
-          </el-button>
-          <el-button
-            type="primary"
-            size="large"
-            :disabled="!files.length"
-            :loading="uploading"
-            @click="handleUpload"
-          >
-            <span v-if="uploading && files.length > 0">上传检测中 {{ doneCount }}/{{ files.length }}...</span>
-            <span v-else-if="uploading">上传检测中...</span>
-            <span v-else>确认上传并检测（{{ files.length }} 张）</span>
-          </el-button>
+          <UploadZone :disabled="uploading" @file-selected="onFileSelected" />
         </div>
       </div>
 
       <!-- 提示卡片 -->
       <div class="tips-card">
+        <span class="tips-eyebrow">BEFORE YOU UPLOAD</span>
         <div class="tips-title">
           <el-icon><InfoFilled /></el-icon>
           上传注意事项
@@ -69,6 +61,23 @@
         </ul>
       </div>
     </div>
+    <div class="action-bar" role="region" aria-label="检测操作">
+      <div class="selection-summary" aria-live="polite">
+        <strong>{{ uploading ? `已完成 ${doneCount} / ${files.length} 张` : files.length ? `已选择 ${files.length} 张影像` : '尚未选择影像' }}</strong>
+        <span>{{ uploading ? '正在上传与分析，请稍候' : files.length ? '确认文件后，即可开始本次检测' : '先选择影像，再开始检测' }}</span>
+      </div>
+      <el-button
+        class="start-detection-button"
+        type="primary"
+        size="large"
+        :disabled="!files.length || uploading"
+        :loading="uploading"
+        @click="handleUpload"
+      >
+        <span>{{ uploading ? '正在检测' : '开始上传并检测' }}</span>
+        <el-icon v-if="!uploading" class="submit-arrow"><Right /></el-icon>
+      </el-button>
+    </div>
   </AppLayout>
 </template>
 
@@ -76,7 +85,7 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Upload, Document, Close, InfoFilled } from '@element-plus/icons-vue'
+import { Upload, InfoFilled, Back, Right } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import UploadZone from '../components/UploadZone.vue'
 import { uploadImage, runDetection, createDetectionTask, getDetectionTask } from '../api/images'
@@ -130,7 +139,7 @@ async function detectOne(imageId) {
 }
 
 async function handleUpload() {
-  if (!files.value.length) return
+  if (!files.value.length || uploading.value) return
   uploading.value = true
   doneCount.value = 0
   const results = []
@@ -168,215 +177,106 @@ async function handleUpload() {
 </script>
 
 <style scoped>
+.page-back-link { padding: 0; height: 28px; margin-bottom: 12px; color: var(--text-secondary); font-size: 12px; }
+.page-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--primary);
+}
+
 .page-header {
-  margin-bottom: 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 .page-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
-  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+  line-height: 1.3;
+  margin: 7px 0 9px;
 }
 .page-desc {
   font-size: 13px;
+  line-height: 1.7;
   color: var(--text-muted);
   margin: 0;
 }
 
-/* 布局 */
-.upload-layout {
+/* Upload workflow */
+.workflow-strip {
   display: grid;
-  grid-template-columns: 1fr 320px;
-  gap: 20px;
-  align-items: start;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 24px;
+  max-width: 900px;
+  margin: 0 0 30px;
 }
-
-/* 上传卡片 */
-.upload-card {
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  overflow: hidden;
-}
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  padding: 24px;
-  border-bottom: 1px solid var(--border-color);
-}
-.header-icon {
-  width: 52px;
-  height: 52px;
-  border-radius: var(--radius-md);
-  background: var(--primary-glow);
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  justify-content: center;
+.workflow-step { display: flex; align-items: center; gap: 12px; color: var(--text-muted); }
+.step-number {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
   flex-shrink: 0;
-}
-.header-text h3 {
-  font-family: var(--font-display);
-  font-size: 17px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 4px;
-}
-.header-text p {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin: 0;
-}
-
-.card-body {
-  padding: 24px;
-}
-
-/* 文件预览 */
-.file-preview {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-top: 16px;
-  padding: 14px 16px;
-  background: var(--bg-hover);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-sm);
-}
-.file-info {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-.file-icon {
-  width: 40px;
-  height: 40px;
-  border-radius: var(--radius-sm);
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary);
-  flex-shrink: 0;
-}
-.file-name {
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--text-primary);
-  max-width: 300px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.file-size {
+  border-radius: 12px;
   font-size: 12px;
-  color: var(--text-muted);
-  margin-top: 2px;
+  font-weight: 700;
+  background: var(--bg-card);
 }
-.file-remove {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.2s ease;
-}
-.file-remove:hover {
-  background: var(--bg-tag-danger);
-  color: var(--danger);
-}
-
-/* 操作栏 */
-.action-bar {
-  display: flex;
-  justify-content: flex-end;
-  gap: 12px;
-  padding: 16px 24px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-page);
-}
-
-/* 提示卡片 */
-.tips-card {
+.workflow-step.current .step-number { color: #fff; background: var(--primary); border-color: var(--primary); }
+.workflow-step strong { display: block; font-size: 13px; font-weight: 600; color: var(--text-secondary); }
+.workflow-step.current strong { color: var(--primary); }
+.workflow-step div > span { display: block; font-size: 11px; margin-top: 4px; }
+.upload-layout { display: grid; grid-template-columns: minmax(0, 1fr) 290px; gap: 24px; align-items: start; }
+.upload-card {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 20px;
-  position: sticky;
-  top: 20px;
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(23, 50, 57, 0.025);
+  overflow: hidden;
 }
-.tips-title {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 16px;
-  padding-bottom: 12px;
-  border-bottom: 1px solid var(--border-color);
+.card-header { display: flex; align-items: center; gap: 14px; padding: 24px 28px; border-bottom: 1px solid var(--border-light); }
+.header-icon { width: 44px; height: 44px; border-radius: 14px; background: var(--primary-glow); color: var(--primary); display: grid; place-items: center; flex-shrink: 0; }
+.header-text h3 { font-size: 16px; font-weight: 650; color: var(--text-primary); margin: 0 0 5px; }
+.header-text p { font-size: 12px; line-height: 1.5; color: var(--text-muted); margin: 0; }
+.card-body { padding: 28px; }
+.action-bar { position: sticky; bottom: 12px; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 24px; padding: 18px 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 -5px 24px rgba(23, 50, 57, .06); }
+.selection-summary { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
+.selection-summary strong { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+.selection-summary > span { font-size: 11px; color: var(--text-muted); }
+.action-bar .el-button { margin-left: 0; }
+.start-detection-button { min-width: 180px; height: 46px; flex-shrink: 0; }
+.submit-arrow { margin-left: 8px; vertical-align: middle; }
+.tips-card { background: var(--bg-card); border: 1px solid var(--border-color); border-radius: var(--radius-lg); padding: 28px 24px; position: sticky; top: 20px; }
+.tips-eyebrow { font-size: 9px; font-weight: 700; letter-spacing: 0.13em; color: var(--text-muted); }
+.tips-title { display: flex; align-items: center; gap: 8px; font-size: 16px; font-weight: 650; color: var(--text-primary); margin: 12px 0 24px; }
+.tips-title .el-icon { color: var(--primary); }
+.tips-list { list-style: none; padding: 0; margin: 0; display: flex; flex-direction: column; gap: 22px; }
+.tips-list li { display: flex; align-items: flex-start; gap: 12px; font-size: 12px; color: var(--text-secondary); line-height: 1.85; }
+.tip-num { width: 22px; height: 22px; border-radius: 7px; background: var(--bg-page); color: var(--primary); display: inline-flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px; }
+@media (max-width: 1100px) {
+  .upload-layout { grid-template-columns: 1fr; }
+  .tips-card { position: static; }
+  .tips-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
-.tips-title .el-icon {
-  color: var(--primary);
+@media (max-width: 760px) {
+  .page-header { flex-direction: column; align-items: flex-start; margin-bottom: 20px; }
+  .workflow-strip { gap: 10px; margin-bottom: 18px; }
+  .workflow-step { gap: 8px; flex-direction: column; align-items: flex-start; }
+  .workflow-step div > span { display: none; }
+  .card-header, .card-body { padding: 16px; }
+  .action-bar { padding: 14px 16px; gap: 12px; }
+  .start-detection-button { min-width: 0; padding: 0 14px; height: 46px; }
+  .selection-summary strong { font-size: 12px; }
+  .selection-summary > span { font-size: 10px; line-height: 1.6; }
+  .tips-list { grid-template-columns: 1fr; }
 }
-.tips-list {
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-}
-.tips-list li {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-  font-size: 13px;
-  color: var(--text-secondary);
-  line-height: 1.6;
-}
-.tip-num {
-  width: 22px;
-  height: 22px;
-  border-radius: 50%;
-  background: var(--primary-glow);
-  color: var(--primary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 11px;
-  font-weight: 700;
-  flex-shrink: 0;
-  margin-top: 1px;
-}
-
-@media (max-width: 900px) {
-  .upload-layout {
-    grid-template-columns: 1fr;
-  }
-  .tips-card {
-    position: static;
-  }
-}
-@media (max-width: 480px) {
-  .card-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  .action-bar {
-    flex-direction: column;
-  }
-  .action-bar .el-button {
-    width: 100%;
-  }
-}
+@media (max-width: 760px) { .action-bar { bottom: calc(74px + env(safe-area-inset-bottom)); } }
 </style>

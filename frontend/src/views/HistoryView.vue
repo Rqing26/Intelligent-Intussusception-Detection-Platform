@@ -3,8 +3,9 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="page-header-main">
+        <span class="page-eyebrow">DETECTION ARCHIVE</span>
         <h1 class="page-title">检测记录</h1>
-        <p class="page-desc">查看所有超声影像的AI检测结果与诊断分析</p>
+        <p class="page-desc">回顾每一次检测，查阅影像分析与诊断记录。</p>
       </div>
     </div>
 
@@ -24,7 +25,6 @@
             <el-icon :size="20"><component :is="stat.icon" /></el-icon>
           </div>
         </div>
-        <div class="stat-accent-bar" :style="{ background: stat.color }"></div>
       </div>
     </div>
 
@@ -37,20 +37,32 @@
           </div>
           <h3>检测记录列表</h3>
         </div>
-        <el-button :icon="Download" @click="handleExport" :loading="exporting">导出 CSV</el-button>
+        <el-button class="export-button" :icon="Download" @click="handleExport" :loading="exporting">{{ exporting ? '正在导出' : '导出 CSV' }}</el-button>
       </div>
 
       <!-- 筛选工具栏 -->
-      <div class="filter-bar">
-        <div class="filter-search">
-          <el-icon class="search-icon"><Search /></el-icon>
-          <el-input v-model="search" placeholder="按患者姓名搜索..." clearable @keyup.enter="handleSearch" />
+      <div class="filter-bar" role="search" aria-label="筛选检测记录">
+        <div class="filter-fields">
+          <div class="filter-field">
+            <label class="filter-label" for="history-patient-search">患者姓名</label>
+            <div class="filter-search">
+              <el-icon class="search-icon"><Search /></el-icon>
+              <el-input id="history-patient-search" v-model="search" placeholder="输入患者姓名" clearable @keyup.enter="handleSearch" @clear="handleSearch" />
+            </div>
+          </div>
+          <div class="filter-field">
+            <label class="filter-label" for="history-classification">诊断结论</label>
+            <el-select id="history-classification" v-model="classification" placeholder="全部诊断结论" clearable @change="handleSearch">
+              <el-option label="肠套叠阳性" value="肠套叠阳性" />
+              <el-option label="肠套叠阴性" value="肠套叠阴性" />
+              <el-option label="图像质量不佳" value="图像质量不佳" />
+            </el-select>
+          </div>
         </div>
-        <el-select v-model="classification" placeholder="按诊断结论筛选" clearable style="width: 180px" @change="handleSearch">
-          <el-option label="肠套叠阳性" value="肠套叠阳性" />
-          <el-option label="肠套叠阴性" value="肠套叠阴性" />
-          <el-option label="图像质量不佳" value="图像质量不佳" />
-        </el-select>
+        <div class="filter-actions">
+          <el-button type="primary" :icon="Search" :loading="loading" @click="handleSearch">查询记录</el-button>
+          <el-button :disabled="!hasFilters || loading" @click="resetFilters">重置筛选</el-button>
+        </div>
       </div>
 
       <div class="table-wrap">
@@ -119,13 +131,9 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="操作" width="100" fixed="right" align="center">
+          <el-table-column label="操作" width="132" fixed="right" align="center">
             <template #default="{ row }">
-              <el-tooltip content="查看详情" placement="top">
-                <button class="icon-btn" @click="$router.push(`/results/${row.id}`)">
-                  <el-icon><View /></el-icon>
-                </button>
-              </el-tooltip>
+              <el-button class="result-button" :icon="View" @click="$router.push(`/results/${row.id}`)">查看结果</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -163,6 +171,7 @@ const total = ref(0)
 const exporting = ref(false)
 const search = ref('')
 const classification = ref('')
+const hasFilters = computed(() => Boolean(search.value || classification.value))
 
 const stats = ref({
   total: 0,
@@ -255,7 +264,14 @@ function handleSearch() {
   fetchData()
 }
 
+function resetFilters() {
+  search.value = ''
+  classification.value = ''
+  handleSearch()
+}
+
 async function handleExport() {
+  if (exporting.value) return
   exporting.value = true
   try {
     const res = await exportResults({})
@@ -278,22 +294,32 @@ onMounted(fetchData)
 </script>
 
 <style scoped>
+.page-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--primary);
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 .page-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
-  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+  line-height: 1.3;
+  margin: 7px 0 9px;
 }
 .page-desc {
   font-size: 13px;
+  line-height: 1.7;
   color: var(--text-muted);
   margin: 0;
 }
@@ -301,29 +327,28 @@ onMounted(fetchData)
 /* 统计卡片 */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
-  margin-bottom: 24px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 28px;
 }
 .stat-card {
-  position: relative;
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: border-color 0.2s ease;
 }
 .stat-card:hover {
-  transform: translateY(-3px);
-  box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 .stat-card-inner {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 16px;
-  padding: 20px 22px 22px;
-  min-height: 96px;
+  padding: 25px 26px;
+  min-height: 118px;
 }
 .stat-icon-wrap {
   width: 44px;
@@ -350,43 +375,37 @@ onMounted(fetchData)
 }
 .stat-value {
   font-family: var(--font-display);
-  font-size: 32px;
-  font-weight: 700;
+  font-size: 36px;
+  font-weight: 600;
   color: var(--text-primary);
-  line-height: 1.05;
-  letter-spacing: -0.01em;
+  line-height: 1.15;
+  letter-spacing: -0.04em;
   font-variant-numeric: tabular-nums;
 }
 .stat-label {
-  font-size: 13px;
+  font-size: 12px;
   color: var(--text-muted);
-  margin-top: 6px;
+  margin-top: 9px;
   font-weight: 500;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-.stat-accent-bar {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  height: 3px;
-  opacity: 0.9;
 }
 
 /* 数据卡片 */
 .data-card {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(23, 50, 57, 0.025);
   overflow: hidden;
 }
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--border-light);
 }
 .card-header-left {
   display: flex;
@@ -397,15 +416,31 @@ onMounted(fetchData)
 /* 筛选工具栏 */
 .filter-bar {
   display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 14px 20px;
-  border-bottom: 1px solid var(--border-color);
+  align-items: flex-end;
+  gap: 16px;
+  padding: 18px 24px;
+  border-bottom: 1px solid var(--border-light);
   flex-wrap: wrap;
 }
+.filter-fields {
+  flex: 1 1 400px;
+  display: grid;
+  grid-template-columns: minmax(0, 1.2fr) minmax(160px, 0.8fr);
+  gap: 12px;
+  min-width: 0;
+}
+.filter-field { min-width: 0; }
+.filter-label { display: block; margin-bottom: 9px; font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.filter-field .el-select { width: 100%; }
+.filter-field :deep(.el-input__wrapper), .filter-field :deep(.el-select__wrapper) { min-height: 44px; }
+.filter-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-left: auto; }
+.filter-actions .el-button { min-height: 44px; margin-left: 0; padding: 0 17px; }
+.export-button { min-height: 40px; color: var(--text-secondary); background: var(--bg-card); border-color: var(--border-color); }
+.export-button:hover { color: var(--primary); border-color: var(--primary); background: var(--bg-hover); }
 .filter-search {
   position: relative;
-  width: 320px;
+  width: 100%;
+  max-width: 100%;
 }
 .filter-search .search-icon {
   position: absolute;
@@ -421,9 +456,9 @@ onMounted(fetchData)
   padding-left: 36px !important;
 }
 .card-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
   background: var(--primary-glow);
   display: flex;
   align-items: center;
@@ -441,12 +476,14 @@ onMounted(fetchData)
 
 /* 表格 */
 .table-wrap {
-  padding: 0 4px;
-  overflow-x: auto; /* 窄屏表格横向滚动，避免内容溢出 */
+  min-width: 0;
+  padding: 0;
+  overflow-x: auto;
 }
 .list-skeleton {
   padding: 20px;
-}.history-table :deep(.el-table__header-wrapper th.el-table__cell) {
+}
+.history-table :deep(.el-table__header-wrapper th.el-table__cell) {
   background: var(--bg-page) !important;
   color: var(--text-secondary) !important;
   font-weight: 600 !important;
@@ -561,21 +598,21 @@ onMounted(fetchData)
 }
 
 /* 操作按钮 */
-.icon-btn {
-  width: 32px;
-  height: 32px;
+.result-button {
+  min-height: 36px;
+  padding: 0 10px;
   border-radius: var(--radius-sm);
-  border: none;
-  background: transparent;
-  color: var(--text-muted);
+  border: 1px solid var(--border-color);
+  background: var(--bg-card);
+  color: var(--primary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
-  font-size: 15px;
+  transition: background 0.2s ease, color 0.2s ease;
+  font-size: 12px;
 }
-.icon-btn:hover {
+.result-button:hover {
   background: var(--bg-hover);
   color: var(--primary);
 }
@@ -585,9 +622,10 @@ onMounted(fetchData)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-page);
+  gap: 12px;
+  padding: 18px 24px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-card);
 }
 .pagination-info {
   font-size: 12px;
@@ -600,19 +638,20 @@ onMounted(fetchData)
 
 /* 空状态 */
 .empty-state {
-  padding: 60px 0;
+  padding: 64px 20px;
   text-align: center;
 }
 .empty-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--bg-hover);
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  background: var(--bg-page);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  margin-bottom: 16px;
+  color: var(--primary);
+  margin-bottom: 20px;
 }
 .empty-title {
   font-size: 15px;
@@ -626,25 +665,19 @@ onMounted(fetchData)
   margin: 0;
 }
 
-@media (max-width: 1100px) {
-  .stats-row {
-    grid-template-columns: repeat(2, 1fr);
-  }
+@media (max-width: 640px) {
+  .stats-row { grid-template-columns: 1fr; gap: 12px; }
+  .stat-card-inner { min-height: 92px; padding: 18px 22px; }
+  .stat-value { font-size: 30px; }
+  .stat-label { margin-top: 5px; }
+  .pagination-bar { flex-direction: column; gap: 12px; }
+  .filter-bar { flex-direction: column; align-items: stretch; padding: 18px; }
+  .filter-fields { flex-basis: auto; grid-template-columns: minmax(0, 1fr); }
+  .filter-actions { width: 100%; margin-left: 0; }
+  .filter-actions .el-button { flex: 1 1 110px; }
+  .export-button, .result-button { min-height: 44px; }
+  .card-header { padding: 18px; }
 }
-@media (max-width: 768px) {
-  .stats-row {
-    grid-template-columns: 1fr;
-  }
-  .pagination-bar {
-    flex-direction: column;
-    gap: 12px;
-  }
-  .filter-bar {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .filter-search {
-    width: 100%;
-  }
-}
+.result-button:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+.empty-desc { margin-bottom: 18px; }
 </style>

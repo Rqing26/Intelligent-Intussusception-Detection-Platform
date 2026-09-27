@@ -1,208 +1,94 @@
 <template>
-  <div class="login-page">
-    <!-- 背景装饰 -->
-    <div class="login-bg">
-      <div class="bg-blob bg-blob-1" />
-      <div class="bg-blob bg-blob-2" />
-      <div class="bg-grid" />
+  <main class="login-page" :class="{ 'is-warm': currentTheme === 'medieval' }">
+    <div class="login-shell">
+      <section class="brand-panel" aria-labelledby="platform-title">
+        <router-link class="hospital-brand" to="/login" aria-label="肠套叠 AI 辅助诊断平台登录页">
+          <span class="hospital-mark">
+            <img src="/newlogo.png" alt="弋矶山医院院徽" />
+          </span>
+          <span class="hospital-wordmark">
+            <strong>皖南医学院第一附属医院</strong>
+            <span>弋矶山医院 · Yijishan Hospital</span>
+          </span>
+        </router-link>
 
-      <!-- 全页淡色几何医学背景 -->
-      <svg class="bg-pattern bg-pattern-target" viewBox="0 0 400 400" fill="none">
-        <circle cx="200" cy="200" r="180" stroke="currentColor" stroke-width="0.6" />
-        <circle cx="200" cy="200" r="140" stroke="currentColor" stroke-width="0.6" />
-        <circle cx="200" cy="200" r="100" stroke="currentColor" stroke-width="0.6" />
-        <circle cx="200" cy="200" r="60" stroke="currentColor" stroke-width="0.8" />
-        <line x1="200" y1="20" x2="200" y2="380" stroke="currentColor" stroke-width="0.3" />
-        <line x1="20" y1="200" x2="380" y2="200" stroke="currentColor" stroke-width="0.3" />
-        <line x1="60" y1="60" x2="340" y2="340" stroke="currentColor" stroke-width="0.3" />
-        <line x1="340" y1="60" x2="60" y2="340" stroke="currentColor" stroke-width="0.3" />
-      </svg>
-
-      <svg class="bg-pattern bg-pattern-radial" viewBox="0 0 400 400" fill="none">
-        <circle cx="200" cy="200" r="190" stroke="currentColor" stroke-width="0.5" />
-        <circle cx="200" cy="200" r="150" stroke="currentColor" stroke-width="0.5" />
-        <circle cx="200" cy="200" r="110" stroke="currentColor" stroke-width="0.5" />
-        <circle cx="200" cy="200" r="70" stroke="currentColor" stroke-width="0.5" />
-        <line x1="200" y1="10" x2="200" y2="390" stroke="currentColor" stroke-width="0.4" />
-        <line x1="10" y1="200" x2="390" y2="200" stroke="currentColor" stroke-width="0.4" />
-        <line x1="60" y1="60" x2="340" y2="340" stroke="currentColor" stroke-width="0.4" />
-        <line x1="340" y1="60" x2="60" y2="340" stroke="currentColor" stroke-width="0.4" />
-        <line x1="106" y1="32" x2="294" y2="368" stroke="currentColor" stroke-width="0.3" />
-        <line x1="294" y1="32" x2="106" y2="368" stroke="currentColor" stroke-width="0.3" />
-        <line x1="32" y1="106" x2="368" y2="294" stroke="currentColor" stroke-width="0.3" />
-        <line x1="368" y1="106" x2="32" y2="294" stroke="currentColor" stroke-width="0.3" />
-      </svg>
-
-      <svg class="bg-pattern bg-pattern-intestine" viewBox="0 0 500 320" fill="none">
-        <g transform="translate(100,160)">
-          <circle r="70" stroke="currentColor" stroke-width="0.6" />
-          <circle r="55" stroke="currentColor" stroke-width="0.5" />
-          <circle r="40" stroke="currentColor" stroke-width="0.6" />
-          <circle r="25" stroke="currentColor" stroke-width="0.5" />
-          <circle r="10" stroke="currentColor" stroke-width="0.6" />
-        </g>
-        <g transform="translate(250,100)">
-          <circle r="60" stroke="currentColor" stroke-width="0.6" />
-          <circle r="45" stroke="currentColor" stroke-width="0.5" />
-          <circle r="30" stroke="currentColor" stroke-width="0.6" />
-          <circle r="15" stroke="currentColor" stroke-width="0.5" />
-        </g>
-        <g transform="translate(250,220)">
-          <circle r="55" stroke="currentColor" stroke-width="0.6" />
-          <circle r="42" stroke="currentColor" stroke-width="0.5" />
-          <circle r="28" stroke="currentColor" stroke-width="0.6" />
-          <circle r="14" stroke="currentColor" stroke-width="0.5" />
-        </g>
-        <g transform="translate(400,160)">
-          <circle r="65" stroke="currentColor" stroke-width="0.6" />
-          <circle r="50" stroke="currentColor" stroke-width="0.5" />
-          <circle r="35" stroke="currentColor" stroke-width="0.6" />
-          <circle r="20" stroke="currentColor" stroke-width="0.5" />
-        </g>
-        <line x1="170" y1="160" x2="190" y2="100" stroke="currentColor" stroke-width="0.3" />
-        <line x1="170" y1="160" x2="190" y2="220" stroke="currentColor" stroke-width="0.3" />
-        <line x1="310" y1="100" x2="310" y2="160" stroke="currentColor" stroke-width="0.3" />
-        <line x1="310" y1="220" x2="310" y2="160" stroke="currentColor" stroke-width="0.3" />
-        <line x1="335" y1="160" x2="335" y2="160" stroke="currentColor" stroke-width="0.3" />
-      </svg>
-    </div>
-
-    <!-- 主题切换：用真按钮而不是可点击 div（可聚焦、可键盘操作） -->
-    <button
-      type="button"
-      class="theme-float-btn"
-      @click="handleToggleTheme"
-      :title="currentTheme === 'modern' ? '切换至中世纪手稿风格' : '切换至现代风格'"
-      :aria-label="currentTheme === 'modern' ? '切换至中世纪手稿风格' : '切换至现代风格'"
-    >
-      <el-icon :size="18">
-        <Notebook v-if="currentTheme === 'modern'" />
-        <Monitor v-else />
-      </el-icon>
-    </button>
-
-    <div class="login-wrap">
-      <!-- 左侧品牌区 -->
-      <div class="login-visual">
-        <!-- 医学线性图案背景 — 肠套叠超声特征几何化 -->
-        <!-- 同心圆靶环征 -->
-        <svg class="medical-pattern pattern-target" viewBox="0 0 240 240" fill="none">
-          <circle cx="120" cy="120" r="110" stroke="currentColor" stroke-width="0.8" />
-          <circle cx="120" cy="120" r="90" stroke="currentColor" stroke-width="0.8" />
-          <circle cx="120" cy="120" r="70" stroke="currentColor" stroke-width="0.8" />
-          <circle cx="120" cy="120" r="50" stroke="currentColor" stroke-width="1.2" />
-          <circle cx="120" cy="120" r="30" stroke="currentColor" stroke-width="0.8" />
-          <circle cx="120" cy="120" r="10" stroke="currentColor" stroke-width="0.8" />
-          <line x1="120" y1="10" x2="120" y2="230" stroke="currentColor" stroke-width="0.4" />
-          <line x1="10" y1="120" x2="230" y2="120" stroke="currentColor" stroke-width="0.4" />
-          <line x1="36" y1="36" x2="204" y2="204" stroke="currentColor" stroke-width="0.4" />
-          <line x1="204" y1="36" x2="36" y2="204" stroke="currentColor" stroke-width="0.4" />
-        </svg>
-
-        <!-- 套筒征侧视 — 梯形套叠 -->
-        <svg class="medical-pattern pattern-telescope" viewBox="0 0 200 300" fill="none">
-          <path d="M60 20 L140 20 L150 80 L50 80 Z" stroke="currentColor" stroke-width="1" />
-          <path d="M55 80 L145 80 L155 140 L45 140 Z" stroke="currentColor" stroke-width="1" />
-          <path d="M50 140 L150 140 L160 200 L40 200 Z" stroke="currentColor" stroke-width="1" />
-          <path d="M45 200 L155 200 L165 260 L35 260 Z" stroke="currentColor" stroke-width="1" />
-          <line x1="100" y1="20" x2="100" y2="260" stroke="currentColor" stroke-width="0.4" stroke-dasharray="4 4" />
-          <line x1="70" y1="50" x2="130" y2="50" stroke="currentColor" stroke-width="0.4" />
-          <line x1="65" y1="110" x2="135" y2="110" stroke="currentColor" stroke-width="0.4" />
-          <line x1="60" y1="170" x2="140" y2="170" stroke="currentColor" stroke-width="0.4" />
-          <line x1="55" y1="230" x2="145" y2="230" stroke="currentColor" stroke-width="0.4" />
-        </svg>
-
-        <!-- 放射状网格 — 超声扫描线 -->
-        <svg class="medical-pattern pattern-radial" viewBox="0 0 300 300" fill="none">
-          <circle cx="150" cy="150" r="130" stroke="currentColor" stroke-width="0.6" />
-          <circle cx="150" cy="150" r="100" stroke="currentColor" stroke-width="0.6" />
-          <circle cx="150" cy="150" r="70" stroke="currentColor" stroke-width="0.6" />
-          <circle cx="150" cy="150" r="40" stroke="currentColor" stroke-width="0.6" />
-          <line x1="150" y1="20" x2="150" y2="280" stroke="currentColor" stroke-width="0.5" />
-          <line x1="20" y1="150" x2="280" y2="150" stroke="currentColor" stroke-width="0.5" />
-          <line x1="46" y1="46" x2="254" y2="254" stroke="currentColor" stroke-width="0.5" />
-          <line x1="254" y1="46" x2="46" y2="254" stroke="currentColor" stroke-width="0.5" />
-          <line x1="91" y1="25" x2="209" y2="275" stroke="currentColor" stroke-width="0.4" />
-          <line x1="209" y1="25" x2="91" y2="275" stroke="currentColor" stroke-width="0.4" />
-          <line x1="25" y1="91" x2="275" y2="209" stroke="currentColor" stroke-width="0.4" />
-          <line x1="275" y1="91" x2="25" y2="209" stroke="currentColor" stroke-width="0.4" />
-        </svg>
-
-        <!-- 肠道横切面阵列 — 多个同心圆组 -->
-        <svg class="medical-pattern pattern-intestine" viewBox="0 0 320 200" fill="none">
-          <g transform="translate(60,100)">
-            <circle r="45" stroke="currentColor" stroke-width="0.8" />
-            <circle r="35" stroke="currentColor" stroke-width="0.6" />
-            <circle r="25" stroke="currentColor" stroke-width="0.8" />
-            <circle r="15" stroke="currentColor" stroke-width="0.6" />
-            <circle r="5" stroke="currentColor" stroke-width="0.8" />
-          </g>
-          <g transform="translate(160,60)">
-            <circle r="40" stroke="currentColor" stroke-width="0.8" />
-            <circle r="30" stroke="currentColor" stroke-width="0.6" />
-            <circle r="20" stroke="currentColor" stroke-width="0.8" />
-            <circle r="10" stroke="currentColor" stroke-width="0.6" />
-          </g>
-          <g transform="translate(160,140)">
-            <circle r="38" stroke="currentColor" stroke-width="0.8" />
-            <circle r="28" stroke="currentColor" stroke-width="0.6" />
-            <circle r="18" stroke="currentColor" stroke-width="0.8" />
-            <circle r="8" stroke="currentColor" stroke-width="0.6" />
-          </g>
-          <g transform="translate(260,100)">
-            <circle r="42" stroke="currentColor" stroke-width="0.8" />
-            <circle r="32" stroke="currentColor" stroke-width="0.6" />
-            <circle r="22" stroke="currentColor" stroke-width="0.8" />
-            <circle r="12" stroke="currentColor" stroke-width="0.6" />
-          </g>
-          <line x1="105" y1="100" x2="120" y2="60" stroke="currentColor" stroke-width="0.4" />
-          <line x1="105" y1="100" x2="120" y2="140" stroke="currentColor" stroke-width="0.4" />
-          <line x1="200" y1="60" x2="200" y2="102" stroke="currentColor" stroke-width="0.4" />
-          <line x1="200" y1="140" x2="200" y2="98" stroke="currentColor" stroke-width="0.4" />
-          <line x1="218" y1="100" x2="218" y2="100" stroke="currentColor" stroke-width="0.4" />
-        </svg>
-
-        <div class="visual-content">
-          <div class="brand-header">
-            <div class="logo-ring">
-              <img src="/newlogo.png" alt="logo" class="brand-logo" />
-            </div>
-            <div class="brand-text">
-              <div class="brand-name">皖南医学院</div>
-              <div class="brand-sub">第一附属医院（弋矶山医院）</div>
-            </div>
-          </div>
-
-          <div class="hero">
-            <h1 class="hero-title">
-              肠套叠 AI<br />
-              <span class="hero-accent">辅助诊断平台</span>
-            </h1>
-            <p class="hero-desc">
-              基于深度学习的超声影像智能分析<br />
-              为儿科医生提供精准、高效的辅助诊断支持
-            </p>
-          </div>
+        <div class="brand-introduction">
+          <div class="section-kicker"><span /> CLINICAL INTELLIGENCE</div>
+          <h1 id="platform-title">让每一次判断，<br /><span>更有依据。</span></h1>
+          <p>肠套叠 AI 辅助诊断平台</p>
+          <div class="introduction-detail">连接超声影像与智能分析，<br />为临床诊疗提供清晰、有序的工作空间。</div>
         </div>
 
-        <!-- 装饰圆环 -->
-        <div class="deco-ring deco-ring-1" />
-        <div class="deco-ring deco-ring-2" />
-        <div class="deco-dots" />
-      </div>
+        <div class="scan-art" aria-hidden="true">
+          <div class="scan-topline"><span>ULTRASOUND INTELLIGENCE</span><span>01 / 03</span></div>
+          <svg viewBox="0 0 500 280" fill="none" class="scan-visual">
+            <defs>
+              <linearGradient id="login-contour" x1="108" y1="20" x2="377" y2="266" gradientUnits="userSpaceOnUse">
+                <stop stop-color="#b6ddd0" stop-opacity="0.85" />
+                <stop offset="0.5" stop-color="#72b8aa" stop-opacity="0.22" />
+                <stop offset="1" stop-color="#d6e8a6" stop-opacity="0.75" />
+              </linearGradient>
+              <radialGradient id="login-scan-glow">
+                <stop stop-color="#65bbaa" stop-opacity="0.11" />
+                <stop offset="1" stop-color="#65bbaa" stop-opacity="0" />
+              </radialGradient>
+            </defs>
+            <ellipse cx="250" cy="141" rx="199" ry="138" fill="url(#login-scan-glow)" />
+            <g stroke="#b4d4ca" opacity="0.13" stroke-width="0.6">
+              <path d="M28 70H472M28 140H472M28 210H472M110 24V256M250 24V256M390 24V256" />
+              <path d="M56 34V246M444 34V246" stroke-dasharray="2 7" />
+            </g>
+            <g stroke="url(#login-contour)" stroke-width="1.1">
+              <path d="M239 22C298 13 365 49 385 102C410 163 361 232 292 253C221 277 145 241 121 182C96 123 127 55 180 31C196 24 219 25 239 22Z" />
+              <path d="M240 39C294 31 350 58 368 106C390 161 348 218 287 238C225 259 159 227 138 177C116 126 142 68 188 47C202 40 221 42 240 39Z" />
+              <path d="M239 57C286 48 335 69 351 112C371 160 335 205 282 221C229 239 172 215 155 171C138 128 159 82 199 65C211 60 223 60 239 57Z" />
+              <path d="M241 74C281 66 321 84 334 118C350 158 321 193 278 207C233 221 187 203 172 166C158 130 176 97 209 82C219 78 228 77 241 74Z" />
+              <path d="M242 91C275 84 306 97 317 124C329 154 309 181 273 193C239 204 201 190 190 162C178 134 192 110 219 99C226 95 231 94 242 91Z" />
+              <path d="M244 107C269 101 292 110 300 130C310 151 295 169 268 179C243 188 217 179 207 158C199 138 208 121 229 114C235 111 238 109 244 107Z" />
+              <path d="M247 123C263 119 278 123 284 136C290 149 280 159 265 164C250 170 232 167 226 155C220 143 230 133 240 129C242 128 245 124 247 123Z" />
+            </g>
+            <g stroke="#d6e8a6" stroke-width="1.4">
+              <path d="M173 70H155V88M333 70H351V88M155 197V215H173M351 197V215H333" />
+            </g>
+            <g stroke="#b9d5cb" opacity="0.55" stroke-width="0.8">
+              <path d="M241 141H259M250 132V150M63 38H72M63 59H68M63 80H72M63 101H68M63 122H72M63 143H68M63 164H72M63 185H68M63 206H72M63 227H68M63 248H72" />
+              <path d="M358 181H410L428 198M104 88H122" />
+            </g>
+            <circle cx="358" cy="181" r="2.5" fill="#c4dfb0" />
+            <text x="402" y="215" fill="#91b5aa" font-size="8" letter-spacing="1.4">AI ASSIST</text>
+          </svg>
+          <div class="scan-bottomline"><span>影像分析工作流示意</span><span>以影像为依据，以临床为核心</span></div>
+        </div>
 
-      <!-- 右侧表单区 -->
-      <div class="login-form-area">
+        <div class="workflow-strip" aria-label="平台工作流程">
+          <span><i>01</i> 影像上传</span>
+          <span class="workflow-divider" />
+          <span><i>02</i> 智能分析</span>
+          <span class="workflow-divider" />
+          <span><i>03</i> 病例管理</span>
+        </div>
+      </section>
+
+      <section class="login-panel" aria-labelledby="login-title">
+        <div class="panel-topbar">
+          <span class="workspace-label">临床工作空间</span>
+          <button
+            type="button"
+            class="theme-button"
+            @click="handleToggleTheme"
+            :title="currentTheme === 'modern' ? '切换至暖色主题' : '切换至标准主题'"
+            :aria-label="currentTheme === 'modern' ? '切换至暖色主题' : '切换至标准主题'"
+          >
+            <el-icon :size="15"><Sunny v-if="currentTheme === 'modern'" /><Monitor v-else /></el-icon>
+            <span>{{ currentTheme === 'modern' ? '标准主题' : '暖色主题' }}</span>
+          </button>
+        </div>
+
         <div class="form-card">
-          <div class="form-header">
-            <div class="form-icon">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                <circle cx="12" cy="7" r="4" />
-              </svg>
-            </div>
-            <h2 class="form-title">医生登录</h2>
-            <p class="form-subtitle">请使用院内账号登录系统</p>
+          <div class="form-heading">
+            <span class="form-eyebrow">WELCOME BACK</span>
+            <h2 id="login-title">欢迎回来</h2>
+            <p>登录您的账号，开始今天的诊疗工作。</p>
           </div>
 
           <el-form
@@ -213,10 +99,13 @@
             @submit.prevent="handleLogin"
           >
             <el-form-item prop="username">
-              <div class="input-label">用户名</div>
+              <label class="input-label" for="login-username">用户名 <span>USERNAME</span></label>
               <el-input
+                id="login-username"
                 v-model="form.username"
-                placeholder="请输入用户名"
+                name="username"
+                autocomplete="username"
+                placeholder="请输入院内账号"
                 size="large"
                 :prefix-icon="User"
                 class="login-input"
@@ -224,12 +113,15 @@
             </el-form-item>
 
             <el-form-item prop="password">
-              <div class="input-label">密码</div>
+              <label class="input-label" for="login-password">密码 <span>PASSWORD</span></label>
               <el-input
+                id="login-password"
                 v-model="form.password"
+                name="password"
                 type="password"
+                autocomplete="current-password"
                 show-password
-                placeholder="请输入密码"
+                placeholder="请输入登录密码"
                 size="large"
                 :prefix-icon="Lock"
                 class="login-input"
@@ -241,50 +133,46 @@
                 type="primary"
                 native-type="submit"
                 :loading="loading"
+                :disabled="loading"
                 size="large"
-                class="login-btn"
+                class="login-button"
               >
-                <span class="btn-text">登 录</span>
-                <svg class="btn-arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M5 12h14M12 5l7 7-7 7" />
-                </svg>
+                <span>{{ loading ? '正在登录' : '进入工作台' }}</span>
+                <el-icon v-if="!loading" :size="18"><ArrowRight /></el-icon>
               </el-button>
             </el-form-item>
           </el-form>
 
-          <div class="form-footer">
-            <div class="divider">
-              <span class="divider-line" />
-              <span class="divider-text">院内系统</span>
-              <span class="divider-line" />
-            </div>
-            <p class="copyright">皖南医学院第一附属医院（弋矶山医院）</p>
+          <div class="account-notice">
+            <el-icon :size="16"><Lock /></el-icon>
+            <p>仅限授权医务人员使用<br /><span>如需开通账号或重置密码，请联系系统管理员。</span></p>
           </div>
         </div>
-      </div>
+
+        <footer class="login-footer">
+          <div class="footer-rule" />
+          <span>肠套叠 AI 辅助诊断平台</span>
+          <span class="footer-english">Designed for better clinical care.</span>
+        </footer>
+      </section>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock, Notebook, Monitor } from '@element-plus/icons-vue'
+import { User, Lock, Sunny, Monitor, ArrowRight } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 import { toggleTheme, getCurrentTheme } from '../utils/theme'
 
 const router = useRouter()
 const authStore = useAuthStore()
 const currentTheme = ref(getCurrentTheme())
-
 const formRef = ref(null)
 const loading = ref(false)
-
-const form = reactive({
-  username: '',
-  password: '',
-})
+const form = reactive({ username: '', password: '' })
 
 const rules = {
   username: [{ required: true, message: '请输入用户名', trigger: 'blur' }],
@@ -296,6 +184,7 @@ function handleToggleTheme() {
 }
 
 async function handleLogin() {
+  if (loading.value) return
   const valid = await formRef.value.validate().catch(() => false)
   if (!valid) return
 
@@ -317,551 +206,193 @@ onMounted(() => {
 </script>
 
 <style scoped>
-/* ========== 页面基础 ========== */
 .login-page {
-  position: relative;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  --login-ink: #102e35;
+  --login-teal: #15746f;
+  --login-paper: #fbfcf9;
+  --login-muted: #748783;
+  --login-line: #dde6e0;
+  --login-accent: #d6e8a6;
   min-height: 100vh;
+  min-height: 100svh;
+  display: grid;
+  place-items: center;
   padding: 24px;
-  background: var(--bg-page);
-  overflow: hidden;
+  background: #edf1ec;
+  color: var(--login-ink);
 }
 
-/* ========== 背景装饰 ========== */
-.login-bg {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
+.login-page.is-warm {
+  --login-ink: #303b31;
+  --login-teal: #626f4d;
+  --login-paper: #fcfaf4;
+  --login-muted: #848677;
+  --login-line: #e4e3d5;
+  --login-accent: #e7d5a8;
+  background: #eeece3;
 }
 
-.bg-blob {
-  position: absolute;
-  border-radius: 50%;
-  filter: blur(80px);
-  opacity: 0.35;
-  animation: blobFloat 8s ease-in-out infinite;
-}
-.bg-blob-1 {
-  width: 500px;
-  height: 500px;
-  top: -10%;
-  left: -5%;
-  background: var(--primary);
-  animation-delay: 0s;
-}
-.bg-blob-2 {
-  width: 400px;
-  height: 400px;
-  bottom: -10%;
-  right: -5%;
-  background: var(--gold);
-  opacity: 0.2;
-  animation-delay: -4s;
-}
-
-.bg-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    radial-gradient(circle at 1px 1px, var(--border-strong) 1px, transparent 0);
-  background-size: 28px 28px;
-  opacity: 0.35;
-  mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-  -webkit-mask-image: radial-gradient(ellipse at center, black 25%, transparent 75%);
-}
-
-/* 全页淡色几何背景图案 */
-.bg-pattern {
-  position: absolute;
-  color: var(--border-strong);
-  pointer-events: none;
-  z-index: 0;
-}
-.bg-pattern-target {
-  width: 500px;
-  height: 500px;
-  top: -8%;
-  left: -6%;
-  opacity: 0.25;
-}
-.bg-pattern-radial {
-  width: 480px;
-  height: 480px;
-  bottom: -10%;
-  right: -8%;
-  opacity: 0.2;
-}
-.bg-pattern-intestine {
-  width: 400px;
-  height: 260px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  opacity: 0.12;
-}
-
-@keyframes blobFloat {
-  0%, 100% { transform: translate(0, 0) scale(1); }
-  33% { transform: translate(20px, -30px) scale(1.05); }
-  66% { transform: translate(-15px, 15px) scale(0.95); }
-}
-
-/* ========== 主题切换按钮 ========== */
-.theme-float-btn {
-  position: fixed;
-  top: 20px;
-  right: 20px;
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background: var(--bg-card);
-  border: 1px solid var(--border-color);
-  color: var(--gold-dim);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 18px;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  z-index: 100;
-  transition: all 0.25s ease;
-  padding: 0;
-}
-.theme-float-btn:hover {
-  transform: scale(1.1) rotate(8deg);
-  box-shadow: var(--shadow-md);
-  color: var(--primary);
-}
-.theme-float-btn:focus-visible {
-  outline: 2px solid var(--gold);
-  outline-offset: 2px;
-}
-
-/* ========== 登录卡片主体 ========== */
-.login-wrap {
-  position: relative;
-  z-index: 1;
+.login-shell {
+  width: 100%;
+  max-width: 1440px;
+  min-height: min(824px, calc(100svh - 48px));
   display: grid;
   grid-template-columns: 1fr 1fr;
-  width: 100%;
-  max-width: 1024px;
-  min-height: 600px;
-  background: var(--bg-card);
-  border-radius: var(--radius-lg);
-  border: 1px solid var(--border-color);
+  border: 1px solid rgba(16, 46, 53, 0.05);
+  border-radius: 24px;
   overflow: hidden;
-  box-shadow: var(--shadow-book);
-  animation: cardEnter 0.6s ease-out;
+  background: var(--login-paper);
+  box-shadow: 0 20px 70px -40px rgba(21, 54, 49, 0.24);
 }
 
-@keyframes cardEnter {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.98);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-/* ========== 左侧品牌区 ========== */
-.login-visual {
-  position: relative;
+.brand-panel {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-  padding: 56px 52px;
-  background: var(--primary);
-  color: var(--text-inverse);
+  padding: 44px 50px 32px;
+  color: #f5f8ef;
+  background: var(--login-ink);
+  position: relative;
+  isolation: isolate;
   overflow: hidden;
 }
 
-/* 左侧背景纹理 */
-.login-visual::before {
+.brand-panel::before {
   content: '';
   position: absolute;
   inset: 0;
-  background:
-    radial-gradient(ellipse at 20% 30%, rgba(255,255,255,0.06) 0%, transparent 50%),
-    radial-gradient(ellipse at 80% 70%, rgba(184,148,31,0.06) 0%, transparent 40%);
+  z-index: -1;
+  background: linear-gradient(145deg, transparent 35%, rgba(75, 125, 98, 0.15));
 }
 
-/* 医学线性图案 */
-.medical-pattern {
-  position: absolute;
-  color: rgba(255,255,255,0.07);
-  pointer-events: none;
-  z-index: 1;
-}
-.pattern-target {
-  width: 180px;
-  height: 180px;
-  top: 12%;
-  right: 6%;
-  opacity: 0.45;
-}
-.pattern-telescope {
-  width: 120px;
-  height: 180px;
-  bottom: 15%;
-  left: 6%;
-  opacity: 0.4;
-}
-.pattern-radial {
-  width: 220px;
-  height: 220px;
-  top: 50%;
-  right: 2%;
-  opacity: 0.35;
-  transform: translateY(-50%);
-}
-.pattern-intestine {
-  width: 260px;
-  height: 160px;
-  bottom: 6%;
-  right: 12%;
-  opacity: 0.3;
-}
-
-.visual-content {
-  position: relative;
-  z-index: 2;
-}
-
-/* 品牌头部 */
-.brand-header {
+.hospital-brand {
   display: flex;
   align-items: center;
-  gap: 16px;
-  margin-bottom: 56px;
+  gap: 13px;
+  color: inherit;
+  text-decoration: none;
+  align-self: flex-start;
 }
 
-.logo-ring {
-  position: relative;
-  width: 56px;
-  height: 56px;
-  border-radius: 50%;
-  padding: 3px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.3), rgba(184,148,31,0.3));
+.hospital-mark {
+  width: 49px;
+  height: 49px;
+  display: grid;
+  place-items: center;
   flex-shrink: 0;
-}
-.logo-ring::before {
-  content: '';
-  position: absolute;
-  inset: 0;
   border-radius: 50%;
-  padding: 2px;
-  background: linear-gradient(135deg, rgba(255,255,255,0.5), transparent);
-  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-  -webkit-mask-composite: xor;
-  mask-composite: exclude;
+  background: #fff;
+  padding: 3px;
 }
 
-.brand-logo {
-  width: 100%;
-  height: 100%;
-  border-radius: 50%;
-  object-fit: cover;
-  background: var(--text-inverse);
+.hospital-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.hospital-wordmark { display: grid; gap: 6px; }
+.hospital-wordmark strong { font-size: 14px; letter-spacing: 1px; font-weight: 600; }
+.hospital-wordmark > span { font-size: 10px; color: #a9c3bd; letter-spacing: 0.6px; }
+.brand-introduction { padding-top: 65px; }
+.section-kicker { display: flex; align-items: center; gap: 9px; font-size: 9px; letter-spacing: 2.5px; color: #b4ccc0; }
+.section-kicker > span { width: 5px; height: 5px; border-radius: 50%; background: var(--login-accent); }
+.brand-introduction h1 { margin: 24px 0 22px; font-size: clamp(36px, 3.2vw, 49px); line-height: 1.5; letter-spacing: 1px; font-weight: 550; }
+.brand-introduction h1 > span { color: var(--login-accent); }
+.brand-introduction > p { margin: 0 0 12px; font-size: 15px; font-weight: 500; letter-spacing: 1.2px; }
+.introduction-detail { color: #a8c0ba; font-size: 12px; line-height: 1.95; letter-spacing: 0.2px; }
+
+.scan-art { margin-top: 32px; flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.scan-topline, .scan-bottomline { display: flex; align-items: center; justify-content: space-between; gap: 12px; color: #88a79e; font-size: 8px; letter-spacing: 1.3px; }
+.scan-topline { padding-top: 16px; border-top: 1px solid rgba(187, 216, 202, 0.12); }
+.scan-visual { width: 100%; max-height: 257px; display: block; margin: 0 auto; }
+.scan-bottomline { margin-top: -3px; font-size: 9px; letter-spacing: 0.6px; }
+.workflow-strip { display: flex; align-items: center; gap: 16px; margin-top: 28px; padding-top: 23px; border-top: 1px solid rgba(187, 216, 202, 0.16); }
+.workflow-strip > span:not(.workflow-divider) { display: flex; align-items: center; gap: 7px; white-space: nowrap; font-size: 11px; color: #ccdbd1; letter-spacing: 0.3px; }
+.workflow-strip i { font-size: 9px; font-style: normal; color: #88a69a; }
+.workflow-divider { flex: 1; height: 1px; background: rgba(187, 216, 202, 0.2); }
+
+.login-panel { display: flex; flex-direction: column; padding: 37px 52px 31px; min-width: 0; }
+.panel-topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+.workspace-label { font-size: 11px; color: var(--login-muted); letter-spacing: 1.3px; }
+.theme-button { display: flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid var(--login-line); border-radius: 7px; background: transparent; font: inherit; font-size: 11px; color: var(--login-muted); cursor: pointer; transition: background 160ms, color 160ms; }
+.theme-button:hover { color: var(--login-ink); background: rgba(21, 116, 111, 0.045); }
+.theme-button:focus-visible, .hospital-brand:focus-visible { outline: 2px solid var(--login-teal); outline-offset: 5px; }
+.form-card { width: 100%; max-width: 367px; margin: auto; padding: 68px 0 65px; }
+.form-eyebrow { font-size: 10px; color: var(--login-teal); letter-spacing: 2.2px; font-weight: 600; }
+.form-heading h2 { margin: 15px 0 12px; font-size: 35px; font-weight: 600; letter-spacing: 1px; line-height: 1.4; color: var(--login-ink); }
+.form-heading p { margin: 0; font-size: 12px; color: var(--login-muted); line-height: 1.8; }
+.login-form { margin-top: 38px; }
+.login-form :deep(.el-form-item) { margin-bottom: 27px; }
+.login-form :deep(.el-form-item__content) { display: flex; flex-direction: column; align-items: stretch; line-height: normal; }
+.input-label { display: flex; align-items: center; justify-content: space-between; margin-bottom: 11px; color: var(--login-ink); font-size: 12px; font-weight: 550; }
+.input-label span { font-size: 8px; color: #91a19b; letter-spacing: 1.2px; font-weight: 400; }
+.login-input :deep(.el-input__wrapper) { min-height: 51px; padding: 1px 16px; border-radius: 8px; background: rgba(255, 255, 255, 0.65); box-shadow: 0 0 0 1px var(--login-line) inset; transition: box-shadow 160ms, background 160ms; }
+.login-input :deep(.el-input__wrapper:hover) { box-shadow: 0 0 0 1px #a9bdb5 inset; }
+.login-input :deep(.el-input__wrapper.is-focus) { box-shadow: 0 0 0 1px var(--login-teal) inset, 0 0 0 3px rgba(21, 116, 111, 0.07); background: #fff; }
+.login-input :deep(.el-input__inner) { height: 49px; color: var(--login-ink); font-size: 12px; }
+.login-input :deep(.el-input__inner::placeholder) { color: #9aa9a2; }
+.login-input :deep(.el-input__prefix) { color: #8a9f94; margin-right: 4px; font-size: 16px; }
+.login-form :deep(.el-form-item__error) { padding-top: 5px; font-size: 11px; }
+.login-form :deep(.submit-item) { margin-top: 34px; margin-bottom: 0; }
+.login-button { width: 100%; height: 52px; border: 1px solid var(--login-teal); border-radius: 8px; background: var(--login-teal); box-shadow: 0 5px 12px -7px rgba(12, 86, 76, 0.4); color: #fff; font-size: 13px; font-weight: 550; letter-spacing: 1px; transition: transform 160ms, box-shadow 160ms, filter 160ms; }
+.login-button:hover { background: var(--login-teal); border-color: var(--login-teal); filter: brightness(1.08); transform: translateY(-1px); box-shadow: 0 7px 17px -7px rgba(12, 86, 76, 0.3); }
+.login-button:focus-visible { outline: 2px solid var(--login-teal); outline-offset: 4px; }
+.login-button.is-disabled { background: var(--login-teal); border-color: var(--login-teal); opacity: 0.75; }
+.login-button :deep(> span) { width: 100%; display: flex; align-items: center; justify-content: center; gap: 18px; }
+.login-button .el-icon { flex-shrink: 0; }
+.account-notice { display: flex; align-items: flex-start; gap: 10px; padding-top: 25px; color: var(--login-muted); }
+.account-notice > .el-icon { margin-top: 3px; color: #8a9f94; flex-shrink: 0; }
+.account-notice p { margin: 0; font-size: 10px; line-height: 1.9; }
+.account-notice p > span { color: #94a099; }
+.login-footer { display: grid; gap: 8px; color: var(--login-muted); font-size: 10px; letter-spacing: 0.3px; }
+.footer-rule { width: 28px; height: 2px; background: #cbd7cb; margin-bottom: 7px; }
+.footer-english { color: #9ba79e; font-size: 9px; letter-spacing: 0.5px; }
+
+@media (min-width: 1550px) {
+  .login-page { padding: 42px; }
+  .login-shell { min-height: 824px; }
+  .brand-panel { padding: 48px 60px 36px; }
+  .login-panel { padding: 42px 64px 35px; }
 }
 
-.brand-name {
-  font-size: 17px;
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  line-height: 1.3;
-  font-family: var(--font-display);
-}
-.brand-sub {
-  font-size: 12px;
-  opacity: 0.65;
-  font-weight: 500;
-  margin-top: 2px;
-  letter-spacing: 0.02em;
-}
-
-/* Hero 区域 */
-.hero {
-  animation: slideUp 0.7s ease-out 0.15s both;
+@media (max-width: 1100px) {
+  .login-page { padding: 16px; }
+  .login-shell { min-height: calc(100svh - 32px); }
+  .brand-panel { padding: 33px 30px 27px; }
+  .login-panel { padding: 31px 34px 27px; }
+  .hospital-wordmark strong { font-size: 12px; letter-spacing: 0.3px; }
+  .hospital-wordmark > span { font-size: 9px; letter-spacing: 0; }
+  .hospital-mark { width: 43px; height: 43px; }
+  .brand-introduction { padding-top: 59px; }
+  .brand-introduction h1 { font-size: 36px; }
+  .workflow-strip { gap: 10px; }
+  .workflow-strip > span:not(.workflow-divider) { font-size: 10px; gap: 4px; }
 }
 
-.hero-title {
-  font-family: var(--font-display);
-  font-size: 36px;
-  font-weight: 700;
-  line-height: 1.25;
-  letter-spacing: 0.04em;
-  margin: 0 0 20px;
-}
-.hero-accent {
-  position: relative;
-  display: inline-block;
-}
-.hero-accent::after {
-  content: '';
-  position: absolute;
-  bottom: 2px;
-  left: 0;
-  right: 0;
-  height: 8px;
-  background: var(--gold);
-  opacity: 0.35;
-  border-radius: 2px;
+@media (max-width: 800px) {
+  .login-page { padding: 16px; }
+  .login-shell { grid-template-columns: 1fr; max-width: 560px; border-radius: 18px; }
+  .brand-panel { padding: 26px 32px 28px; }
+  .brand-introduction { padding-top: 29px; }
+  .brand-introduction h1 { font-size: 31px; line-height: 1.45; margin: 14px 0 14px; }
+  .brand-introduction h1 br { display: none; }
+  .brand-introduction > p { font-size: 13px; margin-bottom: 0; }
+  .section-kicker { font-size: 8px; letter-spacing: 2px; }
+  .introduction-detail, .scan-art, .workflow-strip { display: none; }
+  .login-panel { padding: 24px 32px 27px; }
+  .form-card { max-width: none; padding: 37px 0 40px; }
+  .form-heading h2 { font-size: 29px; margin-top: 10px; }
+  .login-form { margin-top: 28px; }
+  .login-footer { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 14px; font-size: 9px; }
+  .footer-rule { display: none; }
+  .footer-english { font-size: 8px; }
 }
 
-.hero-desc {
-  font-size: 14px;
-  line-height: 1.9;
-  opacity: 0.7;
-  max-width: 300px;
-  margin: 0;
-  font-weight: 400;
+@media (max-width: 420px) {
+  .login-page { padding: 0; align-items: start; }
+  .login-shell { border: 0; border-radius: 0; min-height: 100svh; }
+  .brand-panel { padding: 23px 25px 25px; }
+  .brand-introduction h1 { font-size: 27px; }
+  .login-panel { padding: 20px 25px 24px; }
+  .form-card { padding-top: 34px; }
 }
 
-@keyframes slideUp {
-  from {
-    opacity: 0;
-    transform: translateY(24px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* 装饰元素 */
-.deco-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid rgba(255,255,255,0.08);
-  pointer-events: none;
-}
-.deco-ring-1 {
-  width: 300px;
-  height: 300px;
-  bottom: -80px;
-  right: -80px;
-}
-.deco-ring-2 {
-  width: 200px;
-  height: 200px;
-  bottom: -30px;
-  right: -30px;
-  border-color: rgba(255,255,255,0.04);
-}
-
-.deco-dots {
-  position: absolute;
-  top: 40px;
-  right: 40px;
-  width: 80px;
-  height: 80px;
-  background-image: radial-gradient(circle, rgba(255,255,255,0.15) 1.5px, transparent 1.5px);
-  background-size: 12px 12px;
-  opacity: 0.6;
-}
-
-/* ========== 右侧表单区 ========== */
-.login-form-area {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 48px 56px;
-  background: var(--bg-card);
-  position: relative;
-}
-
-.form-card {
-  width: 100%;
-  max-width: 340px;
-  animation: slideUp 0.7s ease-out 0.25s both;
-}
-
-/* 表单头部 */
-.form-header {
-  text-align: center;
-  margin-bottom: 36px;
-}
-
-.form-icon {
-  width: 56px;
-  height: 56px;
-  margin: 0 auto 16px;
-  border-radius: var(--radius-md);
-  background: var(--primary-glow);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--primary);
-}
-.form-icon svg {
-  width: 26px;
-  height: 26px;
-}
-
-.form-title {
-  font-family: var(--font-display);
-  font-size: 24px;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0 0 6px;
-  letter-spacing: 0.02em;
-}
-.form-subtitle {
-  font-size: 13px;
-  color: var(--text-muted);
-  margin: 0;
-  font-weight: 400;
-}
-
-/* 输入框标签 */
-.input-label {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text-secondary);
-  margin-bottom: 6px;
-}
-
-/* 表单样式覆盖 */
-.login-form :deep(.el-form-item) {
-  margin-bottom: 20px;
-}
-.login-form :deep(.el-form-item__label) {
-  display: none;
-}
-.login-form :deep(.el-input__wrapper) {
-  box-shadow: 0 0 0 1px var(--border-color) inset !important;
-  border-radius: var(--radius-sm) !important;
-  background: var(--bg-input) !important;
-  padding: 4px 12px !important;
-  transition: all 0.2s ease !important;
-}
-.login-form :deep(.el-input__wrapper:hover) {
-  box-shadow: 0 0 0 1px var(--border-strong) inset !important;
-}
-.login-form :deep(.el-input__wrapper.is-focus) {
-  box-shadow: 0 0 0 1px var(--primary) inset, 0 0 0 3px var(--primary-glow) !important;
-}
-.login-form :deep(.el-input__inner) {
-  height: 42px;
-  font-size: 14px;
-}
-.login-form :deep(.el-input__icon) {
-  color: var(--text-muted);
-  font-size: 16px;
-}
-
-/* 登录按钮 */
-.submit-item {
-  margin-top: 8px;
-  margin-bottom: 0 !important;
-}
-
-.login-btn {
-  width: 100%;
-  height: 46px;
-  border-radius: var(--radius-sm) !important;
-  font-size: 15px !important;
-  font-weight: 600 !important;
-  letter-spacing: 0.08em !important;
-  display: flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-  gap: 8px !important;
-  position: relative;
-  overflow: hidden;
-}
-.login-btn::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(90deg, transparent, rgba(255,255,255,0.12), transparent);
-  transform: translateX(-100%);
-  transition: transform 0.5s ease;
-}
-.login-btn:hover::before {
-  transform: translateX(100%);
-}
-
-.btn-text {
-  position: relative;
-  z-index: 1;
-}
-.btn-arrow {
-  width: 16px;
-  height: 16px;
-  position: relative;
-  z-index: 1;
-  transition: transform 0.25s ease;
-}
-.login-btn:hover .btn-arrow {
-  transform: translateX(3px);
-}
-
-/* 表单底部 */
-.form-footer {
-  margin-top: 32px;
-  text-align: center;
-}
-
-.divider {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  margin-bottom: 12px;
-}
-.divider-line {
-  flex: 1;
-  height: 1px;
-  background: var(--border-color);
-}
-.divider-text {
-  font-size: 11px;
-  color: var(--text-muted);
-  font-weight: 500;
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-}
-
-.copyright {
-  font-size: 11px;
-  color: var(--text-muted);
-  margin: 0;
-  letter-spacing: 0.04em;
-}
-
-/* ========== 响应式 ========== */
-@media (max-width: 860px) {
-  .login-wrap {
-    grid-template-columns: 1fr;
-    max-width: 420px;
-    min-height: auto;
-  }
-  .login-visual {
-    display: none;
-  }
-  .login-form-area {
-    padding: 40px 32px;
-  }
-  .form-card {
-    max-width: 100%;
-  }
-  .bg-blob {
-    opacity: 0.2;
-  }
-}
-
-@media (max-width: 400px) {
-  .login-page {
-    padding: 16px;
-  }
-  .login-form-area {
-    padding: 32px 24px;
-  }
+@media (prefers-reduced-motion: reduce) {
+  .theme-button, .login-button, .login-input :deep(.el-input__wrapper) { transition: none; }
 }
 </style>

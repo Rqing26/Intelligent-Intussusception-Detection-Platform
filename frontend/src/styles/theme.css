@@ -1,191 +1,140 @@
-/* ============================================================
-   Theme System — Dual Theme: Modern & Medieval
-   ============================================================ */
+/* Clinical workspace design tokens. Keep both saved theme values compatible. */
 
 /* ---------- Modern Theme (方案 D: 医疗专业版) ---------- */
+:root,
 :root[data-theme="modern"] {
   /* Backgrounds */
-  --bg-page: #f1f5f9;
+  --bg-page: #f3f6f5;
   --bg-card: #ffffff;
-  --bg-sidebar: #0f172a;
-  --bg-sidebar-hover: #1e293b;
+  --bg-sidebar: #102e35;
+  --bg-sidebar-hover: #1b4148;
   --bg-header: #ffffff;
-  --bg-main: #f1f5f9;
+  --bg-main: #f3f6f5;
   --bg-input: #ffffff;
-  --bg-hover: #f8fafc;
-  --bg-table-header: #1e3a5f;
-  --bg-table-row-hover: #f8fafc;
+  --bg-hover: #f1f7f5;
+  --bg-table-header: #eaf1ef;
+  --bg-table-row-hover: #f1f7f5;
   --bg-table-row: transparent;
-  --bg-toolbar: #fafafa;
-  --bg-upload: #fafafa;
-  --bg-upload-hover: rgba(37, 99, 235, 0.03);
+  --bg-toolbar: #ffffff;
+  --bg-upload: #f8fbfa;
+  --bg-upload-hover: rgba(21, 116, 111, 0.04);
   --bg-dialog: #ffffff;
-  --bg-tag-success: rgba(5, 150, 105, 0.08);
-  --bg-tag-danger: rgba(220, 38, 38, 0.08);
-  --bg-tag-warning: rgba(234, 88, 12, 0.08);
-  --bg-tag-info: rgba(37, 99, 235, 0.08);
+  --bg-tag-success: #e4f4ec;
+  --bg-tag-danger: #fbeaea;
+  --bg-tag-warning: #fff3e1;
+  --bg-tag-info: #e3f2f0;
   --bg-stat-card: #ffffff;
   --bg-profile: #ffffff;
   --bg-detail-item: #ffffff;
   --bg-report-card: #ffffff;
-  --bg-advice: #f8fafc;
-  --bg-image-placeholder: #f1f5f9;
+  --bg-advice: #f7faf9;
+  --bg-image-placeholder: #e8efed;
   --bg-file-preview: #ffffff;
   --bg-pagination: transparent;
-  --lapis-deep: #1e3a5f;
+  --lapis-deep: #102e35;
 
   /* Text */
-  --text-primary: #0f172a;
-  --text-secondary: #475569;
-  --text-muted: #94a3b8;
+  --text-primary: #173239;
+  --text-secondary: #536970;
+  --text-muted: #7d9195;
   --text-inverse: #ffffff;
-  --text-sidebar: #94a3b8;
-  --text-sidebar-active: #fbbf24;
-  --text-link: #2563eb;
+  --text-sidebar: #a4bdbe;
+  --text-sidebar-active: #ffffff;
+  --text-link: #15746f;
 
   /* Borders */
-  --border-color: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --border-light: #f1f5f9;
-  --border-card-top: #2563eb;
+  --border-color: #e0e9e6;
+  --border-strong: #c8d8d4;
+  --border-light: #edf2f0;
+  --border-card-top: #15746f;
   --border-sidebar: transparent;
 
   /* Accent colors */
-  --primary: #2563eb;
-  --primary-light: #dbeafe;
-  --primary-hover: #1d4ed8;
-  --primary-glow: rgba(37, 99, 235, 0.15);
-  --success: #059669;
-  --success-light: #d1fae5;
-  --warning: #ea580c;
-  --warning-light: #ffedd5;
-  --danger: #dc2626;
-  --danger-light: #fee2e2;
-  --gold: #b8941f;
-  --gold-light: #d4b04a;
-  --gold-dim: #8a6d2f;
+  --primary: #15746f;
+  --primary-light: #d9efec;
+  --primary-hover: #0d5d59;
+  --primary-glow: rgba(21, 116, 111, 0.12);
+  --success: #26805d;
+  --success-light: #def2e8;
+  --warning: #ad741e;
+  --warning-light: #fff1d9;
+  --danger: #bd5b57;
+  --danger-light: #fae9e7;
+  --gold: #bca271;
+  --gold-light: #d5bf92;
+  --gold-dim: #9e8353;
 
   /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(15, 23, 42, 0.06);
-  --shadow-md: 0 4px 16px rgba(15, 23, 42, 0.08);
-  --shadow-lg: 0 12px 32px rgba(15, 23, 42, 0.12);
-  --shadow-book: 0 12px 40px rgba(15, 23, 42, 0.15);
+  --shadow-sm: 0 1px 3px rgba(16, 46, 53, 0.035);
+  --shadow-md: 0 8px 24px rgba(16, 46, 53, 0.07);
+  --shadow-lg: 0 18px 48px rgba(16, 46, 53, 0.1);
+  --shadow-book: 0 28px 80px rgba(16, 46, 53, 0.16);
   --shadow-inner: inset 0 1px 3px rgba(15, 23, 42, 0.04);
 
   /* Radius */
-  --radius-sm: 8px;
-  --radius-md: 12px;
-  --radius-lg: 16px;
+  --radius-sm: 10px;
+  --radius-md: 16px;
+  --radius-lg: 24px;
 
   /* Typography */
-  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
   --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
-  --font-display: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
+  --font-display: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
 
   /* Element Plus overrides */
-  --el-color-primary: #2563eb;
-  --el-color-primary-light-3: #3b82f6;
-  --el-color-primary-light-5: #60a5fa;
-  --el-color-primary-light-7: #93c5fd;
-  --el-color-primary-light-8: #bfdbfe;
-  --el-color-primary-light-9: #dbeafe;
-  --el-color-primary-dark-2: #1d4ed8;
-  --el-border-radius-base: 8px;
-  --el-border-radius-small: 6px;
+  --el-color-primary: #15746f;
+  --el-color-primary-light-3: #43938e;
+  --el-color-primary-light-5: #80b9b4;
+  --el-color-primary-light-7: #add7d3;
+  --el-color-primary-light-8: #cbe7e3;
+  --el-color-primary-light-9: #e4f3f0;
+  --el-color-primary-dark-2: #0d5d59;
+  --el-border-radius-base: 10px;
+  --el-border-radius-small: 8px;
   --el-border-radius-round: 20px;
 }
 
-/* ---------- Medieval Theme (方案 E: 中世纪手稿) ---------- */
+/* Warm palette. The persisted "medieval" key remains API-compatible. */
 :root[data-theme="medieval"] {
-  /* Backgrounds */
-  --bg-page: #d8d0c0;
-  --bg-card: #f3efe6;
-  --bg-sidebar: #14263d;
-  --bg-sidebar-hover: #1e3a5f;
-  --bg-header: #f3efe6;
-  --bg-main: #d8d0c0;
-  --bg-input: #faf7f0;
-  --bg-hover: rgba(232, 224, 208, 0.4);
-  --bg-table-header: #1e3a5f;
-  --bg-table-row-hover: rgba(232, 224, 208, 0.4);
-  --bg-table-row: transparent;
-  --bg-toolbar: #faf7f0;
-  --bg-upload: #faf7f0;
-  --bg-upload-hover: rgba(184, 148, 31, 0.03);
-  --bg-dialog: #f3efe6;
-  --bg-tag-success: rgba(45, 90, 63, 0.08);
-  --bg-tag-danger: rgba(139, 38, 53, 0.08);
-  --bg-tag-warning: rgba(166, 93, 58, 0.08);
-  --bg-tag-info: rgba(30, 58, 95, 0.08);
-  --bg-stat-card: #f3efe6;
-  --bg-profile: #f3efe6;
-  --bg-detail-item: #f3efe6;
-  --bg-report-card: #f3efe6;
-  --bg-advice: #faf7f0;
-  --bg-image-placeholder: #e2d8c8;
-  --bg-file-preview: #f3efe6;
-  --bg-pagination: transparent;
-  --lapis-deep: #1e3a5f;
-
-  /* Text */
-  --text-primary: #2c241b;
-  --text-secondary: #5a4d3b;
-  --text-muted: #8c7e6a;
-  --text-inverse: #f3efe6;
-  --text-sidebar: rgba(243, 239, 230, 0.6);
-  --text-sidebar-active: #b8941f;
-  --text-link: #1e3a5f;
-
-  /* Borders */
-  --border-color: #d4c8b0;
-  --border-strong: #c4b8a0;
-  --border-light: #e8e0d0;
-  --border-card-top: #b8941f;
-  --border-sidebar: transparent;
-
-  /* Accent colors */
-  --primary: #1e3a5f;
-  --primary-light: #e0e8f0;
-  --primary-hover: #14263d;
-  --primary-glow: rgba(30, 58, 95, 0.15);
-  --success: #2d5a3f;
-  --success-light: #d1e8d8;
-  --warning: #a65d3a;
-  --warning-light: #f5e0d4;
-  --danger: #8b2635;
-  --danger-light: #f0d4d8;
-  --gold: #b8941f;
-  --gold-light: #d4b04a;
-  --gold-dim: #8a6d2f;
-
-  /* Shadows */
-  --shadow-sm: 0 1px 3px rgba(44, 36, 27, 0.06);
-  --shadow-md: 0 4px 16px rgba(44, 36, 27, 0.08);
-  --shadow-lg: 0 12px 32px rgba(44, 36, 27, 0.12);
-  --shadow-book: 0 12px 40px rgba(44, 36, 27, 0.18);
-  --shadow-inner: inset 0 1px 3px rgba(44, 36, 27, 0.04);
-
-  /* Radius */
-  --radius-sm: 2px;
-  --radius-md: 4px;
-  --radius-lg: 8px;
-
-  /* Typography */
-  --font-sans: 'PingFang SC', 'Microsoft YaHei', 'Noto Sans SC', system-ui, sans-serif;
-  --font-serif: 'Noto Serif SC', 'Source Han Serif SC', 'SimSun', 'STSong', serif;
-  --font-display: 'Cormorant Garamond', 'Noto Serif SC', serif;
-
-  /* Element Plus overrides */
-  --el-color-primary: #1e3a5f;
-  --el-color-primary-light-3: #2a5080;
-  --el-color-primary-light-5: #3d6a9f;
-  --el-color-primary-light-7: #5a8ab8;
-  --el-color-primary-light-8: #8ab0d0;
-  --el-color-primary-light-9: #c8dce8;
-  --el-color-primary-dark-2: #14263d;
-  --el-border-radius-base: 4px;
-  --el-border-radius-small: 2px;
-  --el-border-radius-round: 20px;
+  --bg-page: #f4f1e9;
+  --bg-main: #f4f1e9;
+  --bg-card: #fffdf8;
+  --bg-header: #fffdf8;
+  --bg-sidebar: #293b32;
+  --bg-sidebar-hover: #354b3e;
+  --bg-input: #fffdf8;
+  --bg-hover: #f1f1e7;
+  --bg-table-header: #efeee4;
+  --bg-table-row-hover: #f1f1e7;
+  --bg-toolbar: #fffdf8;
+  --bg-upload: #f9f7f0;
+  --bg-dialog: #fffdf8;
+  --bg-stat-card: #fffdf8;
+  --bg-profile: #fffdf8;
+  --bg-detail-item: #fffdf8;
+  --bg-report-card: #fffdf8;
+  --bg-advice: #f9f7f0;
+  --bg-file-preview: #fffdf8;
+  --text-primary: #344136;
+  --text-secondary: #667065;
+  --text-muted: #858c7e;
+  --text-link: #5d7051;
+  --border-color: #e3e2d5;
+  --border-strong: #d0d3bf;
+  --border-light: #efeee6;
+  --primary: #5d7051;
+  --primary-hover: #495c3e;
+  --primary-light: #e7ebdb;
+  --primary-glow: rgba(93,112,81,.12);
+  --bg-tag-info: #edf0e4;
+  --border-card-top: #5d7051;
+  --el-color-primary: #5d7051;
+  --el-color-primary-light-3: #859477;
+  --el-color-primary-light-5: #acb89d;
+  --el-color-primary-light-7: #cdd5c1;
+  --el-color-primary-light-8: #dfe5d4;
+  --el-color-primary-light-9: #edf0e4;
+  --el-color-primary-dark-2: #495c3e;
 }
 
 /* ============================================================
@@ -202,7 +151,7 @@ body {
 }
 
 /* Element Plus overrides using CSS variables */
-.el-button--primary:not(.is-text):not(.is-link):not(.el-button--text) {
+.el-button--primary:where(:not(.is-text, .is-link, .el-button--text, .is-disabled)) {
   background: var(--primary) !important;
   border: none !important;
   color: var(--text-inverse) !important;
@@ -210,7 +159,7 @@ body {
   box-shadow: var(--shadow-sm) !important;
   transition: transform 0.15s, box-shadow 0.2s !important;
 }
-.el-button--primary:not(.is-text):not(.is-link):not(.el-button--text):hover {
+.el-button--primary:where(:not(.is-text, .is-link, .el-button--text, .is-disabled)):hover {
   background: var(--primary-hover) !important;
   transform: translateY(-1px) !important;
   box-shadow: var(--shadow-md) !important;
@@ -224,7 +173,7 @@ body {
 .el-button--primary.is-disabled:focus,
 .el-button--primary.is-loading.is-disabled {
   background: var(--border-strong) !important;
-  color: var(--bg-card) !important;
+  color: var(--text-secondary) !important;
   opacity: 0.65 !important;
   cursor: not-allowed !important;
   transform: none !important;
@@ -240,12 +189,11 @@ body {
 }
 .el-table th.el-table__cell {
   background: var(--bg-table-header) !important;
-  color: var(--text-inverse) !important;
-  font-weight: 700 !important;
-  text-transform: uppercase;
-  letter-spacing: 0.06em;
-  font-size: 11px;
-  border-bottom: 2px solid var(--gold-dim);
+  color: var(--text-secondary) !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.02em;
+  font-size: 12px;
+  border-bottom: 1px solid var(--border-color);
 }
 .el-table td.el-table__cell {
   background: transparent !important;
@@ -357,4 +305,54 @@ body {
 .theme-transition,
 .theme-transition * {
   transition: background 0.35s ease, color 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease;
+}
+
+/* Shared control rhythm and accessible interaction states. */
+*, *::before, *::after { box-sizing: border-box; }
+:root {
+  --el-font-family: var(--font-sans);
+  --el-text-color-primary: var(--text-primary);
+  --el-text-color-regular: var(--text-secondary);
+  --el-text-color-secondary: var(--text-muted);
+  --el-border-color: var(--border-color);
+  --el-border-color-light: var(--border-light);
+  --el-fill-color-blank: var(--bg-card);
+  --el-fill-color-light: var(--bg-hover);
+  --el-component-size: 36px;
+  --el-component-size-large: 44px;
+  --el-color-success: var(--success);
+  --el-color-warning: var(--warning);
+  --el-color-danger: var(--danger);
+}
+body { -webkit-font-smoothing: antialiased; line-height: 1.5; }
+button, input, textarea { font-family: inherit; }
+button, a { -webkit-tap-highlight-color: transparent; }
+button:focus-visible, a:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+::selection { background: var(--primary-light); color: var(--text-primary); }
+.el-button { font-weight: 500; font-size: 12px; padding: 9px 16px; }
+.el-button + .el-button { margin-left: 0; }
+.el-button.is-disabled { cursor: not-allowed; }
+.el-button--primary:not(.is-text):not(.is-link):not(.el-button--text):hover { transform: none !important; }
+.el-input__wrapper { box-shadow: 0 0 0 1px var(--border-color) inset !important; padding: 1px 12px; }
+.el-input__wrapper:not(.is-focus):hover { box-shadow: 0 0 0 1px var(--border-strong) inset !important; }
+.el-input__inner { font-size: 12px; }
+.el-select__wrapper { border-radius: var(--radius-sm); background: var(--bg-input); }
+.el-textarea__inner { border-radius: var(--radius-sm); background: var(--bg-input); }
+.el-dialog { max-width: calc(100vw - 28px); }
+.el-table { font-size: 12px; }
+.el-table th.el-table__cell { padding: 13px 0; }
+.el-table td.el-table__cell { padding: 15px 0; }
+.el-table td.el-table-fixed-column--right, .el-table td.el-table-fixed-column--left { background: var(--bg-card) !important; }
+.el-table tr:hover > td.el-table-fixed-column--right, .el-table tr:hover > td.el-table-fixed-column--left { background: var(--bg-hover) !important; }
+.el-tag { border-radius: 6px; font-size: 11px; }
+.el-pagination { gap: 6px; }
+.el-pagination .el-pager { gap: 5px; }
+.el-pagination .el-pager li, .el-pagination button { min-width: 30px; height: 30px; font-size: 11px; }
+.el-dropdown-menu__item.danger-menu-item { color: var(--danger); }
+.el-dropdown-menu__item.danger-menu-item:not(.is-disabled):hover { background: var(--bg-tag-danger); color: var(--danger); }
+.el-message-box { max-width: calc(100vw - 32px); }
+.el-message-box.danger-confirm-dialog .el-button.el-button--primary,
+.el-message-box.danger-confirm-dialog .el-button.el-button--primary:hover { background: var(--danger) !important; }
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; }
 }

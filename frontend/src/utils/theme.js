@@ -9,12 +9,7 @@ export function setTheme(theme) {
   const valid = theme === 'modern' || theme === 'medieval' ? theme : DEFAULT_THEME
   document.documentElement.setAttribute('data-theme', valid)
   localStorage.setItem(THEME_KEY, valid)
-  // Sync Element Plus primary color variable to current theme
-  const rootStyles = getComputedStyle(document.documentElement)
-  const primary = rootStyles.getPropertyValue('--el-color-primary').trim()
-  if (primary) {
-    document.documentElement.style.setProperty('--el-color-primary', primary)
-  }
+
 }
 
 export function toggleTheme() {

@@ -3,41 +3,58 @@
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="page-header-main">
+        <span class="page-eyebrow">ACTIVITY & AUDIT</span>
         <h1 class="page-title">审计日志</h1>
-        <p class="page-desc">记录每位医护人员的操作，便于追溯（仅管理员可见）</p>
+        <p class="page-desc">查阅系统操作轨迹，让每次更改变得清晰可追溯。</p>
       </div>
+      <span class="access-badge"><el-icon><Lock /></el-icon>管理员工作区</span>
     </div>
 
     <!-- 数据卡片 -->
     <div class="data-card">
+      <div class="audit-card-heading"><div><h3>操作记录</h3><p>按时间、操作对象或关键词检索</p></div><el-button class="export-button" :icon="Download" @click="handleExport" :loading="exporting">{{ exporting ? '正在导出' : '导出 CSV' }}</el-button></div>
       <!-- 工具栏 -->
-      <div class="toolbar">
-        <div class="toolbar-search">
-          <el-icon class="search-icon"><Search /></el-icon>
-          <el-input
-            v-model="search"
-            placeholder="搜索用户名、操作或详情..."
-            clearable
-            @keyup.enter="handleSearch"
-          />
+      <div class="toolbar" role="search" aria-label="筛选审计日志">
+        <div class="filter-fields">
+          <div class="filter-field">
+            <label class="filter-label" for="audit-keyword">关键词</label>
+            <div class="toolbar-search">
+              <el-icon class="search-icon"><Search /></el-icon>
+              <el-input
+                id="audit-keyword"
+                v-model="search"
+                placeholder="用户名、操作或详情"
+                clearable
+                @keyup.enter="handleSearch"
+                @clear="handleSearch"
+              />
+            </div>
+          </div>
+          <div class="filter-field">
+            <label class="filter-label" for="audit-resource">操作对象</label>
+            <el-select id="audit-resource" v-model="resource" placeholder="全部操作对象" clearable @change="handleSearch">
+              <el-option label="患者" value="patient" />
+              <el-option label="影像/检测" value="image" />
+              <el-option label="系统设置" value="settings" />
+              <el-option label="登录" value="auth" />
+            </el-select>
+          </div>
+          <div class="filter-field date-field">
+            <label class="filter-label" for="audit-start-time">时间范围</label>
+            <el-date-picker
+              :id="['audit-start-time', 'audit-end-time']"
+              v-model="dateRange"
+              type="datetimerange"
+              range-separator="至"
+              start-placeholder="开始时间"
+              end-placeholder="结束时间"
+              @change="handleSearch"
+            />
+          </div>
         </div>
         <div class="toolbar-actions">
-          <el-date-picker
-            v-model="dateRange"
-            type="datetimerange"
-            range-separator="至"
-            start-placeholder="开始时间"
-            end-placeholder="结束时间"
-            style="width: 320px"
-            @change="handleSearch"
-          />
-          <el-select v-model="resource" placeholder="操作对象" clearable style="width: 150px" @change="handleSearch">
-            <el-option label="患者" value="patient" />
-            <el-option label="影像/检测" value="image" />
-            <el-option label="系统设置" value="settings" />
-            <el-option label="登录" value="auth" />
-          </el-select>
-          <el-button :icon="Download" @click="handleExport" :loading="exporting">导出 CSV</el-button>
+          <el-button type="primary" :icon="Search" :loading="tableLoading" @click="handleSearch">查询日志</el-button>
+          <el-button :disabled="!hasFilters || tableLoading" @click="resetFilters">重置筛选</el-button>
         </div>
       </div>
 
@@ -115,9 +132,9 @@
 </template>
 
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Document, Clock, Search, Download } from '@element-plus/icons-vue'
+import { Document, Clock, Search, Download, Lock } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import { getAuditLogs, exportAuditLogs } from '../api/audit'
 import { formatDateTime } from '../utils/time'
@@ -131,6 +148,7 @@ const search = ref('')
 const resource = ref('')
 const dateRange = ref(null)
 const exporting = ref(false)
+const hasFilters = computed(() => Boolean(search.value || resource.value || dateRange.value?.length))
 
 const RESOURCE_MAP = {
   patient: '患者',
@@ -193,6 +211,7 @@ async function fetchData() {
 }
 
 async function handleExport() {
+  if (exporting.value) return
   exporting.value = true
   try {
     const params = buildParams()
@@ -219,48 +238,86 @@ function handleSearch() {
   fetchData()
 }
 
+function resetFilters() {
+  search.value = ''
+  resource.value = ''
+  dateRange.value = null
+  handleSearch()
+}
+
 onMounted(fetchData)
 </script>
 
 <style scoped>
+.access-badge { display: inline-flex; align-items: center; gap: 7px; padding: 8px 12px; border: 1px solid var(--border-color); border-radius: 8px; color: var(--text-secondary); font-size: 11px; background: var(--bg-card); }
+.audit-card-heading { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 16px; padding: 24px; border-bottom: 1px solid var(--border-light); }
+.audit-card-heading h3 { margin: 0 0 6px; color: var(--text-primary); font-size: 16px; font-weight: 650; }
+.audit-card-heading p { margin: 0; color: var(--text-muted); font-size: 12px; }
+
+.page-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--primary);
+}
+
 .page-header {
   display: flex;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 .page-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
-  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+  line-height: 1.3;
+  margin: 7px 0 9px;
 }
 .page-desc {
   font-size: 13px;
+  line-height: 1.7;
   color: var(--text-muted);
   margin: 0;
 }
 
 .data-card {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(23, 50, 57, 0.025);
   overflow: hidden;
 }
 
 .toolbar {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  gap: 12px;
-  border-bottom: 1px solid var(--border-color);
+  align-items: flex-end;
+  flex-wrap: wrap;
+  padding: 18px 24px;
+  gap: 16px;
+  border-bottom: 1px solid var(--border-light);
 }
+.filter-fields {
+  flex: 1 1 680px;
+  display: grid;
+  grid-template-columns: minmax(180px, 1fr) minmax(130px, 0.65fr) minmax(260px, 1.3fr);
+  gap: 12px;
+  min-width: 0;
+}
+.filter-field { min-width: 0; }
+.filter-label { display: block; margin-bottom: 9px; font-size: 12px; font-weight: 500; color: var(--text-secondary); }
+.filter-field .el-select, .filter-field .el-date-editor { width: 100%; min-width: 0; }
+.filter-field :deep(.el-input__wrapper), .filter-field :deep(.el-select__wrapper), .filter-field :deep(.el-range-editor) { min-height: 44px; }
+.export-button { min-height: 40px; color: var(--text-secondary); background: var(--bg-card); border-color: var(--border-color); }
+.export-button:hover { color: var(--primary); border-color: var(--primary); background: var(--bg-hover); }
 .toolbar-search {
   position: relative;
-  width: 320px;
+  width: 100%;
 }
 .toolbar-search .search-icon {
   position: absolute;
@@ -277,11 +334,16 @@ onMounted(fetchData)
 }
 .toolbar-actions {
   display: flex;
+  flex-wrap: wrap;
   gap: 8px;
+  margin-left: auto;
 }
+.toolbar-actions .el-button { min-height: 44px; margin-left: 0; padding: 0 17px; }
 
 .table-wrap {
-  padding: 0 4px;
+  min-width: 0;
+  padding: 0;
+  overflow-x: auto;
 }
 
 .audit-table :deep(.el-table__header-wrapper th.el-table__cell) {
@@ -365,9 +427,10 @@ onMounted(fetchData)
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 12px 20px;
-  border-top: 1px solid var(--border-color);
-  background: var(--bg-page);
+  gap: 12px;
+  padding: 18px 24px;
+  border-top: 1px solid var(--border-light);
+  background: var(--bg-card);
 }
 .pagination-info {
   font-size: 12px;
@@ -379,19 +442,20 @@ onMounted(fetchData)
 }
 
 .empty-state {
-  padding: 60px 0;
+  padding: 64px 20px;
   text-align: center;
 }
 .empty-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--bg-hover);
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  background: var(--bg-page);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  margin-bottom: 16px;
+  color: var(--primary);
+  margin-bottom: 20px;
 }
 .empty-title {
   font-size: 15px;
@@ -405,15 +469,18 @@ onMounted(fetchData)
   margin: 0;
 }
 
-@media (max-width: 768px) {
-  .page-header { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .toolbar { flex-direction: column; align-items: stretch; }
-  .toolbar-search { width: 100%; }
-  .toolbar-actions {
-    flex-direction: column;
-    align-items: stretch;
-  }
-  .toolbar-actions .el-select, .toolbar-actions .el-date-editor { width: 100% !important; }
+@media (max-width: 1100px) {
+  .filter-fields { grid-template-columns: minmax(0, 1fr) minmax(150px, 0.7fr); }
+  .date-field { grid-column: 1 / -1; }
+}
+@media (max-width: 640px) {
+  .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .toolbar { flex-direction: column; align-items: stretch; padding: 18px; }
+  .filter-fields { flex-basis: auto; grid-template-columns: minmax(0, 1fr); }
+  .toolbar-actions { width: 100%; margin-left: 0; }
+  .toolbar-actions .el-button { flex: 1 1 110px; }
+  .export-button { min-height: 44px; }
   .pagination-bar { flex-direction: column; gap: 12px; }
+  .audit-card-heading { align-items: flex-start; padding: 18px; }
 }
 </style>

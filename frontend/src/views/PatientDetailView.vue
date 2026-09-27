@@ -1,15 +1,22 @@
 <template>
   <AppLayout>
+    <router-link class="page-back-link" to="/patients">
+      <el-icon><Back /></el-icon>
+      返回患者列表
+    </router-link>
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="page-header-main">
+        <span class="page-eyebrow">PATIENT PROFILE</span>
         <h1 class="page-title">患者详情</h1>
         <p class="page-desc">查看患者信息、超声影像及检测结果</p>
       </div>
-      <div class="page-header-actions">
-        <el-button type="primary" @click="printLatestReport" v-if="patient">
-          <el-icon><Printer /></el-icon>
-          打印报告
+      <div class="page-header-actions" v-if="patient">
+        <el-button :icon="Printer" :disabled="loading || !hasPrintableResult" :title="hasPrintableResult ? '打印最近一次检测报告' : '完成检测后可打印报告'" @click="printLatestReport">
+          打印最新报告
+        </el-button>
+        <el-button type="primary" :icon="Upload" @click="$router.push(`/patients/${patient.id}/upload`)">
+          上传影像并检测
         </el-button>
       </div>
     </div>
@@ -62,16 +69,6 @@
                   <span class="meta-value">{{ formatDateTimeCn(patient.created_at) }}</span>
                 </div>
               </div>
-
-              <div class="profile-actions">
-                <el-button
-                  type="primary"
-                  :icon="Upload"
-                  @click="$router.push(`/patients/${patient.id}/upload`)"
-                >
-                  上传影像
-                </el-button>
-              </div>
             </div>
           </div>
 
@@ -117,9 +114,7 @@
                   </div>
                   <h3>超声影像列表</h3>
                 </div>
-                <el-button type="primary" @click="$router.push(`/patients/${patient.id}/upload`)">
-                  + 上传新影像
-                </el-button>
+                <span class="image-count">共 {{ images.length }} 张影像</span>
               </div>
               <div class="table-wrap">
                 <el-table :data="images" class="image-table">
@@ -129,7 +124,8 @@
                         <el-icon :size="48"><Picture /></el-icon>
                       </div>
                       <p class="empty-title">暂无超声影像</p>
-                      <p class="empty-desc">点击右上角按钮上传影像</p>
+                      <p class="empty-desc">为这位患者上传超声影像，即可开始辅助检测</p>
+                      <el-button class="empty-upload-link" type="primary" link :icon="Upload" @click="$router.push(`/patients/${patient.id}/upload`)">上传第一张影像</el-button>
                     </div>
                   </template>
 
@@ -161,43 +157,21 @@
                     </template>
                   </el-table-column>
 
-                  <el-table-column label="操作" width="180" fixed="right" align="center">
+                  <el-table-column label="操作" width="244" fixed="right" align="center">
                     <template #default="{ row }">
                       <div class="action-group">
-                        <el-tooltip content="预览" placement="top">
-                          <button class="icon-btn" @click="previewImage(row)">
-                            <el-icon><View /></el-icon>
-                          </button>
-                        </el-tooltip>
-                        <el-tooltip v-if="!row.has_result" content="检测" placement="top">
-                          <button class="icon-btn warn" @click="handleDetect(row)">
-                            <el-icon><VideoPlay /></el-icon>
-                          </button>
-                        </el-tooltip>
-                        <el-tooltip v-if="row.has_result" content="查看结果" placement="top">
-                          <button class="icon-btn" @click="$router.push(`/results/${row.result_id}`)">
-                            <el-icon><DataLine /></el-icon>
-                          </button>
-                        </el-tooltip>
-                        <el-tooltip v-if="row.has_result" content="打印报告" placement="top">
-                          <button class="icon-btn" @click="printForImage(row)">
-                            <el-icon><Printer /></el-icon>
-                          </button>
-                        </el-tooltip>
-                        <el-tooltip v-if="row.has_result" content="重新检测" placement="top">
-                          <el-popconfirm
-                            title="重新检测将覆盖当前结果，确认继续？"
-                            confirm-button-text="重新检测"
-                            cancel-button-text="取消"
-                            @confirm="handleRedetect(row)"
-                          >
-                            <template #reference>
-                              <button class="icon-btn warn">
-                                <el-icon><RefreshRight /></el-icon>
-                              </button>
-                            </template>
-                          </el-popconfirm>
-                        </el-tooltip>
+                        <el-button v-if="row.has_result" class="row-main-action" type="primary" plain @click="$router.push(`/results/${row.result_id}`)">查看结果</el-button>
+                        <el-button v-else class="row-main-action" type="primary" plain :icon="VideoPlay" @click="handleDetect(row)">开始检测</el-button>
+                        <el-button class="row-preview-action" text @click="previewImage(row)">预览</el-button>
+                        <el-dropdown v-if="row.has_result" trigger="click" @command="handleImageAction($event, row)">
+                          <el-button class="row-more-action" text :icon="MoreFilled" aria-label="更多影像操作" />
+                          <template #dropdown>
+                            <el-dropdown-menu>
+                              <el-dropdown-item command="print" :icon="Printer">打印报告</el-dropdown-item>
+                              <el-dropdown-item command="redetect" :icon="RefreshRight" divided>重新检测</el-dropdown-item>
+                            </el-dropdown-menu>
+                          </template>
+                        </el-dropdown>
                       </div>
                     </template>
                   </el-table-column>
@@ -217,7 +191,7 @@
                 <span class="timeline-hint">按时间倒序，对比历次诊断变化</span>
               </div>
               <div class="timeline-body">
-                <div v-for="(d, idx) in detections" :key="d.id" class="timeline-item">
+                <div v-for="d in detections" :key="d.id" class="timeline-item">
                   <div class="timeline-node" :class="detectionClass(d.classification)"></div>
                   <div class="timeline-card">
                     <div class="timeline-card-head">
@@ -252,7 +226,7 @@
     </div>
 
     <!-- 影像预览 -->
-    <el-dialog v-model="previewVisible" title="影像预览" width="700px" append-to-body class="preview-dialog">
+    <el-dialog v-model="previewVisible" title="影像预览" width="min(700px, 94vw)" append-to-body class="preview-dialog">
       <ImageViewer v-if="previewSrc" :src="previewSrc" :media-type="previewMediaType" />
     </el-dialog>
 
@@ -264,7 +238,7 @@
 <script setup>
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import { ElMessage } from 'element-plus'
+import { ElMessage, ElMessageBox } from 'element-plus'
 import {
   Printer,
   Upload,
@@ -275,7 +249,8 @@ import {
   Picture,
   Select,
   DataLine,
-  View,
+  Back,
+  MoreFilled,
   VideoPlay,
   Document,
   OfficeBuilding,
@@ -303,6 +278,7 @@ const printResult = ref(null)
 const printImageUrl = ref('')
 
 const latestDetection = computed(() => detections.value[0] || null)
+const hasPrintableResult = computed(() => detections.value.length > 0 || images.value.some((image) => image.has_result && image.result_id))
 
 const latestResultText = computed(() => {
   const d = latestDetection.value
@@ -329,7 +305,7 @@ function stringToColor(str) {
   for (let i = 0; i < str.length; i++) {
     hash = str.charCodeAt(i) + ((hash << 5) - hash)
   }
-  const colors = ['#2563eb', '#059669', '#d97706', '#dc2626', '#7c3aed', '#0891b2', '#be185d', '#4338ca']
+  const colors = ['#437b73', '#64876d', '#a18154', '#937478', '#727b91', '#59818b', '#8c7868', '#5f7b83']
   return colors[Math.abs(hash) % colors.length]
 }
 
@@ -426,6 +402,21 @@ async function handleRedetect(row) {
   }
 }
 
+async function handleImageAction(command, row) {
+  if (command === 'print') return printForImage(row)
+  if (command !== 'redetect') return
+  try {
+    await ElMessageBox.confirm('重新检测将覆盖当前结果，确认继续？', '重新检测', {
+      confirmButtonText: '重新检测',
+      cancelButtonText: '取消',
+      type: 'warning',
+    })
+  } catch {
+    return
+  }
+  await handleRedetect(row)
+}
+
 // 统一打开报告：按「结果 ID + 影像 ID」加载后打开打印预览
 async function openReport(resultId, imageId) {
   if (!resultId) {
@@ -475,35 +466,62 @@ onMounted(fetchPatient)
 </script>
 
 <style scoped>
+.page-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  margin: -8px 0 14px;
+  color: var(--text-secondary);
+  font-size: 12px;
+  text-decoration: none;
+}
+.page-back-link:hover { color: var(--primary); }
+.page-back-link:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 4px; }
+.page-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--primary);
+}
+
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 24px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 .page-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
-  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+  line-height: 1.3;
+  margin: 7px 0 9px;
 }
 .page-desc {
   font-size: 13px;
+  line-height: 1.7;
   color: var(--text-muted);
   margin: 0;
 }
 .page-header-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
   gap: 10px;
 }
+.page-header-actions .el-button { min-height: 42px; padding: 0 18px; margin-left: 0; }
 
 /* 布局 */
 .detail-layout {
   display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 20px;
+  grid-template-columns: 280px minmax(0, 1fr);
+  gap: 24px;
 }
 
 /* 左侧患者卡片 */
@@ -515,24 +533,23 @@ onMounted(fetchPatient)
 .profile-card {
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 28px 20px;
+  border-radius: var(--radius-lg);
+  padding: 32px 24px 24px;
   text-align: center;
+  box-shadow: 0 4px 24px rgba(23, 50, 57, 0.025);
 }
 .profile-avatar {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  margin: 0 auto 16px;
+  width: 72px;
+  height: 72px;
+  border-radius: 24px;
+  margin: 0 auto 18px;
   display: flex;
   align-items: center;
   justify-content: center;
   color: #fff;
   font-size: 28px;
-  font-weight: 700;
+  font-weight: 600;
   font-family: var(--font-display);
-  text-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 .profile-name {
   font-family: var(--font-display);
@@ -549,8 +566,8 @@ onMounted(fetchPatient)
 }
 .profile-divider {
   height: 1px;
-  background: var(--border-color);
-  margin: 20px 0;
+  background: var(--border-light);
+  margin: 24px 0;
 }
 .profile-meta {
   display: flex;
@@ -561,8 +578,10 @@ onMounted(fetchPatient)
 .meta-row {
   display: flex;
   justify-content: space-between;
-  align-items: center;
-  font-size: 13px;
+  align-items: flex-start;
+  gap: 12px;
+  font-size: 12px;
+  line-height: 1.8;
 }
 .meta-label {
   display: inline-flex;
@@ -570,52 +589,45 @@ onMounted(fetchPatient)
   gap: 6px;
   color: var(--text-muted);
   font-weight: 500;
+  flex-shrink: 0;
 }
 .meta-label .el-icon {
   font-size: 14px;
 }
 .meta-value {
-  font-weight: 600;
+  font-weight: 500;
   color: var(--text-primary);
   text-align: right;
-  max-width: 140px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-.profile-actions {
-  margin-top: 20px;
-}
-.profile-actions .el-button {
-  width: 100%;
+  min-width: 0;
+  overflow-wrap: anywhere;
 }
 
 /* 右侧主内容 */
 .detail-main {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  min-width: 0;
+  gap: 22px;
 }
 
 /* 迷你统计 */
 .stats-grid {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: 1fr 1fr 1.5fr;
   gap: 14px;
 }
 .mini-stat {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 22px 18px;
   display: flex;
   align-items: center;
   gap: 14px;
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 .mini-stat:hover {
-  transform: translateY(-2px);
-  box-shadow: var(--shadow-sm);
+  border-color: var(--border-strong);
 }
 .mini-stat-icon {
   width: 40px;
@@ -635,8 +647,8 @@ onMounted(fetchPatient)
 }
 .mini-stat-value {
   font-family: var(--font-display);
-  font-size: 20px;
-  font-weight: 700;
+  font-size: 28px;
+  font-weight: 600;
   color: var(--text-primary);
   line-height: 1.2;
   font-variant-numeric: tabular-nums;
@@ -653,24 +665,28 @@ onMounted(fetchPatient)
   min-width: 0;
 }
 .mini-stat-label {
-  font-size: 12px;
+  font-size: 11px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 5px;
 }
 
 /* 数据卡片 */
 .data-card {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
+  box-shadow: 0 4px 24px rgba(23, 50, 57, 0.025);
   overflow: hidden;
 }
 .card-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 16px 20px;
-  border-bottom: 1px solid var(--border-color);
+  flex-wrap: wrap;
+  gap: 12px;
+  padding: 22px 24px;
+  border-bottom: 1px solid var(--border-light);
 }
 .card-header-left {
   display: flex;
@@ -678,9 +694,9 @@ onMounted(fetchPatient)
   gap: 10px;
 }
 .card-icon {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
+  width: 34px;
+  height: 34px;
+  border-radius: 11px;
   background: var(--primary-glow);
   display: flex;
   align-items: center;
@@ -695,11 +711,13 @@ onMounted(fetchPatient)
   margin: 0;
   letter-spacing: 0.02em;
 }
+.image-count { font-size: 12px; color: var(--text-muted); }
 
 /* 表格 */
 .table-wrap {
-  padding: 0 4px;
-  overflow-x: auto; /* 窄屏表格横向滚动，避免内容溢出 */
+  min-width: 0;
+  padding: 0;
+  overflow-x: auto;
 }
 .image-table :deep(.el-table__header-wrapper th.el-table__cell) {
   background: var(--bg-page) !important;
@@ -768,53 +786,33 @@ onMounted(fetchPatient)
 
 /* 操作按钮 */
 .action-group {
-  display: inline-flex;
+  display: flex;
   align-items: center;
-  gap: 4px;
+  justify-content: flex-start;
+  gap: 6px;
 }
-.icon-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: var(--radius-sm);
-  border: none;
-  background: transparent;
-  /* 与「患者管理」列表保持一致：--text-muted 在卡片白底上太淡，看起来像禁用 */
-  color: var(--text-secondary);
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: background 0.2s ease, color 0.2s ease;
-  font-size: 15px;
-}
-.icon-btn:hover {
-  background: var(--bg-tag-info);
-  color: var(--primary);
-}
-.icon-btn:focus-visible {
-  outline: 2px solid var(--primary);
-  outline-offset: 1px;
-}
-.icon-btn.warn:hover {
-  background: var(--bg-tag-warning);
-  color: var(--warning);
-}
+.action-group .el-button { height: 40px; margin-left: 0; font-size: 12px; }
+.row-main-action { min-width: 98px; padding: 0 10px; }
+.row-preview-action { padding: 0 10px; color: var(--text-secondary); }
+.row-more-action { width: 34px; padding: 0; color: var(--text-secondary); }
+.empty-upload-link { min-height: 40px; margin-top: 12px; }
 
 /* 空状态 */
 .empty-state {
-  padding: 50px 0;
+  padding: 64px 20px;
   text-align: center;
 }
 .empty-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 50%;
-  background: var(--bg-hover);
+  width: 72px;
+  height: 72px;
+  border: 1px solid var(--border-color);
+  border-radius: 24px;
+  background: var(--bg-page);
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  color: var(--text-muted);
-  margin-bottom: 16px;
+  color: var(--primary);
+  margin-bottom: 20px;
 }
 .empty-title {
   font-size: 15px;
@@ -861,10 +859,9 @@ onMounted(fetchPatient)
   color: var(--text-muted);
 }
 .timeline-body {
-  padding: 20px;
+  padding: 24px;
   display: flex;
   flex-direction: column;
-  gap: 0;
   max-height: 520px;
   overflow-y: auto;
 }
@@ -898,11 +895,12 @@ onMounted(fetchPatient)
 .timeline-node.cls-default { background: var(--primary); }
 .timeline-card {
   flex: 1;
-  background: var(--bg-hover);
+  min-width: 0;
+  background: var(--bg-card);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 12px 14px;
-  margin-bottom: 14px;
+  padding: 18px;
+  margin-bottom: 16px;
 }
 .timeline-card-head {
   display: flex;
@@ -947,5 +945,13 @@ onMounted(fetchPatient)
 }
 .timeline-actions {
   margin-top: 8px;
+}
+
+@media (max-width: 640px) {
+  .card-header { padding: 18px; }
+  .timeline-body { padding: 18px 12px; }
+  .tl-time { width: 100%; margin-left: 0; }
+  .page-header-actions { width: 100%; margin-left: 0; }
+  .page-header-actions .el-button { flex: 1 1 150px; }
 }
 </style>

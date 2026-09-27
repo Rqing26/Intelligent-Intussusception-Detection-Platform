@@ -1,18 +1,21 @@
 <template>
   <AppLayout>
+    <button class="page-back-link" type="button" @click="handleBack">
+      <el-icon><Back /></el-icon>
+      {{ patientId ? '返回患者档案' : '返回上一页' }}
+    </button>
     <!-- 页面头部 -->
     <div class="page-header">
       <div class="page-header-main">
+        <span class="page-eyebrow">ANALYSIS REPORT</span>
         <h1 class="page-title">检测结果</h1>
-        <p class="page-desc">查看AI辅助诊断结果与影像分析详情</p>
+        <p class="page-desc">超声影像与 AI 辅助分析，在同一视野中清晰呈现。</p>
       </div>
-      <div class="page-header-actions">
-        <el-button @click="handleBack">
-          <el-icon><Back /></el-icon>
-          返回
+      <div class="page-header-actions" v-if="result">
+        <el-button v-if="patientId" :icon="Upload" @click="$router.push(`/patients/${patientId}/upload`)">
+          继续上传检测
         </el-button>
-        <el-button type="primary" @click="printVisible = true" v-if="result">
-          <el-icon><Printer /></el-icon>
+        <el-button type="primary" :icon="Printer" @click="printVisible = true">
           打印报告
         </el-button>
       </div>
@@ -119,7 +122,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Printer, Picture, DataLine, Back } from '@element-plus/icons-vue'
+import { Printer, Picture, DataLine, Back, Upload } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import ImageViewer from '../components/ImageViewer.vue'
 import ResultCard from '../components/ResultCard.vue'
@@ -136,10 +139,11 @@ const result = ref(null)
 const patient = ref(null)
 const printVisible = ref(false)
 const imageMode = ref('original')
+const patientId = computed(() => result.value?.image?.patient_id || patient.value?.id)
 
 // 返回患者详情（结果中的影像包含 patient_id）；若无则返回上一页
 function handleBack() {
-  const pid = result.value?.image?.patient_id
+  const pid = patientId.value
   if (pid) router.push(`/patients/${pid}`)
   else router.back()
 }
@@ -230,58 +234,90 @@ onMounted(fetchResult)
 </script>
 
 <style scoped>
+.page-back-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 36px;
+  margin: -8px 0 14px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--text-secondary);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.page-back-link:hover { color: var(--primary); }
+.page-back-link:focus-visible { outline: 2px solid var(--primary); outline-offset: 4px; border-radius: 4px; }
+.page-eyebrow {
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--primary);
+}
+
 .page-header {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: flex-end;
-  margin-bottom: 20px;
+  gap: 20px;
+  margin-bottom: 28px;
 }
 .page-title {
   font-family: var(--font-display);
-  font-size: 26px;
+  font-size: clamp(26px, 2.5vw, 32px);
   font-weight: 700;
   color: var(--text-primary);
-  letter-spacing: 0.02em;
-  margin: 0 0 4px;
+  letter-spacing: -0.04em;
+  line-height: 1.3;
+  margin: 7px 0 9px;
 }
 .page-desc {
   font-size: 13px;
+  line-height: 1.7;
   color: var(--text-muted);
   margin: 0;
 }
 .page-header-actions {
   display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  margin-left: auto;
   gap: 10px;
 }
+.page-header-actions .el-button { min-height: 42px; padding: 0 18px; margin-left: 0; }
 
 /* 患者信息条 */
 .patient-bar {
-  display: inline-flex;
-  align-items: center;
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr minmax(220px, 1.5fr);
   gap: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
-  padding: 14px 20px;
-  margin-bottom: 20px;
-  box-shadow: var(--shadow-sm);
+  border-radius: var(--radius-lg);
+  padding: 24px;
+  margin-bottom: 24px;
 }
 .patient-bar-item {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 0 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  min-width: 0;
+  gap: 10px;
+  padding: 0 20px;
+  border-right: 1px solid var(--border-light);
 }
 .patient-bar-item:first-child {
   padding-left: 0;
 }
 .patient-bar-item:last-child {
   padding-right: 0;
+  border-right: 0;
 }
 .patient-bar-divider {
-  width: 1px;
-  height: 24px;
-  background: var(--border-color);
+  display: none;
 }
 .bar-label {
   font-size: 12px;
@@ -292,6 +328,8 @@ onMounted(fetchResult)
   font-size: 13px;
   font-weight: 600;
   color: var(--text-primary);
+  line-height: 1.65;
+  overflow-wrap: anywhere;
 }
 
 /* 双模型：检测 / 分类 各一行 */
@@ -304,9 +342,9 @@ onMounted(fetchResult)
 .model-line {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 6px;
-  line-height: 1.5;
-  white-space: nowrap;
+  line-height: 1.6;
 }
 .model-role {
   display: inline-flex;
@@ -327,8 +365,8 @@ onMounted(fetchResult)
   color: var(--warning, #e6a23c);
 }
 .model-name {
-  font-size: 13px;
-  font-weight: 600;
+  font-size: 12px;
+  font-weight: 500;
   color: var(--text-primary);
 }
 .model-meta {
@@ -360,23 +398,28 @@ onMounted(fetchResult)
 /* 结果布局 */
 .result-layout {
   display: grid;
-  grid-template-columns: 1.1fr 1fr;
-  gap: 20px;
+  grid-template-columns: minmax(0, 1.15fr) minmax(340px, 0.85fr);
+  gap: 24px;
+  align-items: start;
 }
 .result-panel {
+  min-width: 0;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
-  border-radius: var(--radius-md);
+  border-radius: var(--radius-lg);
   overflow: hidden;
   display: flex;
   flex-direction: column;
+  box-shadow: 0 4px 24px rgba(23, 50, 57, 0.025);
 }
 .panel-header {
   display: flex;
   align-items: center;
+  flex-wrap: wrap;
   gap: 10px;
-  padding: 14px 18px;
-  border-bottom: 1px solid var(--border-color);
+  min-height: 80px;
+  padding: 20px 24px;
+  border-bottom: 1px solid var(--border-light);
 }
 .panel-icon {
   width: 32px;
@@ -409,39 +452,33 @@ onMounted(fetchResult)
   border-radius: 10px;
 }
 .panel-body {
-  padding: 18px;
+  padding: 24px;
   flex: 1;
 }
 .image-body {
-  padding: 0;
-  min-height: 400px;
+  padding: 20px;
+  min-height: 460px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: var(--bg-hover);
+  background: #15272c;
 }
 
-@media (max-width: 1100px) {
-  .result-layout {
-    grid-template-columns: 1fr;
-  }
-  .patient-bar {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 10px;
-  }
-  .patient-bar-divider {
-    display: none;
-  }
-  .patient-bar-item {
-    padding: 0;
-  }
+@media (max-width: 1200px) {
+  .patient-bar { grid-template-columns: 1fr 1fr; gap: 24px; }
+  .patient-bar-item { padding: 0; border: 0; }
 }
-@media (max-width: 768px) {
-  .page-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 12px;
-  }
+@media (max-width: 1000px) {
+  .result-layout { grid-template-columns: 1fr; }
+}
+@media (max-width: 640px) {
+  .page-header { flex-direction: column; align-items: flex-start; gap: 16px; }
+  .patient-bar { grid-template-columns: 1fr; padding: 20px; gap: 18px; }
+  .patient-bar-item { gap: 4px; }
+  .panel-header, .panel-body { padding: 18px; }
+  .image-body { min-height: 300px; padding: 8px; }
+  .page-header-actions { width: 100%; margin-left: 0; }
+  .page-header-actions .el-button { flex: 1 1 150px; }
+  .image-mode-switch { margin-left: 0; }
 }
 </style>
