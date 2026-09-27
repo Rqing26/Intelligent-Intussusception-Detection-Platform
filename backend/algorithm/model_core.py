@@ -136,6 +136,51 @@ def calibrate_negative(score: float) -> float:
 
 
 # --------------------------------------------------------------------------------------
+# 带样本量下界的经验可信度（pseudo-calibration）
+# --------------------------------------------------------------------------------------
+# 用途：当只有**小样本带标注评测**（而不是算法侧那个 339 张留出集）时，别用上面的标定表
+# 硬报一个点值，而要报「点估计 + Wilson 95% 区间下界」——下界才是能对外承诺的数字。
+#
+# 依据（2026-09-27 本机实测，tools/eval_confidence.py）：
+#   · 剔除「同一影像被同时标成阳性与阴性」的冲突组、并把同一段 cine 的连续近重复帧
+#     合并后，评测集为 19 正 / 12 负
+#   · 证据分完全可分：阴性 12/12 均为 0，阳性 19/19 落在 0.783~0.912
+#   · 即：在**这份数据上** P(阳性 | 证据分≥阈值) 与 P(阴性 | 证据分<阈值) 都是 100%，
+#     但 Wilson 95% 下界只有 83% / 76%
+#   · 现有标定表在同一致据点上给 0.9923 / 0.9489（来自另一个数据分布，不能跨域外推）
+#
+# 说明：这是**外部评测**的结论，不是部署决策；阈值与标定表都没变。
+EMPIRICAL_SENSITIVITY_CI = (0.832, 1.0)   # 阳性 19/19
+EMPIRICAL_SPECIFICITY_CI = (0.757, 1.0)   # 阴性 12/12
+EMPIRICAL_DATASET = "19 正 / 12 负（去重去冲突后，本机评测集）"
+
+
+def calibrate_with_ci(score: float) -> dict:
+    """证据分 → 带样本量下界的经验可信度（供报告/材料引用，不参与部署判定）。
+
+    返回：
+        point       点估计（本机评测集上的经验比例）
+        ci_low      95% Wilson 下界 —— 对外可承诺的数字
+        ci_high     95% Wilson 上界
+        table       现有部署标定表的值（供对照，提示"跨数据集差异"）
+        dataset     数据依据（写进报告时必须一起写）
+    注意：score 是连续量，但本机数据里它近似二值（阴性全 0、阳性≥0.78），
+    所以这里只在阈值两侧取值；更细的分档需要更多样本（每档 ≥30~50 张）才谈得上。
+    """
+    thr = float(POLICIES[POLICY]["threshold"])
+    positive = float(score) >= thr
+    lo, hi = EMPIRICAL_SENSITIVITY_CI if positive else EMPIRICAL_SPECIFICITY_CI
+    return {
+        "point": 1.0,
+        "ci_low": float(lo),
+        "ci_high": float(hi),
+        "table": calibrate_positive(score) if positive else calibrate_negative(score),
+        "dataset": EMPIRICAL_DATASET,
+        "semantics": "P(阳性|证据分≥阈值)" if positive else "P(阴性|证据分<阈值)",
+    }
+
+
+# --------------------------------------------------------------------------------------
 # 病灶框标注图（平台新契约 ROI.annotated_image）
 # --------------------------------------------------------------------------------------
 ANNOT_COLOR = (0, 0, 255)        # BGR 红

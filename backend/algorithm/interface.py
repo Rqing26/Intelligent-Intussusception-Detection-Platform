@@ -183,7 +183,9 @@ def validate_result(result: DetectionResult) -> DetectionResult:
     score = result.detection_score
     if score is not None:
         try:
-            score = max(0.0, min(1.0, float(score)))
+            # 收敛到 [0,1] 并保留 4 位小数——原始证据分可能是 float64 全精度
+            # （曾导致界面显示 "score 0.8067795828594818"）
+            score = round(max(0.0, min(1.0, float(score))), 4)
         except (TypeError, ValueError):
             score = None
     return DetectionResult(

@@ -192,9 +192,11 @@ def test_validate_result_sanitizes_model_metadata():
     normalized = validate_result(DetectionResult(
         classification="肠套叠阳性", confidence=0.9,
         detection_ms=12.3456, roi_box=[1.9, 2.1, 3, 4],
+        detection_score=0.8067795828594818,      # 原始 float64 全精度
     ))
     assert normalized.detection_ms == 12.35                 # 保留 2 位小数
     assert normalized.roi_box == (1, 2, 3, 4)
+    assert normalized.detection_score == 0.8068             # 证据分保留 4 位小数
 
     negative_box = validate_result(DetectionResult(
         classification="肠套叠阳性", confidence=0.9, roi_box="not-a-box",
