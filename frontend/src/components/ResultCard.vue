@@ -150,7 +150,7 @@ const rateColor = computed(() => {
 .result-card {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 24px;
 }
 
 /* 诊断大卡片 */
@@ -158,31 +158,31 @@ const rateColor = computed(() => {
   display: flex;
   align-items: center;
   gap: 16px;
-  padding: 20px;
+  padding: 22px 20px;
   border-radius: var(--radius-md);
   border: 1px solid var(--border-color);
 }
 .diag-hero.hero-success {
   background: var(--bg-tag-success);
-  border-color: rgba(5, 150, 105, 0.2);
+  border-color: var(--border-color);
 }
 .diag-hero.hero-danger {
   background: var(--bg-tag-danger);
-  border-color: rgba(220, 38, 38, 0.2);
+  border-color: var(--border-color);
 }
 .diag-hero.hero-warning {
   background: var(--bg-tag-warning);
-  border-color: rgba(234, 88, 12, 0.2);
+  border-color: var(--border-color);
 }
 .diag-hero.hero-default {
   background: var(--bg-tag-info);
-  border-color: rgba(37, 99, 235, 0.2);
+  border-color: var(--border-color);
 }
 
 .hero-icon {
   width: 56px;
   height: 56px;
-  border-radius: 50%;
+  border-radius: 18px;
   background: rgba(255, 255, 255, 0.6);
   display: flex;
   align-items: center;
@@ -203,8 +203,9 @@ const rateColor = computed(() => {
 }
 .hero-value {
   font-family: var(--font-display);
-  font-size: 22px;
-  font-weight: 700;
+  font-size: 23px;
+  font-weight: 650;
+  letter-spacing: -0.03em;
   color: var(--text-primary);
 }
 
@@ -232,7 +233,7 @@ const rateColor = computed(() => {
 
 /* 进度条 */
 .progress-track {
-  height: 8px;
+  height: 6px;
   background: var(--border-light);
   border-radius: 4px;
   overflow: hidden;
@@ -244,7 +245,7 @@ const rateColor = computed(() => {
 .progress-fill {
   height: 100%;
   border-radius: 4px;
-  transition: width 0.8s cubic-bezier(0.34, 1.56, 0.64, 1);
+  transition: width 0.4s ease;
 }
 .progress-track.large .progress-fill {
   border-radius: 5px;
@@ -310,7 +311,7 @@ const rateColor = computed(() => {
   background: var(--bg-hover);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 20px;
 }
 .rate-header {
   display: flex;
@@ -343,7 +344,7 @@ const rateColor = computed(() => {
   background: var(--bg-advice);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
-  padding: 16px;
+  padding: 20px;
 }
 .advice-header {
   display: inline-flex;
