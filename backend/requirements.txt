@@ -14,21 +14,23 @@ httpx==0.28.1
 # ---------------------------------------------------------------------------
 # 算法侧依赖（跑真实模型才需要；只用 Mock 演示时可不安）
 #
-# 注意：torch 请**单独指定 CPU 源**安装，不要直接写进本文件——
-# 从 PyPI 默认源装会拉 CUDA 版（数 GB），本机无 N 卡时纯属浪费。
-# 正确装法（在 backend 目录下）：
-#   1) 先装 CPU 版 torch（约 200MB）：
+# ⚠️ 关键：只装本文件 **不足以**跑真实推理！
+#    `pipeline.load_image()` 硬依赖 numpy + pillow，检测/预后模型还依赖 ultralytics + torch。
+#    这些依赖目前不在本文件里（避免把 torch 写进来导致误装 CUDA 版），
+#    它们由算法侧维护在：
+#        backend/algorithm/requirements-algorithm.txt
+#
+# 完整安装顺序（在 backend 目录下）：
+#   1) 先装 CPU 版 torch（约 126MB；本机无 N 卡时不要装 CUDA 版）：
 #      pip install torch torchvision --index-url https://download.pytorch.org/whl/cpu
-#   2) 再装其余算法依赖：
-#      pip install ultralytics pillow numpy pydicom
+#   2) 再装算法侧依赖：
+#      pip install -r algorithm/requirements-algorithm.txt
 #
-# 有 NVIDIA 显卡、想用 GPU 推理时，把第 1 步换成：
-#      pip install torch torchvision --index-url https://download.pytorch.org/whl/cu124
+# 有 NVIDIA 显卡、想用 GPU 推理时，把第 1 步的 index-url 换成
+#      https://download.pytorch.org/whl/cu124
 #
-# 算法模型：YOLO 切面/横纵切 5 折集成 + ResNet18（见 algorithm/team_model.py）
-# 权重文件（约 150MB）不进 Git，请单独拷贝到 backend/algorithm/weights/
+# 权重：
+#   · 检测槽位（OBB，约 93MB）—— 已提交进 Git，clone 即有
+#   · 预后槽位（约 150MB，12 个文件）—— 被 .gitignore 排除，换机器需单独拷贝到
+#     backend/algorithm/weights/
 # ---------------------------------------------------------------------------
-# ultralytics   # YOLO 推理
-# pillow        # 图像读取/预处理
-# numpy         # 数值运算
-# pydicom       # DICOM(.dcm) 解析（可选）
