@@ -52,13 +52,16 @@ class DetectionService:
             model_version=result.model_version or None,
             inference_ms=inference_ms,
             class_probabilities=json.dumps(result.class_probabilities, ensure_ascii=False) if result.class_probabilities else None,
-            # 双模型溯源（Mock/旧算法未提供时为 None，前端会回退显示 model_name）
+            # 多模型溯源（Mock/旧算法未提供时为 None，前端会回退显示 model_name）
             detection_model_name=result.detection_model_name or None,
             detection_model_version=result.detection_model_version or None,
             classification_model_name=result.classification_model_name or None,
             classification_model_version=result.classification_model_version or None,
+            prognosis_model_name=result.prognosis_model_name or None,
+            prognosis_model_version=result.prognosis_model_version or None,
             detection_ms=result.detection_ms,
             classification_ms=result.classification_ms,
+            prognosis_ms=result.prognosis_ms,
             detection_score=result.detection_score,
             roi_box=json.dumps(list(result.roi_box)) if result.roi_box else None,
             result_image_path=result_image_path,

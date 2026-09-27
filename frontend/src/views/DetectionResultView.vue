@@ -44,8 +44,9 @@
           <div class="patient-bar-divider"></div>
           <div class="patient-bar-item">
             <div class="bar-label">模型</div>
-            <!-- 双模型溯源：有哪个模型就显示哪一行（当前融合模型只有「分类」） -->
-            <div class="bar-value model-value" v-if="hasPipelineModels">
+            <!-- 多模型溯源：有哪个模型就显示哪一行
+                 （检测=病灶在哪 / 分类=有没有肠套叠 / 预后=灌肠复位会不会成功） -->
+            <div class="bar-value model-value" v-if="hasNamedModels">
               <span v-if="result.detection_model_name" class="model-line">
                 <span class="model-role">检测</span>
                 <span class="model-name">{{ result.detection_model_name }}<template v-if="result.detection_model_version"> v{{ result.detection_model_version }}</template></span>
@@ -56,6 +57,11 @@
                 <span class="model-role">分类</span>
                 <span class="model-name">{{ result.classification_model_name }}<template v-if="result.classification_model_version"> v{{ result.classification_model_version }}</template></span>
                 <span v-if="result.classification_ms != null" class="model-meta">{{ result.classification_ms }}ms</span>
+              </span>
+              <span v-if="result.prognosis_model_name" class="model-line">
+                <span class="model-role model-role-prognosis">预后</span>
+                <span class="model-name">{{ result.prognosis_model_name }}<template v-if="result.prognosis_model_version"> v{{ result.prognosis_model_version }}</template></span>
+                <span v-if="result.prognosis_ms != null" class="model-meta">{{ result.prognosis_ms }}ms</span>
               </span>
             </div>
             <!-- 旧数据 / Mock 回退：只有一个整体模型名 -->
@@ -145,9 +151,11 @@ const imageUrl = computed(() => {
   return ''
 })
 
-// ---- 双模型溯源 ----
-const hasPipelineModels = computed(() => Boolean(
-  result.value?.detection_model_name || result.value?.classification_model_name
+// ---- 多模型溯源 ----
+const hasNamedModels = computed(() => Boolean(
+  result.value?.detection_model_name
+  || result.value?.classification_model_name
+  || result.value?.prognosis_model_name
 ))
 
 const legacyModelText = computed(() => {
@@ -312,6 +320,11 @@ onMounted(fetchResult)
   color: var(--primary);
   font-size: 11px;
   font-weight: 600;
+}
+/* 预后模型用不同底色区分，避免和"诊断分类"混淆 */
+.model-role-prognosis {
+  background: var(--bg-tag-warning, #fdf6ec);
+  color: var(--warning, #e6a23c);
 }
 .model-name {
   font-size: 13px;

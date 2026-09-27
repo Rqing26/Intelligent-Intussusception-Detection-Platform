@@ -84,8 +84,11 @@ class DetectionResult(Base):
     detection_model_version = Column(String(50), nullable=True)        # A：检测模型版本
     classification_model_name = Column(String(100), nullable=True)     # B：分类模型名
     classification_model_version = Column(String(50), nullable=True)   # B：分类模型版本
+    prognosis_model_name = Column(String(100), nullable=True)          # 预后模型名（灌肠复位成功率）
+    prognosis_model_version = Column(String(50), nullable=True)        # 预后模型版本
     detection_ms = Column(Float, nullable=True)                        # A：检测耗时(毫秒)
     classification_ms = Column(Float, nullable=True)                   # B：分类耗时(毫秒)
+    prognosis_ms = Column(Float, nullable=True)                        # 预后模型耗时(毫秒)
     detection_score = Column(Float, nullable=True)                     # A：检测置信度 0~1
     roi_box = Column(Text, nullable=True)                              # A：病灶框 JSON 文本 [x1,y1,x2,y2]
     result_image_path = Column(String(500), nullable=True)             # A：带病灶框的标注图存盘路径

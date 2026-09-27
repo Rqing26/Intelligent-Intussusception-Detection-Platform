@@ -72,6 +72,8 @@ def main() -> int:
           f"  ({result.detection_ms} ms, score={result.detection_score}, box={result.roi_box})")
     print(f"分类模型(B)            : {result.classification_model_name} / {result.classification_model_version}"
           f"  ({result.classification_ms} ms)")
+    print(f"预后模型               : {result.prognosis_model_name} / {result.prognosis_model_version}"
+          f"  ({result.prognosis_ms} ms)")
 
     # ---- 合法性校验 ----
     ok = True

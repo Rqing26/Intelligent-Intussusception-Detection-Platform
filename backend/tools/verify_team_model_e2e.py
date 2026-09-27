@@ -53,8 +53,10 @@ with TestClient(app) as client:
     print("\n=== 前端「模型」区域会用到的字段 ===")
     keys = [
         "detection_model_name", "detection_model_version", "detection_ms",
-        "detection_score", "classification_model_name", "classification_model_version",
-        "classification_ms", "has_result_image", "roi_box",
+        "detection_score", "roi_box",
+        "classification_model_name", "classification_model_version", "classification_ms",
+        "prognosis_model_name", "prognosis_model_version", "prognosis_ms",
+        "has_result_image",
     ]
     for k in keys:
         print(f"  {k:<30} = {got.get(k)!r}")
@@ -70,11 +72,13 @@ with TestClient(app) as client:
     # 5) 确认落库
     con = sqlite3.connect(DB)
     row = con.execute(
-        "select classification_model_name, classification_ms, model_name, classification from detection_results where id=?",
+        "select detection_model_name, classification_model_name, prognosis_model_name, "
+        "prognosis_ms, model_name, classification from detection_results where id=?",
         (body["id"],),
     ).fetchone()
     con.close()
-    print(f"\n落库复查: {row}")
+    print("\n落库复查 (检测/分类/预后/预后耗时/整体名/分类值):")
+    print(f"  {row}")
 
     # 6) CSV 导出表头（确认新列）
     csv = client.get("/api/results/export", headers=headers)

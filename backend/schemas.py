@@ -127,13 +127,16 @@ class DetectionResultOut(BaseModel):
     model_version: Optional[str] = None
     inference_ms: Optional[float] = None
     class_probabilities: Optional[dict] = None
-    # ---- 双模型溯源：检测(A) / 分类(B) 各自的模型信息（旧数据为 None）----
+    # ---- 多模型溯源：检测(A) / 分类(B) / 预后（旧数据为 None）----
     detection_model_name: Optional[str] = None
     detection_model_version: Optional[str] = None
     classification_model_name: Optional[str] = None
     classification_model_version: Optional[str] = None
+    prognosis_model_name: Optional[str] = None
+    prognosis_model_version: Optional[str] = None
     detection_ms: Optional[float] = None
     classification_ms: Optional[float] = None
+    prognosis_ms: Optional[float] = None
     detection_score: Optional[float] = None
     roi_box: Optional[List[int]] = None
     # 算法是否回传了带病灶框的标注图（前端据此显示「AI 标注图」切换）

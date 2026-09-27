@@ -476,8 +476,11 @@ def detect_intussusception(image_path: Path):
     """平台唯一入口：调用队友实现，再补上平台需要的溯源元数据。
 
     队友的 `_infer()` 返回什么就是什么，这里只**追加**平台字段，不改判定结果：
-      - classification_model_name / classification_model_version：结果页「分类模型」那一行
-      - classification_ms：本模型实际耗时（首次调用含 12 个权重的加载时间）
+
+      - prognosis_model_name / prognosis_model_version / prognosis_ms
+        → 本模型是**预后模型**（灌肠复位成功率/严重度/治疗建议的来源），
+          因此登记在「预后」槽位，**不再占用「分类」槽位**。
+          「分类」槽位留给尚未接入的**诊断分类模型**（它才回答"有没有肠套叠"）。
     """
     from dataclasses import replace
 
@@ -496,7 +499,7 @@ def detect_intussusception(image_path: Path):
 
     return replace(
         result,
-        classification_model_name=NAME,
-        classification_model_version=VERSION,
-        classification_ms=elapsed_ms,
+        prognosis_model_name=NAME,
+        prognosis_model_version=VERSION,
+        prognosis_ms=elapsed_ms,
     )

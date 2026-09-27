@@ -84,15 +84,22 @@ class DetectionResult:
     # 平台会校验并归一化；若未提供，则前端用 confidence 兜底展示。
     class_probabilities: Optional[dict] = None
 
-    # ---- 双模型溯源（可选，通常由适配层 pipeline 自动填充）----
+    # ---- 多模型溯源（可选，通常由适配层 pipeline 自动填充）----
     # 检测模块(A) / 分类模块(B) 各自的模型名与版本
     detection_model_name: str = ""
     detection_model_version: str = ""
     classification_model_name: str = ""
     classification_model_version: str = ""
-    # 分段耗时（毫秒）：A 的检测耗时、B 的分类耗时
+    # 预后模型（可选）：只输出"灌肠复位成功率/严重度/治疗建议"的模型，
+    # 与"诊断分类模型"是**两回事**，必须分开记录，不能混用同一个字段：
+    #   诊断分类模型 → 回答"有没有肠套叠"（classification）
+    #   预后模型     → 回答"灌肠复位会不会成功"（treatment_success_rate / severity）
+    prognosis_model_name: str = ""
+    prognosis_model_version: str = ""
+    # 分段耗时（毫秒）：A 的检测耗时、B 的分类耗时、预后模型耗时
     detection_ms: Optional[float] = None
     classification_ms: Optional[float] = None
+    prognosis_ms: Optional[float] = None
     # 检测原始输出（可选）：A 给出的检测置信度与病灶框 (x1,y1,x2,y2) 原图坐标
     detection_score: Optional[float] = None
     roi_box: Optional[tuple] = None
@@ -192,8 +199,11 @@ def validate_result(result: DetectionResult) -> DetectionResult:
         detection_model_version=_clean_text(result.detection_model_version, _MAX_VERSION_LEN),
         classification_model_name=_clean_text(result.classification_model_name, _MAX_NAME_LEN),
         classification_model_version=_clean_text(result.classification_model_version, _MAX_VERSION_LEN),
+        prognosis_model_name=_clean_text(result.prognosis_model_name, _MAX_NAME_LEN),
+        prognosis_model_version=_clean_text(result.prognosis_model_version, _MAX_VERSION_LEN),
         detection_ms=_clean_ms(result.detection_ms),
         classification_ms=_clean_ms(result.classification_ms),
+        prognosis_ms=_clean_ms(result.prognosis_ms),
         detection_score=score,
         roi_box=_clean_box(result.roi_box),
         # 标注图原样透传（图片数据的合法性/存盘由 services/result_images.py 负责）

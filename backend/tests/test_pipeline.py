@@ -163,16 +163,22 @@ def test_validate_result_sanitizes_model_metadata():
         confidence=0.9,
         detection_model_name="  " + "X" * 200 + "  ",
         detection_model_version="V" * 80,
+        prognosis_model_name="  " + "P" * 200 + "  ",
+        prognosis_model_version="W" * 80,
         detection_ms=-5,
         classification_ms="abc",
+        prognosis_ms=7.777,
         detection_score=1.7,
         roi_box=(1, 2, 3),
     )
     clean = validate_result(dirty)
     assert clean.detection_model_name == "X" * 100          # 限长到列宽
     assert clean.detection_model_version == "V" * 50
+    assert clean.prognosis_model_name == "P" * 100
+    assert clean.prognosis_model_version == "W" * 50
     assert clean.detection_ms is None                       # 负数耗时丢弃
     assert clean.classification_ms is None                  # 非数字耗时丢弃
+    assert clean.prognosis_ms == 7.78                       # 保留 2 位小数
     assert clean.detection_score == 1.0                     # 越界收敛
     assert clean.roi_box is None                            # 长度不对的框丢弃
 
@@ -209,18 +215,20 @@ def test_team_model_used_when_ab_not_ready(monkeypatch):
             confidence=0.77,
             model_name=team_model.NAME,
             model_version=team_model.VERSION,
-            classification_model_name=team_model.NAME,
-            classification_model_version=team_model.VERSION,
-            classification_ms=1234.5,
+            # 该模型是预后模型，登记在「预后」槽位，不占「分类」槽位
+            prognosis_model_name=team_model.NAME,
+            prognosis_model_version=team_model.VERSION,
+            prognosis_ms=1234.5,
         )
 
     monkeypatch.setattr(team_model, "detect_intussusception", fake_team_detect)
 
     result = pipeline.detect_intussusception(Path("image.jpg"))
     assert called["path"] == Path("image.jpg")
-    assert result.classification_model_name == team_model.NAME
-    assert result.classification_ms == 1234.5
-    assert result.detection_model_name == ""       # 该模型没有检测环节
+    assert result.prognosis_model_name == team_model.NAME
+    assert result.prognosis_ms == 1234.5
+    assert result.detection_model_name == ""        # 没有检测环节
+    assert result.classification_model_name == ""   # 诊断分类模型尚未接入
 
 
 def test_ab_pipeline_wins_over_team_model(monkeypatch):

@@ -97,7 +97,7 @@ def export_results(
     writer.writerow([
         "ID", "患者", "性别", "年龄(月)", "病历号",
         "分类", "置信度", "严重度", "成功率", "治疗建议",
-        "检测模型", "检测版本", "分类模型", "分类版本",
+        "检测模型", "检测版本", "分类模型", "分类版本", "预后模型", "预后版本",
         "模型", "版本", "检测时间(UTC)",
     ])
     for r in items:
@@ -118,6 +118,8 @@ def export_results(
             r.detection_model_version or "",
             r.classification_model_name or "",
             r.classification_model_version or "",
+            r.prognosis_model_name or "",
+            r.prognosis_model_version or "",
             r.model_name or "",
             r.model_version or "",
             created,

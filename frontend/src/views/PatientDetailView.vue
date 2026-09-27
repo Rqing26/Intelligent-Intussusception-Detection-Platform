@@ -228,10 +228,11 @@
                     <div class="timeline-card-body">
                       <span v-if="d.severity" class="tl-sev">等级：{{ d.severity }}</span>
                       <span v-if="d.treatment_success_rate != null" class="tl-sev">成功率 {{ Math.round(d.treatment_success_rate * 100) }}%</span>
-                      <!-- 双模型溯源：检测(A) / 分类(B) -->
-                      <template v-if="d.detection_model_name || d.classification_model_name">
+                      <!-- 多模型溯源：检测(A) / 分类(B) / 预后 -->
+                      <template v-if="d.detection_model_name || d.classification_model_name || d.prognosis_model_name">
                         <span v-if="d.detection_model_name" class="tl-model">检测 {{ d.detection_model_name }}<template v-if="d.detection_model_version"> v{{ d.detection_model_version }}</template></span>
                         <span v-if="d.classification_model_name" class="tl-model">分类 {{ d.classification_model_name }}<template v-if="d.classification_model_version"> v{{ d.classification_model_version }}</template></span>
+                        <span v-if="d.prognosis_model_name" class="tl-model">预后 {{ d.prognosis_model_name }}<template v-if="d.prognosis_model_version"> v{{ d.prognosis_model_version }}</template></span>
                       </template>
                       <span v-else-if="d.model_name" class="tl-model">{{ d.model_name }}<template v-if="d.model_version"> v{{ d.model_version }}</template></span>
                     </div>

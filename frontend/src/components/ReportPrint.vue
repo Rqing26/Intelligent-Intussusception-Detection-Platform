@@ -296,7 +296,7 @@ const resultDescription = computed(() => {
   return '图像质量欠佳，无法满足诊断要求，建议重新采集超声影像。'
 })
 
-// 模型溯源：优先分别展示 检测(A) / 分类(B)，旧数据回退到单一模型名
+// 模型溯源：优先分别展示 检测 / 分类 / 预后，旧数据回退到单一模型名
 const modelTraceText = computed(() => {
   const r = props.result
   if (!r) return ''
@@ -305,7 +305,10 @@ const modelTraceText = computed(() => {
     parts.push(`检测模型：${r.detection_model_name}${r.detection_model_version ? ` v${r.detection_model_version}` : ''}`)
   }
   if (r.classification_model_name) {
-    parts.push(`分类模型：${r.classification_model_name}${r.classification_model_version ? ` v${r.classification_model_version}` : ''}`)
+    parts.push(`诊断分类模型：${r.classification_model_name}${r.classification_model_version ? ` v${r.classification_model_version}` : ''}`)
+  }
+  if (r.prognosis_model_name) {
+    parts.push(`预后模型：${r.prognosis_model_name}${r.prognosis_model_version ? ` v${r.prognosis_model_version}` : ''}`)
   }
   if (!parts.length && r.model_name) {
     parts.push(`分析模型：${r.model_name}${r.model_version ? ` v${r.model_version}` : ''}`)
