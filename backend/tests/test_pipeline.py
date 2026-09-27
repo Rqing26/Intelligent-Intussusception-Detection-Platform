@@ -268,30 +268,33 @@ def test_team_model_reports_unavailable_reason_without_weights(monkeypatch, tmp_
 
 # ---------------- 融合模型的分类判定（可脱离权重/torch 单测） ----------------
 
-def test_classification_follows_fusion_result(monkeypatch):
-    """融合结论为「阴」时必须返回阴性——不能再硬编码阳性。
+def test_classification_is_placeholder_pending_diagnosis_model(monkeypatch):
+    """默认（诊断分类模型未接入）：classification 是占位值，不随预后结果变化。
 
-    这是回归测试：队友交付版把 classification 写死为"肠套叠阳性"，
-    导致纯黑图/随机噪声/非医学图像也全部被判阳性。
+    本文件里的模型是**预后模型**（输出灌肠复位成功/失败），
+    不具备诊断"有无肠套叠"的能力，因此不能拿它反推阳性/阴性。
     """
     from algorithm import team_model
 
-    monkeypatch.setattr(team_model, "CLASSIFY_MODE", "model")
+    monkeypatch.setattr(team_model, "CLASSIFY_MODE", "placeholder")
+    assert team_model.decide_classification(1) == "肠套叠阳性"
+    assert team_model.decide_classification(0) == "肠套叠阳性"   # 预后"失败"也不改分类
+
+
+def test_prognosis_mode_is_opt_in(monkeypatch):
+    """prognosis 模式：按预后成功率外推（语义不严谨，仅显式开启时生效）。"""
+    from algorithm import team_model
+
+    monkeypatch.setattr(team_model, "CLASSIFY_MODE", "prognosis")
     assert team_model.decide_classification(1) == "肠套叠阳性"
     assert team_model.decide_classification(0) == "肠套叠阴性"
 
 
-def test_always_positive_mode_restores_old_demo_behavior(monkeypatch):
-    """演示开关：ALGO_CLASSIFY_MODE=always_positive 时恢复原行为。"""
-    from algorithm import team_model
-
-    monkeypatch.setattr(team_model, "CLASSIFY_MODE", "always_positive")
-    assert team_model.decide_classification(0) == "肠套叠阳性"
-    assert team_model.decide_classification(1) == "肠套叠阳性"
-
-
 def test_negative_classification_drops_treatment_success_rate():
-    """阴性结果不应带严重度/成功率（平台契约：这两项仅阳性有意义）。"""
+    """阴性结果不应带严重度/成功率（平台契约：这两项仅阳性有意义）。
+
+    占位模式下不会产生阴性，但诊断分类模型接入后必须成立，属前瞻性保护。
+    """
     from algorithm.interface import DetectionResult, validate_result
 
     negative = validate_result(DetectionResult(

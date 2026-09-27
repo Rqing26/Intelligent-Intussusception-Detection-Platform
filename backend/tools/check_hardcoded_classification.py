@@ -1,7 +1,15 @@
-"""反例实验：验证 classification 是否真的与模型输出无关。
+"""反例实验：分类是「模型判定」还是「占位值」。
 
-喂明显不属于肠套叠超声的图（纯黑/纯白/噪声/渐变/医院 logo），
-对比「按融合逻辑应给出的分类」与「代码实际返回的分类」。
+背景：本文件所测的模型是**预后模型**（输出灌肠复位成功/失败），不具备诊断能力。
+所以默认（ALGO_CLASSIFY_MODE=placeholder）下 classification 恒为占位值「肠套叠阳性」，
+**任何输入都返回阳性** —— 这不是缺陷，而是"诊断分类模型尚未接入"的必然结果。
+
+本脚本用明显不属于肠套叠超声的图（纯黑/纯白/噪声/渐变/医院 Logo）验证这一点，
+同时给出「若改用 prognosis 模式（按成功率外推诊断）会得到什么」作对照。
+
+用法（backend 目录下）：
+    .\\venv\\Scripts\\python.exe tools\\check_hardcoded_classification.py
+    $env:ALGO_CLASSIFY_MODE = "prognosis"   # 对照：按预后外推
 """
 import os
 import sys
@@ -42,10 +50,12 @@ for name, im in cases.items():
 
 tm._load_models()
 
-print("=" * 104)
-print(f"{'输入':<18}{'切面':>9}{'YOLO':>8}{'ResNet':>8}  {'融合判定':<12}{'应给分类':<12}{'实际返回':<12}{'成功率':>7}")
-print("-" * 104)
-mismatch = 0
+print(f"当前 ALGO_CLASSIFY_MODE = {tm.CLASSIFY_MODE!r}"
+      f"（placeholder=占位阳性；prognosis=按预后成功率外推）")
+print("=" * 100)
+print(f"{'输入':<18}{'切面':>9}{'YOLO':>8}{'ResNet':>8}  {'成功率':>7}  "
+      f"{'预后外推':<10}{'实际返回分类':<14}")
+print("-" * 100)
 for name, p in paths.items():
     img = tm._load_image_as_pil(p)
     cut = tm._cut_model(img, verbose=False)[0]
@@ -53,18 +63,18 @@ for name, p in paths.items():
     models = tm._zong_models if ("zong" in label.lower() or "纵" in label) else tm._heng_models
     y = tm._ensemble_yolo_success(models, img)
     r = tm._resnet_success_prob(img)
-    yolo_pred = 1 if y > 0.5 else 0
-    resnet_pred = 1 if r > 0.5 else 0
-    fusion = yolo_pred | resnet_pred
-    should = "肠套叠阳性" if fusion else "肠套叠阴性"
+    fusion = (1 if y > 0.5 else 0) | (1 if r > 0.5 else 0)
     actual = tm.detect_intussusception(p)          # 走平台完整入口
-    flag = "" if should == actual.classification else "   ← 不一致"
-    if should != actual.classification:
-        mismatch += 1
     print(f"{name:<18}{label[:8]:>9}{y:>8.3f}{r:>8.3f}  "
-          f"{'阴' if fusion == 0 else '阳':<12}{should:<12}{actual.classification:<12}"
-          f"{actual.treatment_success_rate:>7.3f}{flag}")
+          f"{actual.treatment_success_rate:>7.3f}  "
+          f"{'阳' if fusion else '阴':<10}{actual.classification:<14}")
 
-print("-" * 104)
-print(f"按融合逻辑应为「阴性」却被判成「阳性」的样本数：{mismatch} / {len(paths)}")
+print("-" * 100)
+print("说明：这 5 张都不是肠套叠超声（含纯黑图/随机噪声/医院 Logo）。")
+if tm.CLASSIFY_MODE == "placeholder":
+    print("placeholder 模式下全部返回「肠套叠阳性」——这是**占位值**，不是模型判定：")
+    print("  本文件里的模型是预后模型（fail/success），没有诊断能力，")
+    print("  真正的诊断分类模型尚未接入平台。")
+else:
+    print("prognosis 模式下按预后成功率外推（注意：语义不严谨，仅作对照）。")
 print(f"\n临时图片目录：{TMP}")
