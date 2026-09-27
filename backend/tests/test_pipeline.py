@@ -111,8 +111,13 @@ def test_mock_leaves_model_slots_empty(monkeypatch, no_team_model):
     assert result.classification_ms is None
 
 
-def test_real_pipeline_records_both_models(monkeypatch):
-    """就绪时应分别记录 A/B 的模型名、版本、耗时，以及检测原始输出。"""
+def test_real_pipeline_records_detection_slot(monkeypatch):
+    """检测槽位应记录模型名/版本/耗时与检测原始输出。
+
+    注意：decider（判定步骤）**不单独登记**为「分类模型」—— 它复用检测分数、
+    没有独立权重，按 2026-09-27 的决定折进「检测」槽位。
+    `classification_model_*` 留给将来真正独立的诊断模型。
+    """
     monkeypatch.setattr(pipeline, "load_image", lambda p: "IMG")
     monkeypatch.setattr(detection, "READY", True)
     monkeypatch.setattr(classification, "READY", True)
@@ -129,8 +134,8 @@ def test_real_pipeline_records_both_models(monkeypatch):
     result = pipeline.detect_intussusception(Path("x.jpg"))
     assert result.detection_model_name == "DetA"
     assert result.detection_model_version == "1.2.3"
-    assert result.classification_model_name == "ClsB"
-    assert result.classification_model_version == "2.0"
+    assert result.classification_model_name == ""     # decider 折进检测，不单独占一行
+    assert result.classification_model_version == ""
     assert result.detection_score == 0.93
     assert result.roi_box == (10, 20, 30, 40)
     assert result.detection_ms is not None and result.detection_ms >= 0
@@ -306,7 +311,8 @@ def test_positive_runs_prognosis_and_keeps_diagnosis(monkeypatch):
     assert result.classification == "肠套叠阳性"
     assert result.confidence == 0.9
     assert result.detection_model_name == "DetA"
-    assert result.classification_model_name == "ClsB"
+    # decider 是检测槽位的判定步骤（复用检测分数），不单独登记为"分类模型"
+    assert result.classification_model_name == ""
     assert result.roi_box == (1, 2, 3, 4)
     # 预后侧：来自预后模型
     assert result.severity == "轻度"

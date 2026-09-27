@@ -247,12 +247,13 @@ def _run_ab_pipeline(image_path: Path) -> DetectionResult:
         class_probabilities=outcome.class_probabilities,
         model_name="team-pipeline",
         model_version="1.0",
+        # 「检测」槽位：detector 负责定位，decider 负责把证据分判成阴阳性。
+        # 两者是**同一个槽位的两个步骤**（decider 复用 detector 的分数，没有独立权重），
+        # 因此只登记一行「检测」；`classification_model_*` 留给将来**真正独立**的诊断模型。
         detection_model_name=_module_meta(detection, "NAME"),
         detection_model_version=_module_meta(detection, "VERSION"),
-        classification_model_name=_module_meta(classification, "NAME"),
-        classification_model_version=_module_meta(classification, "VERSION"),
         detection_ms=detection_ms,
-        classification_ms=classification_ms,
+        classification_ms=classification_ms,      # 判定耗时仍记录（排查用，不单独展示）
         detection_score=getattr(roi, "score", None),
         roi_box=_clamp_box(getattr(roi, "box", None), img),   # 越界框裁到图内
         # A 若回传了带病灶框的标注图，一并交给平台存盘/展示
