@@ -102,10 +102,19 @@
         </div>
 
         <!-- 检查所见 -->
+        <!--
+          ⚠️ 这里以前写的是按分类硬编码的模板文本（"可见同心圆征、套筒征，CDFI 显示血流信号"），
+          但模型从未输出过这些影像学征象 —— 以"超声所见"的名义写出来等于伪造检查所见。
+          现改为：只陈述 AI 实际产出的内容（判定 + 证据分 + 标注区域），
+          并把影像学所见明确留给检查医生。
+        -->
         <div class="report-section" v-if="result">
           <div class="section-title">检查所见</div>
           <div class="section-content">
-            <p>超声所见：{{ resultDescription }}</p>
+            <p class="ai-hint">{{ aiFindingHint }}</p>
+            <p class="finding-rule">影像学征象描述（如"同心圆征""套筒征"、CDFI 血流信号等）须由检查医生阅片后填写，AI 不对其作任何陈述。</p>
+            <p class="finding-blank">超声所见：________________________________________________________________________</p>
+            <p class="finding-blank">________________________________________________________________________________</p>
           </div>
         </div>
 
@@ -128,21 +137,27 @@
           <div class="section-title">AI 辅助诊断结果</div>
           <div class="diag-grid">
             <div class="diag-item">
-              <span class="diag-label">诊断分类：</span>
+              <span class="diag-label">诊断结论：</span>
               <span class="diag-badge" :class="classificationClass">{{ result.classification }}</span>
             </div>
-            <div class="diag-item">
-              <span class="diag-label">置 信 度：</span>
-              <span class="diag-value">{{ confidencePercent }}%</span>
+            <div class="diag-item" v-if="result.detection_score != null">
+              <span class="diag-label">检测证据分：</span>
+              <span class="diag-value">{{ result.detection_score.toFixed(3) }}</span>
             </div>
+            <!-- 预后：由灌肠复位成功率推导，与诊断结论分栏呈现 -->
             <div class="diag-item" v-if="result.severity">
-              <span class="diag-label">诊断等级：</span>
+              <span class="diag-label">预 后 分 级：</span>
               <span class="severity-badge" :class="severityClass">{{ result.severity }}</span>
             </div>
             <div class="diag-item" v-if="result.treatment_success_rate != null">
               <span class="diag-label">治疗成功率：</span>
-              <span class="diag-value">灌肠成功率{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
+              <span class="diag-value">空气灌肠复位{{ (result.treatment_success_rate * 100).toFixed(0) }}%</span>
             </div>
+          </div>
+          <div class="model-trace-note">
+            注：「检测证据分」是模型对本次影像中肠套叠相关特征的响应强度（非阳性概率，未经概率标定）；
+            报告不给出"置信度百分比"——该数值由评估集的历史精度表换算而来，与本次病例无关。
+            「预后分级」由复位成功率反推，不代表病灶本身的解剖严重程度。
           </div>
           <!-- 模型溯源：报告归档需能追溯是哪个模型/版本产出的结果 -->
           <div class="model-trace" v-if="modelTraceText">{{ modelTraceText }}</div>
@@ -264,12 +279,6 @@ const reportDate = computed(() => {
   return formatDateTime(todayIso)
 })
 
-const confidencePercent = computed(() => {
-  const v = props.result?.confidence
-  if (v == null) return 0
-  return Math.round(v * 100)
-})
-
 const classificationClass = computed(() => {
   const map = {
     '肠套叠阳性': 'badge-danger',
@@ -288,12 +297,19 @@ const severityClass = computed(() => {
   return map[props.result?.severity] || ''
 })
 
-const resultDescription = computed(() => {
-  if (!props.result) return ''
-  const cls = props.result.classification
-  if (cls === '肠套叠阳性') return '超声检查显示肠套叠典型"同心圆征"及"套筒征"，套叠部位可见多层肠壁结构，CDFI显示套叠肠壁血流信号。'
-  if (cls === '肠套叠阴性') return '超声检查未见明确肠套叠征象，肠壁结构清晰，未见"同心圆征"及"套筒征"，CDFI显示肠壁血流信号正常。'
-  return '图像质量欠佳，无法满足诊断要求，建议重新采集超声影像。'
+// AI 实际产出的内容（判定 + 证据分 + 标注区域），**不含任何影像学征象描述**
+const aiFindingHint = computed(() => {
+  const r = props.result
+  if (!r) return ''
+  const score = r.detection_score != null ? `检测证据分 ${r.detection_score.toFixed(3)}` : '未记录检测证据分'
+  const box = Array.isArray(r.roi_box) ? `，标注区域 (${r.roi_box.join(', ')})` : ''
+  if (r.classification === '肠套叠阳性') {
+    return `【AI 提示】本次 AI 在影像中识别到肠套叠相关特征（${score}${box}）。`
+  }
+  if (r.classification === '肠套叠阴性') {
+    return `【AI 提示】本次 AI 未识别到肠套叠相关特征（${score}）。`
+  }
+  return `【AI 提示】本次影像未通过 AI 质量判定，未给出有效提示（${score}）；建议重新采集。`
 })
 
 // 模型溯源：优先分别展示 检测 / 分类 / 预后，旧数据回退到单一模型名
@@ -305,7 +321,9 @@ const modelTraceText = computed(() => {
     parts.push(`检测模型：${r.detection_model_name}${r.detection_model_version ? ` v${r.detection_model_version}` : ''}`)
   }
   if (r.classification_model_name) {
-    parts.push(`诊断分类模型：${r.classification_model_name}${r.classification_model_version ? ` v${r.classification_model_version}` : ''}`)
+    // 该槽位预留给「将来真正独立的诊断模型」；当前算法侧的判定步骤复用检测分数，
+    // 折进「检测模型」一行，所以这里通常为空
+    parts.push(`诊断模型：${r.classification_model_name}${r.classification_model_version ? ` v${r.classification_model_version}` : ''}`)
   }
   if (r.prognosis_model_name) {
     parts.push(`预后模型：${r.prognosis_model_name}${r.prognosis_model_version ? ` v${r.prognosis_model_version}` : ''}`)
@@ -601,6 +619,40 @@ async function handlePrint() {
   font-size: 12px;
   color: #555;
   font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+}
+
+/* 术语说明（随报告打印，避免"证据分/预后分级"被误读） */
+.model-trace-note {
+  margin-top: 10px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #777;
+  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+}
+
+.diag-note {
+  font-size: 11px;
+  color: #666;
+}
+
+/* 检查所见：AI 提示 + 待医生填写的空行 */
+.ai-hint {
+  margin: 0 0 6px;
+  font-weight: 600;
+  color: #000;
+}
+.finding-rule {
+  margin: 0 0 10px;
+  font-size: 11px;
+  line-height: 1.7;
+  color: #777;
+  font-family: 'SimHei', 'Microsoft YaHei', sans-serif;
+}
+.finding-blank {
+  margin: 6px 0 0;
+  color: #333;
+  letter-spacing: 1px;
+  line-height: 2;
 }
 
 .diag-badge {
