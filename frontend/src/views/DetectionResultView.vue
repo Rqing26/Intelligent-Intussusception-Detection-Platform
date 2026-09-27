@@ -12,6 +12,28 @@
         <p class="page-desc">超声影像与 AI 辅助分析，在同一视野中清晰呈现。</p>
       </div>
       <div class="page-header-actions" v-if="result">
+        <!-- 同一患者批量上传的影像：在这里顺次翻看，不必退回列表逐个点开 -->
+        <div class="shot-pager" v-if="hasSiblings">
+          <el-button
+            :disabled="!prevId"
+            title="上一张（键盘 ← ）"
+            aria-label="上一张"
+            @click="goSibling(prevId)"
+          >
+            <el-icon><ArrowLeft /></el-icon><span>上一张</span>
+          </el-button>
+          <span class="shot-pager-count" :title="`该患者共 ${siblingIds.length} 张影像`">
+            {{ siblingIndex + 1 }} / {{ siblingIds.length }}
+          </span>
+          <el-button
+            :disabled="!nextId"
+            title="下一张（键盘 → ）"
+            aria-label="下一张"
+            @click="goSibling(nextId)"
+          >
+            <span>下一张</span><el-icon><ArrowRight /></el-icon>
+          </el-button>
+        </div>
         <el-button v-if="patientId" :icon="Upload" @click="$router.push(`/patients/${patientId}/upload`)">
           继续上传检测
         </el-button>
@@ -119,15 +141,15 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, onBeforeUnmount, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Printer, Picture, DataLine, Back, Upload } from '@element-plus/icons-vue'
+import { Printer, Picture, DataLine, Back, Upload, ArrowLeft, ArrowRight } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import ImageViewer from '../components/ImageViewer.vue'
 import ResultCard from '../components/ResultCard.vue'
 import ReportPrint from '../components/ReportPrint.vue'
-import { getResult, getResultImageUrl } from '../api/results'
+import { getResult, getResultImageUrl, getResults } from '../api/results'
 import { getImageUrl } from '../api/images'
 import { getPatient } from '../api/patients'
 import { formatDateTime } from '../utils/time'
@@ -147,6 +169,60 @@ function handleBack() {
   if (pid) router.push(`/patients/${pid}`)
   else router.back()
 }
+
+// ---- 同一患者的影像翻页 ----
+// 批量上传后一次落库多张，医生需要顺着看完，不必退回档案页逐个点开。
+const siblingIds = ref([])   // 该患者全部结果 id
+const siblingIndex = computed(() => siblingIds.value.indexOf(Number(route.params.id)))
+const hasSiblings = computed(() => siblingIds.value.length > 1)
+const prevId = computed(() => {
+  const i = siblingIndex.value
+  return i > 0 ? siblingIds.value[i - 1] : null
+})
+const nextId = computed(() => {
+  const i = siblingIndex.value
+  return i >= 0 && i < siblingIds.value.length - 1 ? siblingIds.value[i + 1] : null
+})
+
+async function fetchSiblings() {
+  const pid = patientId.value
+  if (!pid) {
+    siblingIds.value = []
+    return
+  }
+  try {
+    // size 上限 100：单患者结果超过 100 条时，翻页只覆盖最近 100 张
+    const res = await getResults({ patient_id: pid, page: 1, size: 100 })
+    const items = res.data.items ?? res.data.data ?? res.data ?? []
+    // 按 id 升序 = 落库顺序 = 批量上传时的处理顺序；批量上传的 created_at 可能同秒，
+    // 用 id 排序才稳定（否则翻页顺序会在两次请求之间跳变）
+    siblingIds.value = items.map((r) => r.id).sort((a, b) => a - b)
+  } catch {
+    siblingIds.value = []
+  }
+}
+
+function goSibling(id) {
+  if (id == null) return
+  router.push(`/results/${id}`)
+}
+
+// 键盘 ← / → 也可以翻（正在输入、或报告弹窗打开时不拦截）
+function onKeydown(e) {
+  if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return
+  if (e.metaKey || e.ctrlKey || e.altKey || e.shiftKey) return
+  if (printVisible.value) return
+  const t = e.target
+  if (t && (t.tagName === 'INPUT' || t.tagName === 'TEXTAREA' || t.isContentEditable)) return
+  if (!hasSiblings.value) return
+  const target = e.key === 'ArrowLeft' ? prevId.value : nextId.value
+  if (target == null) return
+  e.preventDefault()
+  goSibling(target)
+}
+
+onMounted(() => window.addEventListener('keydown', onKeydown))
+onBeforeUnmount(() => window.removeEventListener('keydown', onKeydown))
 
 const imageUrl = computed(() => {
   if (result.value && result.value.image_id) {
@@ -223,6 +299,7 @@ async function fetchResult() {
         patient.value = null
       }
     }
+    await fetchSiblings()
   } catch {
     ElMessage.error('获取检测结果失败')
   } finally {
@@ -230,7 +307,17 @@ async function fetchResult() {
   }
 }
 
-onMounted(fetchResult)
+// 同一患者的多条结果共用这一个组件实例：切 id 必须重新取数，
+// 否则翻页后画面还停在上一张（onMounted 只在首次进入时跑一次）
+watch(
+  () => route.params.id,
+  () => {
+    imageMode.value = 'original'
+    printVisible.value = false
+    fetchResult()
+  },
+  { immediate: true },
+)
 </script>
 
 <style scoped>
@@ -288,6 +375,27 @@ onMounted(fetchResult)
   gap: 10px;
 }
 .page-header-actions .el-button { min-height: 42px; padding: 0 18px; margin-left: 0; }
+
+/* 同患者影像翻页：批量上传后顺次查看 */
+.shot-pager {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-right: 4px;
+}
+.shot-pager-count {
+  min-width: 54px;
+  text-align: center;
+  font-size: 12px;
+  font-family: var(--font-display);
+  font-weight: 700;
+  color: var(--text-secondary);
+  font-variant-numeric: tabular-nums;
+}
+/* el-button 只在「图标 + span」时自动补间距，文字在前时自己补一下 */
+.shot-pager .el-button span + .el-icon {
+  margin-left: 6px;
+}
 
 /* 患者信息条 */
 .patient-bar {

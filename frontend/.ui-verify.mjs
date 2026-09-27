@@ -119,6 +119,57 @@ if (resultId) {
   await shot('06-result')
 }
 
+// ── 同患者影像翻页：真点一次「下一张」，并试键盘 → ──
+console.log('— 翻页功能验证 —')
+const target = await page.evaluate(async () => {
+  const t = localStorage.getItem('access_token')
+  const h = { Authorization: 'Bearer ' + t }
+  const pr = await (await fetch('/api/patients?page=1&size=50', { headers: h })).json()
+  const pts = pr.items || pr.data || pr
+  if (!Array.isArray(pts)) return null
+  for (const p of pts) {
+    const rr = await (await fetch(`/api/results?patient_id=${p.id}&page=1&size=100`, { headers: h })).json()
+    const items = rr.items || rr.data || rr
+    if (Array.isArray(items) && items.length >= 3) {
+      return { pid: p.id, name: p.name, ids: items.map((r) => r.id).sort((a, b) => a - b) }
+    }
+  }
+  return null
+})
+if (!target) {
+  console.log('  跳过：没有找到影像数 >= 3 的患者')
+} else {
+  console.log(`  目标患者: ${target.name} (id=${target.pid})，结果 id: ${target.ids.join(', ')}`)
+  await goHash(`#/results/${target.ids[0]}`, 3500)
+  const readCount = async () =>
+    (await page.locator('.shot-pager-count').first().innerText().catch(() => '(无翻页控件)'))
+      .replace(/\s+/g, ' ')
+      .trim()
+  console.log('  首个结果计数:', await readCount())
+  await shot('08-pager-first')
+
+  const before = page.url()
+  const prevDisabled = await page
+    .getByRole('button', { name: '上一张' })
+    .first()
+    .isDisabled()
+    .catch(() => 'n/a')
+  await page.getByRole('button', { name: '下一张' }).first().click()
+  await page.waitForTimeout(3200)
+  const afterClick = page.url()
+  console.log(`  第一张时「上一张」是否禁用: ${prevDisabled}（应为 true）`)
+  console.log(`  点「下一张」: ${before.split('#')[1]} → ${afterClick.split('#')[1]}`)
+  console.log(`  计数变为: ${await readCount()}`)
+  await shot('08b-pager-next')
+
+  await page.keyboard.press('ArrowRight')
+  await page.waitForTimeout(3200)
+  console.log(`  键盘 → 之后: ${page.url().split('#')[1]}`)
+  console.log(
+    `  判定: ${afterClick !== before && page.url() !== afterClick ? 'PASS 按钮与键盘均生效' : 'FAIL 请检查'}`,
+  )
+}
+
 console.log('— 管理员：审计日志 —')
 await login('admin', 'admin123')
 await goHash('#/audit', 3500)
