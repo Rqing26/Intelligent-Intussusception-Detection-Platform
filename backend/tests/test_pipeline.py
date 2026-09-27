@@ -264,3 +264,43 @@ def test_team_model_reports_unavailable_reason_without_weights(monkeypatch, tmp_
     assert team_model.is_available() is False
     reason = team_model.unavailable_reason()
     assert "权重" in reason and str(tmp_path) in reason
+
+
+# ---------------- 融合模型的分类判定（可脱离权重/torch 单测） ----------------
+
+def test_classification_follows_fusion_result(monkeypatch):
+    """融合结论为「阴」时必须返回阴性——不能再硬编码阳性。
+
+    这是回归测试：队友交付版把 classification 写死为"肠套叠阳性"，
+    导致纯黑图/随机噪声/非医学图像也全部被判阳性。
+    """
+    from algorithm import team_model
+
+    monkeypatch.setattr(team_model, "CLASSIFY_MODE", "model")
+    assert team_model.decide_classification(1) == "肠套叠阳性"
+    assert team_model.decide_classification(0) == "肠套叠阴性"
+
+
+def test_always_positive_mode_restores_old_demo_behavior(monkeypatch):
+    """演示开关：ALGO_CLASSIFY_MODE=always_positive 时恢复原行为。"""
+    from algorithm import team_model
+
+    monkeypatch.setattr(team_model, "CLASSIFY_MODE", "always_positive")
+    assert team_model.decide_classification(0) == "肠套叠阳性"
+    assert team_model.decide_classification(1) == "肠套叠阳性"
+
+
+def test_negative_classification_drops_treatment_success_rate():
+    """阴性结果不应带严重度/成功率（平台契约：这两项仅阳性有意义）。"""
+    from algorithm.interface import DetectionResult, validate_result
+
+    negative = validate_result(DetectionResult(
+        classification="肠套叠阴性",
+        confidence=0.8,
+        severity="轻度",                 # 模型侧误填，平台应清掉
+        treatment_success_rate=0.97,
+        treatment_advice="",             # 留空 → 平台补阴性默认建议
+    ))
+    assert negative.severity is None
+    assert negative.treatment_success_rate is None
+    assert "未见肠套叠" in negative.treatment_advice

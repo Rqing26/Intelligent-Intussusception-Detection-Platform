@@ -1,7 +1,7 @@
 """端到端验证：真实融合模型 → 平台接口 → 落库 → 前端消费的字段。
 
 在 app.db 的临时副本上跑，不修改平台真实数据。
-用法（backend 目录下）：python verify_team_model_e2e.py
+用法（backend 目录下）：python tools\\verify_team_model_e2e.py
 """
 import json
 import os
@@ -9,6 +9,10 @@ import shutil
 import sqlite3
 import sys
 import tempfile
+
+BACKEND_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, BACKEND_DIR)
+os.chdir(BACKEND_DIR)   # 之后用相对路径找 app.db
 
 TMP = tempfile.mkdtemp(prefix="e2e_")
 DB = os.path.join(TMP, "app.db")

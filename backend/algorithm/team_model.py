@@ -13,9 +13,14 @@
 ⚠️ 已知问题（队友待处理，非平台侧改动）:
     1. `kfold_heng` 与 `kfold_zong` 的 5 个权重文件**内容完全相同**（MD5 一致），
        因此当前"按切面选分支"实际上不会改变结果；等队友放入真正的纵切权重后自动生效。
-    2. `classification` 目前按队友要求**硬编码为「肠套叠阳性」**（见其 TODO），
-       `confidence` 取的是两个模型 success 概率的较大值。
-       即：现阶段无论输入什么图，结果页都会显示阳性。上线前必须改掉。
+    2. ~~`classification` 目前按队友要求**硬编码为「肠套叠阳性」**~~
+       **已由平台侧修正（2026-09-27）**：改为按 `fusion_pred` 判定（见 `decide_classification`）。
+       需要恢复"全部阳性"的演示行为时设 `ALGO_CLASSIFY_MODE=always_positive`。
+       仍未实现的是「图像质量不佳」分支（需质量模型或阈值）。
+    3. `confidence` 目前是**灌肠复位成功率**（max(yolo, resnet)），不是"阳性的概率"，
+       但前端把它当"置信度"展示，语义不符 —— 待队友改，平台未擅自改动。
+    4. 模型没有"域外输入"出口：纯黑图/随机噪声/非医学图像也会给出 0.25~0.67 的"成功率"，
+       不会返回"图像质量不佳"。开质量分支前，任何图都会被判成阳性或阴性。
 
 平台侧加固（不改动算法逻辑）:
     - 重依赖（torch/ultralytics/Pillow…）导入失败不炸平台：缺失时 READY=False，平台自动回退 Mock。
@@ -23,6 +28,10 @@
     - `torch.load` 兼容 torch>=2.6 的 weights_only 默认值变化。
     - 权重目录支持用环境变量 `ALGO_WEIGHTS_DIR` 覆盖。
     - 入口函数返回后补充平台的双模型溯源字段（分类模型名/版本/耗时）。
+
+平台侧唯一的**行为改动**（其余推理逻辑一字未改）:
+    - 分类由 `fusion_pred` 判定，不再硬编码阳性；阴性时不给"灌肠/手术"建议，
+      交由平台补默认文本。见 `decide_classification` 与 `_infer` 内的标注。
 """
 from __future__ import annotations
 
@@ -54,6 +63,12 @@ WEIGHTS_DIR = _default_weights_dir()
 # 平台日志会被刷屏。默认静音，排查问题时可设 ALGO_YOLO_VERBOSE=1 打开。
 # ⚠️ 该开关只影响日志输出，不影响任何推理结果。
 YOLO_VERBOSE = os.getenv("ALGO_YOLO_VERBOSE", "0") == "1"
+
+# 分类判定模式：
+#   model            （默认）按模型融合结论判定阳性/阴性 —— 正确行为
+#   always_positive  一律返回"肠套叠阳性" —— 队友交付版的原行为，
+#                    仅用于演示时想让所有样本都显示阳性，**不要用于实际诊断**
+CLASSIFY_MODE = os.getenv("ALGO_CLASSIFY_MODE", "model").strip().lower()
 
 
 # ==================== 依赖导入（失败不炸平台） ====================
@@ -311,6 +326,22 @@ def _severity_from_success(rate: float) -> str:
         return "轻度"
 
 
+def decide_classification(fusion_pred: int) -> str:
+    """融合结论 → 平台三分类标签。
+
+    fusion_pred: 0=阴，1=阳（yolo_pred | resnet_pred，队友的融合规则）。
+
+    - 默认（ALGO_CLASSIFY_MODE=model）：按模型结论返回阳性/阴性
+    - ALGO_CLASSIFY_MODE=always_positive：一律返回阳性（队友交付版原行为，仅供演示）
+
+    尚未实现：「图像质量不佳」——需要质量模型或阈值判定（切面置信度/图像清晰度），
+    当前所有输入只会在阳性/阴性之间二选一。
+    """
+    if CLASSIFY_MODE == "always_positive":
+        return "肠套叠阳性"
+    return "肠套叠阳性" if fusion_pred else "肠套叠阴性"
+
+
 # ==================== 队友原始实现（推理逻辑未改动） ====================
 def _infer(image_path: Path):
     """
@@ -351,13 +382,20 @@ def _infer(image_path: Path):
     resnet_pred = 1 if resnet_success > 0.5 else 0
     fusion_pred = yolo_pred | resnet_pred  # 0=阴，1=阳
 
-    # ==================== 后续修改判定逻辑的位置 ====================
-    # TODO: 目前按你的要求先预设为“肠套叠阳性”，图像质量不佳暂不处理。
-    #       后续请在这里根据 fusion_pred、切面置信度、质量模型等修改分类。
-    classification = "肠套叠阳性"
+    # ==================== 分类判定（平台侧改动，2026-09-27） ====================
+    # 原实现（队友交付版）:
+    #     classification = "肠套叠阳性"      # ← 字面量，fusion_pred 算了却没用
+    # 后果：任何输入都返回阳性——包括纯黑图、随机噪声、医院 Logo（实测均被判阳性）。
+    # 现改为按模型融合结论判定；如需临时恢复"全部阳性"的演示行为，
+    # 设环境变量 ALGO_CLASSIFY_MODE=always_positive 即可，**不用改代码**。
+    # 尚未处理：图像质量不佳（需质量模型或阈值，见文件末尾"已知问题"）。
+    classification = decide_classification(fusion_pred)
+    # ============================================================================
 
-    # TODO: 当前 confidence 暂用两个模型 success 概率的较大值。
+    # TODO(队友): 当前 confidence 暂用两个模型 success 概率的较大值。
     #       后续应改为诊断阳性置信度或融合诊断置信度。
+    #       注意：这两个模型输出的是"灌肠复位成功率"，不是"阳性的概率"，
+    #       所以界面上那句"置信度 xx%"目前语义仍是成功率（尚未改动）。
     confidence = round(max(yolo_success, resnet_success), 4)
 
     # 严重程度按 success 反向
@@ -367,7 +405,12 @@ def _infer(image_path: Path):
     treatment_success_rate = round(avg_success, 4)
 
     # ==================== 治疗建议：根据两个模型是否看好灌肠复位来给 ====================
-    if yolo_pred == 0 and resnet_pred == 0:
+    # 阳性才给"灌肠/手术"这类处置建议；阴性时留空，由平台按分类给默认文本
+    # （validate_result 的 _default_advice：未见肠套叠征象，无需特殊治疗），
+    # 避免出现"阴性 + 建议立即空气灌肠复位"这种自相矛盾的报告。
+    if classification == "肠套叠阴性":
+        advice = ""
+    elif yolo_pred == 0 and resnet_pred == 0:
         # 两个模型都认为灌肠复位成功率低于 50%
         advice = (
             f"YOLO与ResNet均预测灌肠复位成功率低于50%"
@@ -390,7 +433,7 @@ def _infer(image_path: Path):
         )
     # ================================================================================
 
-    # 三分类概率：当前预设阳性，质量不佳给 0
+    # 三分类概率：由 confidence 派生（图像质量不佳暂给 0）
     class_probabilities = {
         "肠套叠阳性": confidence,
         "肠套叠阴性": round(1.0 - confidence, 4),
