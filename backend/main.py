@@ -1,3 +1,5 @@
+import os
+import threading
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -53,7 +55,28 @@ async def lifespan(app: FastAPI):
         db.commit()
     finally:
         db.close()
+
+    # 后台预热算法模型：首次检测不必再等 torch/ultralytics 导入 + 权重加载（实测约 20+ 秒）。
+    # 失败只记日志，不影响启动；不需要预热的场景可设 ALGO_PRELOAD=0。
+    if os.getenv("ALGO_PRELOAD", "1") == "1":
+        threading.Thread(target=_preload_algorithm, name="algo-preload", daemon=True).start()
+
     yield
+
+
+def _preload_algorithm() -> None:
+    """在后台线程里加载算法权重（不阻塞启动，也不影响 Mock 模式）。"""
+    import logging
+    logger = logging.getLogger("uvicorn.error")
+    try:
+        from algorithm import pipeline
+        if not pipeline.is_team_model_ready():
+            logger.info("算法模型不可用（A/B 未就绪且 team_model 缺少依赖/权重），平台运行在 Mock 模式")
+            return
+        from algorithm import team_model
+        team_model.warmup()
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("算法模型预热失败（不影响平台运行）：%s", exc)
 
 
 app = FastAPI(title="Intussusception Detection Platform", lifespan=lifespan)

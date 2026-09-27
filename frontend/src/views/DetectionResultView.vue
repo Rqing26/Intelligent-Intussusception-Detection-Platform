@@ -44,17 +44,17 @@
           <div class="patient-bar-divider"></div>
           <div class="patient-bar-item">
             <div class="bar-label">模型</div>
-            <!-- 双模型溯源：检测(A) / 分类(B) 分别展示 -->
+            <!-- 双模型溯源：有哪个模型就显示哪一行（当前融合模型只有「分类」） -->
             <div class="bar-value model-value" v-if="hasPipelineModels">
-              <span class="model-line">
+              <span v-if="result.detection_model_name" class="model-line">
                 <span class="model-role">检测</span>
-                <span class="model-name">{{ result.detection_model_name || '—' }}<template v-if="result.detection_model_version"> v{{ result.detection_model_version }}</template></span>
+                <span class="model-name">{{ result.detection_model_name }}<template v-if="result.detection_model_version"> v{{ result.detection_model_version }}</template></span>
                 <span v-if="result.detection_ms != null" class="model-meta">{{ result.detection_ms }}ms</span>
                 <span v-if="result.detection_score != null" class="model-meta">score {{ result.detection_score }}</span>
               </span>
-              <span class="model-line">
+              <span v-if="result.classification_model_name" class="model-line">
                 <span class="model-role">分类</span>
-                <span class="model-name">{{ result.classification_model_name || '—' }}<template v-if="result.classification_model_version"> v{{ result.classification_model_version }}</template></span>
+                <span class="model-name">{{ result.classification_model_name }}<template v-if="result.classification_model_version"> v{{ result.classification_model_version }}</template></span>
                 <span v-if="result.classification_ms != null" class="model-meta">{{ result.classification_ms }}ms</span>
               </span>
             </div>

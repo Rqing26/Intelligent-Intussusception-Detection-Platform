@@ -32,6 +32,35 @@ def setup_db():
     Base.metadata.drop_all(bind=engine)
 
 
+@pytest.fixture(autouse=True)
+def disable_team_model(monkeypatch):
+    """默认屏蔽队友融合模型（team_model）。
+
+    它需要加载 12 个权重（约 150MB）并在 CPU 上推理，测试里既慢又不该依赖权重文件。
+    需要验证 team_model 调度行为的用例，可在用例内自行 monkeypatch 覆盖本设置。
+    """
+    from algorithm import pipeline
+
+    monkeypatch.setattr(pipeline, "is_team_model_ready", lambda: False, raising=False)
+    yield
+
+
+@pytest.fixture(autouse=True)
+def isolated_upload_dir(tmp_path_factory, monkeypatch):
+    """把上传目录与标注图目录指到临时目录。
+
+    否则测试调用的 /api/images/upload 会把 1×1 的假 JPEG 写进真实的 `uploads/`，
+    留下几百个无人引用的桩文件（数据库用的是内存库，记录一 drop 就没了）。
+    """
+    from routers import images as images_router
+    from services import result_images
+
+    tmp_uploads = tmp_path_factory.mktemp("uploads")
+    monkeypatch.setattr(images_router, "UPLOAD_DIR", str(tmp_uploads))
+    monkeypatch.setattr(result_images, "RESULT_IMAGE_DIR", str(tmp_uploads / "results"))
+    yield tmp_uploads
+
+
 @pytest.fixture
 def client():
     return TestClient(app)

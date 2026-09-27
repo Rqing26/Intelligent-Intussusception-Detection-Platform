@@ -6,6 +6,8 @@ node_modules/
 dist/
 uploads/
 *.db
+# 数据库备份（tools/redetect.py 等工具会自动生成，如 app.db.bak-20260927-155141）
+*.db.bak-*
 .superpowers/
 *.log
 *.err
@@ -13,3 +15,10 @@ uploads/
 /backend/backend.log
 /frontend/frontend.err
 /frontend/frontend.log
+/backend/.venv/
+
+# 模型权重：体积大（约 150MB），不进 Git。需要单独拷贝到 backend/algorithm/weights/
+/backend/algorithm/weights/
+*.pt
+*.pth
+*.onnx

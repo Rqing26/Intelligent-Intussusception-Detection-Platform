@@ -4,16 +4,19 @@
 平台只依赖这一个函数：
     detect_intussusception(image_path: Path) -> DetectionResult
 
-工作方式（**自动切换，不需要改平台代码**）：
-    ┌─ detection.READY 且 classification.READY 都为 True
-    │     → 走真实流水线：读图 → 检测(A) → 分类(B) → 组装结果
-    └─ 否则
-          → 自动回退到 interface.py 里的 Mock（保证平台随时能跑通）
+工作方式（**自动切换，不需要改平台代码**），按优先级从高到低：
 
-所以现在的状态：两人模块都是 READY=False，平台照常跑 Mock。
-等他们把各自模块实现好、把 READY 改成 True，真实模型就自动生效。
+    1) detection.READY 且 classification.READY 都为 True
+         → A/B 真实流水线：读图 → 检测(A) → 分类(B) → 组装结果
+    2) team_model 可用（依赖齐全 + 权重齐全）
+         → 队友交付的融合模型：切面 YOLO + 横/纵切 5 折 YOLO 集成 + ResNet18
+    3) 以上都不满足
+         → 自动回退到 interface.py 里的 Mock（保证平台随时能跑通）
 
-本文件是两人代码的**唯一交汇点**，保持轻薄、写完基本不动。
+真实入口的判定在启动/每次请求时都会重新求值：把权重放进
+`algorithm/weights/`、把 READY 改成 True，对应模型就自动生效。
+
+本文件是各方代码的**唯一交汇点**，保持轻薄、写完基本不动。
 """
 import logging
 from pathlib import Path
@@ -31,7 +34,7 @@ from algorithm import classification
 logger = logging.getLogger("uvicorn.error")
 
 # 只提示一次，避免刷屏
-_warned_mock = False
+_logged_source = None
 
 
 def _module_meta(module, attr: str) -> str:
@@ -40,8 +43,47 @@ def _module_meta(module, attr: str) -> str:
 
 
 def is_real_ready() -> bool:
-    """两个子模块是否都已就绪。"""
+    """A/B 两个子模块是否都已就绪。"""
     return bool(getattr(detection, "READY", False)) and bool(getattr(classification, "READY", False))
+
+
+def is_team_model_ready() -> bool:
+    """队友交付的融合模型是否可用（依赖 + 权重都齐全）。
+
+    优先调用 team_model.is_available()（每次都重新检查权重文件是否到位），
+    拿不到就退回读 READY 常量；team_model 自身导入失败时返回 False，不影响平台。
+    """
+    try:
+        from algorithm import team_model
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("加载 algorithm.team_model 失败：%s", exc)
+        return False
+
+    checker = getattr(team_model, "is_available", None)
+    if callable(checker):
+        try:
+            return bool(checker())
+        except Exception as exc:  # noqa: BLE001
+            logger.warning("team_model.is_available() 检查失败：%s", exc)
+            return False
+    return bool(getattr(team_model, "READY", False))
+
+
+def _log_source_once(source: str) -> None:
+    """首次走某个入口时打一条日志，方便排查"到底用的哪个模型"。"""
+    global _logged_source
+    if _logged_source == source:
+        return
+    _logged_source = source
+    if source == "team_model":
+        logger.info("检测入口：队友融合模型 team_model（YOLO5Fold+ResNet18）")
+    elif source == "pipeline":
+        logger.info("检测入口：A/B 真实流水线")
+    else:
+        logger.warning(
+            "检测入口：Mock 占位结果（A/B 模块未就绪，且 team_model 不可用）。"
+            "把权重放到 algorithm/weights/ 并安装依赖后自动启用真实模型。"
+        )
 
 
 def load_image(image_path: Path):
@@ -73,17 +115,26 @@ def load_image(image_path: Path):
 
 def detect_intussusception(image_path: Path) -> DetectionResult:
     """平台调用的唯一入口。"""
-    global _warned_mock
-
+    # ---- 1) A/B 真实流水线（优先级最高）----
     if not is_real_ready():
-        if not _warned_mock:
-            logger.warning(
-                "算法模块尚未就绪（detection.READY / classification.READY 为 False），"
-                "本次使用 Mock 结果。实现完成后把对应 READY 改为 True 即可自动启用。"
-            )
-            _warned_mock = True
+        # ---- 2) 队友交付的融合模型 ----
+        if is_team_model_ready():
+            from algorithm import team_model  # noqa: WPS433
+
+            _log_source_once("team_model")
+            raw = team_model.detect_intussusception(image_path)
+            return validate_result(raw)
+
+        # ---- 3) Mock 兜底 ----
+        _log_source_once("mock")
         return _mock_detect(image_path)
 
+    _log_source_once("pipeline")
+    return _run_ab_pipeline(image_path)
+
+
+def _run_ab_pipeline(image_path: Path) -> DetectionResult:
+    """A/B 真实流水线：读图 → 检测(A) → 分类(B) → 组装结果。"""
     # ---- 真实流水线 ----
     img = load_image(image_path)          # 1) 读图（含 DICOM）
 

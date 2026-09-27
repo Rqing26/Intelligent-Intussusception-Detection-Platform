@@ -34,14 +34,29 @@ def main() -> int:
         return 2
 
     from algorithm import detection, classification
-    from algorithm.pipeline import detect_intussusception, is_real_ready
+    from algorithm.pipeline import detect_intussusception, is_real_ready, is_team_model_ready
 
     d_ready = bool(getattr(detection, "READY", False))
     c_ready = bool(getattr(classification, "READY", False))
+    team_ready = is_team_model_ready()
+    if is_real_ready():
+        source = "A/B 真实流水线"
+    elif team_ready:
+        from algorithm import team_model
+        source = f"队友融合模型 team_model（{team_model.NAME} v{team_model.VERSION}）"
+    else:
+        source = "Mock 占位"
     print("=" * 52)
-    print(f"检测模块 READY = {d_ready}")
-    print(f"分类模块 READY = {c_ready}")
-    print(f"当前走的是: {'真实流水线' if is_real_ready() else 'Mock 占位(两模块需都 READY)'}")
+    print(f"检测模块(A) READY = {d_ready}")
+    print(f"分类模块(B) READY = {c_ready}")
+    print(f"融合模型 team_model 可用 = {team_ready}")
+    if not team_ready:
+        try:
+            from algorithm import team_model as _tm
+            print(f"  不可用原因: {_tm.unavailable_reason()}")
+        except Exception as exc:  # noqa: BLE001
+            print(f"  不可用原因: 导入失败 {exc}")
+    print(f"当前走的是: {source}")
     print("=" * 52)
 
     result = detect_intussusception(img_path)
@@ -69,7 +84,7 @@ def main() -> int:
     if result.class_probabilities and not isinstance(result.class_probabilities, dict):
         print("[FAIL] class_probabilities 必须是 dict")
         ok = False
-    # 真实流水线下提醒补全模型名（前端会原样展示，TODO 字样会被医生看到）
+    # A/B 真实流水线下提醒补全模型名（前端会原样展示，TODO 字样会被医生看到）
     if is_real_ready():
         for role, name in (("检测(A)", result.detection_model_name), ("分类(B)", result.classification_model_name)):
             if not name or "TODO" in name.upper():

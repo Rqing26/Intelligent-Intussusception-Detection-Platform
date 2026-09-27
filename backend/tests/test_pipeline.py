@@ -6,14 +6,23 @@
   3. detect 返回 None → 按"全图送分类"处理
   4. 队友返回非法分类 → validate_result 兜底纠正
   5. 双模型溯源：A/B 的模型名、版本、分段耗时、检测置信度、病灶框
+  6. 入口优先级：A/B 流水线 > team_model 融合模型 > Mock
 """
 from pathlib import Path
+
+import pytest
 
 from algorithm import pipeline, detection, classification
 from algorithm.contracts import ROI, ClassificationOutcome
 
 
-def test_fallback_to_mock_when_not_ready(monkeypatch):
+@pytest.fixture
+def no_team_model(monkeypatch):
+    """屏蔽队友融合模型，保证测试只验证 Mock / A/B 两条路径。"""
+    monkeypatch.setattr(pipeline, "is_team_model_ready", lambda: False)
+
+
+def test_fallback_to_mock_when_not_ready(monkeypatch, no_team_model):
     """模块未就绪时，应回退到 Mock 且结果合法。"""
     monkeypatch.setattr(detection, "READY", False)
     monkeypatch.setattr(classification, "READY", False)
@@ -87,7 +96,7 @@ def test_invalid_classification_is_corrected(monkeypatch):
     assert result.confidence == 1.0                 # 越界置信度被收敛
 
 
-def test_mock_leaves_model_slots_empty(monkeypatch):
+def test_mock_leaves_model_slots_empty(monkeypatch, no_team_model):
     """Mock 是整条流水线的占位实现，不应伪造检测/分类模型名。"""
     monkeypatch.setattr(detection, "READY", False)
     monkeypatch.setattr(classification, "READY", False)
@@ -178,3 +187,80 @@ def test_validate_result_sanitizes_model_metadata():
         classification="肠套叠阳性", confidence=0.9, roi_box="not-a-box",
     ))
     assert negative_box.roi_box is None
+
+
+# ---------------- 入口优先级：A/B 流水线 > team_model > Mock ----------------
+
+def test_team_model_used_when_ab_not_ready(monkeypatch):
+    """A/B 未就绪但融合模型可用时，应走 team_model。"""
+    from algorithm import team_model
+    from algorithm.interface import DetectionResult
+
+    monkeypatch.setattr(detection, "READY", False)
+    monkeypatch.setattr(classification, "READY", False)
+    monkeypatch.setattr(pipeline, "is_team_model_ready", lambda: True)
+
+    called = {}
+
+    def fake_team_detect(path):
+        called["path"] = path
+        return DetectionResult(
+            classification="肠套叠阳性",
+            confidence=0.77,
+            model_name=team_model.NAME,
+            model_version=team_model.VERSION,
+            classification_model_name=team_model.NAME,
+            classification_model_version=team_model.VERSION,
+            classification_ms=1234.5,
+        )
+
+    monkeypatch.setattr(team_model, "detect_intussusception", fake_team_detect)
+
+    result = pipeline.detect_intussusception(Path("image.jpg"))
+    assert called["path"] == Path("image.jpg")
+    assert result.classification_model_name == team_model.NAME
+    assert result.classification_ms == 1234.5
+    assert result.detection_model_name == ""       # 该模型没有检测环节
+
+
+def test_ab_pipeline_wins_over_team_model(monkeypatch):
+    """A/B 就绪时优先级高于融合模型。"""
+    monkeypatch.setattr(pipeline, "load_image", lambda p: "IMG")
+    monkeypatch.setattr(detection, "READY", True)
+    monkeypatch.setattr(classification, "READY", True)
+    monkeypatch.setattr(detection, "NAME", "DetA")
+    monkeypatch.setattr(pipeline, "is_team_model_ready", lambda: True)
+    monkeypatch.setattr(detection, "detect", lambda img: ROI(image="ROI"))
+    monkeypatch.setattr(
+        classification, "classify",
+        lambda roi: ClassificationOutcome(classification="肠套叠阴性", confidence=0.6),
+    )
+
+    result = pipeline.detect_intussusception(Path("x.jpg"))
+    assert result.model_name == "team-pipeline"
+    assert result.detection_model_name == "DetA"
+
+
+def test_team_model_import_failure_is_safe(monkeypatch):
+    """team_model 不可用（缺依赖/权重）时，is_team_model_ready 返回 False 而不是抛错。"""
+    from algorithm import team_model
+
+    monkeypatch.setattr(team_model, "is_available", lambda: False)
+    assert pipeline.is_team_model_ready() is False
+
+    # is_available 缺失时退回读 READY
+    monkeypatch.delattr(team_model, "is_available")
+    monkeypatch.setattr(team_model, "READY", False)
+    assert pipeline.is_team_model_ready() is False
+
+
+def test_team_model_reports_unavailable_reason_without_weights(monkeypatch, tmp_path):
+    """权重缺失时给出可读的不可用原因（便于交付排查）。"""
+    from algorithm import team_model
+
+    # 依赖是否装好与本用例无关，这里只看"权重缺失"这条分支
+    monkeypatch.setattr(team_model, "_DEPS_ERROR", None)
+    monkeypatch.setattr(team_model, "WEIGHTS_DIR", tmp_path)
+    assert team_model.is_available() is False
+    reason = team_model.unavailable_reason()
+    assert "权重" in reason and str(tmp_path) in reason
