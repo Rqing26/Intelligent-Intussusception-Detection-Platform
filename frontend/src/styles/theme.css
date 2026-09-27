@@ -216,6 +216,21 @@ body {
   box-shadow: var(--shadow-md) !important;
 }
 
+/* 禁用态必须一眼看出来。
+   上面的 !important 会盖掉 Element Plus 自带的 .is-disabled 样式，
+   导致「确认上传并检测（0 张）」这类按钮看起来仍然可点，所以这里显式补回禁用态。 */
+.el-button--primary.is-disabled,
+.el-button--primary.is-disabled:hover,
+.el-button--primary.is-disabled:focus,
+.el-button--primary.is-loading.is-disabled {
+  background: var(--border-strong) !important;
+  color: var(--bg-card) !important;
+  opacity: 0.65 !important;
+  cursor: not-allowed !important;
+  transform: none !important;
+  box-shadow: none !important;
+}
+
 .el-table {
   background: transparent !important;
   --el-table-border-color: var(--border-color);

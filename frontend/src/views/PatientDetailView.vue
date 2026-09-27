@@ -80,7 +80,7 @@
             <!-- 统计网格 -->
             <div class="stats-grid">
               <div class="mini-stat">
-                <div class="mini-stat-icon" style="--accent: var(--primary)">
+                <div class="mini-stat-icon" style="--accent: var(--primary); --accent-tint: var(--bg-tag-info)">
                   <el-icon><Picture /></el-icon>
                 </div>
                 <div class="mini-stat-body">
@@ -89,7 +89,7 @@
                 </div>
               </div>
               <div class="mini-stat">
-                <div class="mini-stat-icon" style="--accent: var(--success)">
+                <div class="mini-stat-icon" style="--accent: var(--success); --accent-tint: var(--bg-tag-success)">
                   <el-icon><Select /></el-icon>
                 </div>
                 <div class="mini-stat-body">
@@ -98,11 +98,11 @@
                 </div>
               </div>
               <div class="mini-stat">
-                <div class="mini-stat-icon" style="--accent: var(--warning)">
+                <div class="mini-stat-icon" style="--accent: var(--warning); --accent-tint: var(--bg-tag-warning)">
                   <el-icon><DataLine /></el-icon>
                 </div>
                 <div class="mini-stat-body">
-                  <div class="mini-stat-value" :style="latestResultStyle">{{ latestResultText }}</div>
+                  <div class="mini-stat-value is-text" :style="latestResultStyle">{{ latestResultText }}</div>
                   <div class="mini-stat-label">最新结果</div>
                 </div>
               </div>
@@ -222,7 +222,7 @@
                   <div class="timeline-card">
                     <div class="timeline-card-head">
                       <span class="tl-class" :class="detectionClass(d.classification)">{{ d.classification }}</span>
-                      <span class="tl-conf">置信度 {{ Math.round((d.confidence || 0) * 100) }}%</span>
+                      <span class="tl-conf">证据分 {{ d.detection_score != null ? d.detection_score.toFixed(3) : '—' }}</span>
                       <span class="tl-time">{{ formatDateTime(d.created_at) }}</span>
                     </div>
                     <div class="timeline-card-body">
@@ -309,7 +309,8 @@ const latestResultText = computed(() => {
   if (!d) return '—'
   let label = d.classification || '已检测'
   if (d.severity) label += ` · ${d.severity}`
-  if (d.confidence != null) label += ` · ${Math.round(d.confidence * 100)}%`
+  // 展示模型真实输出「检测证据分」，不再展示由评估集精度表换算的置信度百分比
+  if (d.detection_score != null) label += ` · 证据分 ${d.detection_score.toFixed(3)}`
   return label
 })
 
@@ -619,16 +620,17 @@ onMounted(fetchPatient)
 .mini-stat-icon {
   width: 40px;
   height: 40px;
-  border-radius: var(--radius-sm);
-  background: var(--accent);
-  opacity: 0.1;
+  border-radius: 12px;
+  /* 半透明底色 + 实色图标；不能对容器用 opacity，否则图标会一起变透明 */
+  background: var(--accent-tint, var(--bg-hover));
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
 }
 .mini-stat-icon .el-icon {
-  color: var(--accent);
+  color: inherit;
   font-size: 20px;
 }
 .mini-stat-value {
@@ -637,6 +639,18 @@ onMounted(fetchPatient)
   font-weight: 700;
   color: var(--text-primary);
   line-height: 1.2;
+  font-variant-numeric: tabular-nums;
+}
+/* 「最新结果」是一句话而不是一个数字：按正文尺寸排版，避免 20px 大字撑破卡片 */
+.mini-stat-value.is-text {
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.mini-stat-body {
+  min-width: 0;
 }
 .mini-stat-label {
   font-size: 12px;
@@ -764,17 +778,22 @@ onMounted(fetchPatient)
   border-radius: var(--radius-sm);
   border: none;
   background: transparent;
-  color: var(--text-muted);
+  /* 与「患者管理」列表保持一致：--text-muted 在卡片白底上太淡，看起来像禁用 */
+  color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
   font-size: 15px;
 }
 .icon-btn:hover {
-  background: var(--bg-hover);
+  background: var(--bg-tag-info);
   color: var(--primary);
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
 }
 .icon-btn.warn:hover {
   background: var(--bg-tag-warning);

@@ -67,15 +67,19 @@
       </svg>
     </div>
 
-    <!-- 主题切换 -->
-    <div
+    <!-- 主题切换：用真按钮而不是可点击 div（可聚焦、可键盘操作） -->
+    <button
+      type="button"
       class="theme-float-btn"
       @click="handleToggleTheme"
-      :title="currentTheme === 'modern' ? '切换至中世纪风格' : '切换至现代风格'"
+      :title="currentTheme === 'modern' ? '切换至中世纪手稿风格' : '切换至现代风格'"
+      :aria-label="currentTheme === 'modern' ? '切换至中世纪手稿风格' : '切换至现代风格'"
     >
-      <span v-if="currentTheme === 'modern'">🏛</span>
-      <span v-else>⚡</span>
-    </div>
+      <el-icon :size="18">
+        <Notebook v-if="currentTheme === 'modern'" />
+        <Monitor v-else />
+      </el-icon>
+    </button>
 
     <div class="login-wrap">
       <!-- 左侧品牌区 -->
@@ -266,7 +270,7 @@
 import { ref, reactive, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { User, Lock } from '@element-plus/icons-vue'
+import { User, Lock, Notebook, Monitor } from '@element-plus/icons-vue'
 import { useAuthStore } from '../stores/auth'
 import { toggleTheme, getCurrentTheme } from '../utils/theme'
 
@@ -415,6 +419,7 @@ onMounted(() => {
   border-radius: 50%;
   background: var(--bg-card);
   border: 1px solid var(--border-color);
+  color: var(--gold-dim);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -423,10 +428,16 @@ onMounted(() => {
   box-shadow: var(--shadow-sm);
   z-index: 100;
   transition: all 0.25s ease;
+  padding: 0;
 }
 .theme-float-btn:hover {
   transform: scale(1.1) rotate(8deg);
   box-shadow: var(--shadow-md);
+  color: var(--primary);
+}
+.theme-float-btn:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 2px;
 }
 
 /* ========== 登录卡片主体 ========== */

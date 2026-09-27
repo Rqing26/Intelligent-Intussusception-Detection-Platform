@@ -21,9 +21,16 @@
         </div>
       </div>
       <div class="header-actions">
-        <button class="theme-toggle" @click="handleToggleTheme" :title="currentTheme === 'modern' ? '切换至中世纪风格' : '切换至现代风格'">
-          <span v-if="currentTheme === 'modern'">🏛</span>
-          <span v-else>⚡</span>
+        <button
+          class="theme-toggle"
+          @click="handleToggleTheme"
+          :title="currentTheme === 'modern' ? '切换至中世纪手稿风格' : '切换至现代风格'"
+          :aria-label="currentTheme === 'modern' ? '切换至中世纪手稿风格' : '切换至现代风格'"
+        >
+          <el-icon :size="14">
+            <Notebook v-if="currentTheme === 'modern'" />
+            <Monitor v-else />
+          </el-icon>
           <span class="toggle-label">{{ currentTheme === 'modern' ? '手稿' : '现代' }}</span>
         </button>
         <div class="user-divider" />
@@ -63,14 +70,18 @@
         </div>
       </el-aside>
       <el-main class="app-main">
-        <div class="hospital-watermark">
+        <!-- 装饰层：水印与底图固定定位，靠 z-index 压在内容之下（见 .app-content） -->
+        <div class="hospital-watermark" aria-hidden="true">
           <div class="watermark-text">皖南医学院第一附属医院</div>
           <div class="watermark-sub">弋矶山医院</div>
         </div>
-        <div class="app-background-logo">
-          <img src="/newlogo.png" alt="decorative logo" />
+        <div class="app-background-logo" aria-hidden="true">
+          <img src="/newlogo.png" alt="" />
         </div>
-        <slot />
+        <!-- 内容层：独立堆叠上下文，保证装饰层永远不会盖住表格/按钮 -->
+        <div class="app-content">
+          <slot />
+        </div>
       </el-main>
     </el-container>
   </el-container>
@@ -82,7 +93,7 @@ import { useAuthStore } from '../stores/auth'
 import { useSettingsStore } from '../stores/settings'
 import { toggleTheme, getCurrentTheme } from '../utils/theme'
 import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { Document } from '@element-plus/icons-vue'
+import { Document, Notebook, Monitor } from '@element-plus/icons-vue'
 
 const router = useRouter()
 const route = useRoute()
@@ -252,7 +263,7 @@ function handleLogout() {
 }
 
 .theme-toggle {
-  display: flex;
+  display: inline-flex;
   align-items: center;
   gap: 6px;
   padding: 6px 12px;
@@ -260,8 +271,9 @@ function handleLogout() {
   background: var(--bg-card);
   color: var(--text-secondary);
   font-size: 13px;
+  line-height: 1;
   cursor: pointer;
-  border-radius: var(--radius-sm);
+  border-radius: 999px;
   transition: all 0.2s;
   font-family: var(--font-sans);
 }
@@ -269,6 +281,16 @@ function handleLogout() {
 .theme-toggle:hover {
   border-color: var(--gold-dim);
   color: var(--text-primary);
+  background: var(--bg-hover);
+}
+
+.theme-toggle:focus-visible {
+  outline: 2px solid var(--gold);
+  outline-offset: 1px;
+}
+
+.theme-toggle .el-icon {
+  color: var(--gold-dim);
 }
 
 .toggle-label {
@@ -362,6 +384,12 @@ function handleLogout() {
   position: relative;
 }
 
+/* 内容层：抬高到装饰层之上，避免水印/底图盖住表格与操作按钮 */
+.app-content {
+  position: relative;
+  z-index: 2;
+}
+
 .app-background-logo {
   position: fixed;
   bottom: 40px;
@@ -369,8 +397,9 @@ function handleLogout() {
   width: 120px;
   height: 120px;
   pointer-events: none;
-  z-index: 1;
-  opacity: 0.08;
+  /* 装饰层必须压在内容之下：0 而不是 1（1 会盖在未定位的卡片内容之上） */
+  z-index: 0;
+  opacity: 0.06;
   display: flex;
   align-items: center;
   justify-content: center;

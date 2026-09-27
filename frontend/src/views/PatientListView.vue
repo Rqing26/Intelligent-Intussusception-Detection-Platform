@@ -18,12 +18,16 @@
     <div class="stats-row">
       <div class="stat-card" v-for="(stat, idx) in statItems" :key="idx">
         <div class="stat-card-inner">
-          <div class="stat-icon-wrap" :style="{ '--accent': stat.color }">
-            <el-icon :size="22"><component :is="stat.icon" /></el-icon>
-          </div>
           <div class="stat-body">
             <div class="stat-value">{{ stat.value }}</div>
             <div class="stat-label">{{ stat.label }}</div>
+          </div>
+          <!-- 用「半透明底色 + 实色图标」表达强调色，不能对容器用 opacity（会把图标一起变透明） -->
+          <div
+            class="stat-icon-wrap"
+            :style="{ '--accent': stat.color, '--accent-tint': `var(${stat.tint})` }"
+          >
+            <el-icon :size="20"><component :is="stat.icon" /></el-icon>
           </div>
         </div>
         <div class="stat-accent-bar" :style="{ background: stat.color }"></div>
@@ -85,7 +89,7 @@
             <template #default="{ row }">
               <div class="patient-info">
                 <div class="patient-avatar" :style="{ background: stringToColor(row.name) }">
-                  {{ row.name ? row.name.charAt(0) : '?' }}
+                  {{ avatarText(row.name) }}
                 </div>
                 <div class="patient-meta">
                   <div class="patient-name">{{ row.name }}</div>
@@ -97,8 +101,8 @@
 
           <el-table-column prop="gender" label="性别" width="80" align="center">
             <template #default="{ row }">
-              <span class="gender-tag" :class="row.gender === '男' ? 'gender-male' : 'gender-female'">
-                {{ row.gender }}
+              <span class="gender-tag" :class="genderClass(row.gender)">
+                {{ genderText(row.gender) }}
               </span>
             </template>
           </el-table-column>
@@ -143,12 +147,12 @@
             <template #default="{ row }">
               <div class="action-group">
                 <el-tooltip content="查看详情" placement="top">
-                  <button class="icon-btn" @click="handleDetail(row.id)">
+                  <button class="icon-btn" aria-label="查看详情" @click="handleDetail(row.id)">
                     <el-icon><View /></el-icon>
                   </button>
                 </el-tooltip>
                 <el-tooltip content="编辑" placement="top">
-                  <button class="icon-btn" @click="openEdit(row)">
+                  <button class="icon-btn" aria-label="编辑患者" @click="openEdit(row)">
                     <el-icon><Edit /></el-icon>
                   </button>
                 </el-tooltip>
@@ -160,7 +164,7 @@
                     @confirm="handleDelete(row.id)"
                   >
                     <template #reference>
-                      <button class="icon-btn danger">
+                      <button class="icon-btn danger" aria-label="删除患者">
                         <el-icon><Delete /></el-icon>
                       </button>
                     </template>
@@ -292,24 +296,28 @@ const statItems = computed(() => [
     value: stats.value.total_patients ?? 0,
     icon: UserFilled,
     color: 'var(--primary)',
+    tint: '--bg-tag-info',
   },
   {
     label: '今日新增',
     value: stats.value.today_new ?? 0,
     icon: Plus,
     color: 'var(--success)',
+    tint: '--bg-tag-success',
   },
   {
     label: '待检测',
     value: stats.value.pending ?? 0,
     icon: Bell,
     color: 'var(--warning)',
+    tint: '--bg-tag-warning',
   },
   {
     label: '阳性病例',
     value: stats.value.positive ?? 0,
     icon: Warning,
     color: 'var(--danger)',
+    tint: '--bg-tag-danger',
   },
 ])
 
@@ -351,6 +359,38 @@ function stringToColor(str) {
     '#7c3aed', '#0891b2', '#be185d', '#4338ca',
   ]
   return colors[Math.abs(hash) % colors.length]
+}
+
+/**
+ * 头像文字：姓名首字。
+ * 但以数字开头的姓名（现网有 "16"、"15test" 这类）只取首字符会得到一列相同的「1」，
+ * 起不到区分作用，所以数字开头的取前两位。
+ */
+function avatarText(name) {
+  const v = String(name ?? '').trim()
+  if (!v) return '?'
+  if (/^\d/.test(v)) return v.slice(0, 2)
+  return v.charAt(0)
+}
+
+/**
+ * 性别展示：库里可能存中文「男/女」，也可能存英文 male/female。
+ * 不认识的取值走中性灰，不能默认落成"女"（原来除了「男」以外全按女样式渲染）。
+ */
+function genderClass(gender) {
+  const v = String(gender ?? '').trim().toLowerCase()
+  if (v === '男' || v === 'male' || v === 'm') return 'gender-male'
+  if (v === '女' || v === 'female' || v === 'f') return 'gender-female'
+  return 'gender-unknown'
+}
+
+function genderText(gender) {
+  const v = String(gender ?? '').trim()
+  if (!v) return '—'
+  const low = v.toLowerCase()
+  if (low === 'male' || low === 'm') return '男'
+  if (low === 'female' || low === 'f') return '女'
+  return v
 }
 
 function statusClass(row) {
@@ -502,7 +542,8 @@ onMounted(() => {
 .page-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
+  gap: 16px;
   margin-bottom: 24px;
 }
 .page-title {
@@ -552,53 +593,60 @@ onMounted(() => {
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
   overflow: hidden;
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
+  transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
 }
 .stat-card:hover {
   transform: translateY(-3px);
   box-shadow: var(--shadow-md);
+  border-color: var(--border-strong);
 }
 .stat-card-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
-  padding: 22px 20px;
-}
-.stat-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  background: var(--accent);
-  opacity: 0.1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: var(--accent);
-  flex-shrink: 0;
-  transition: opacity 0.2s ease;
-}
-.stat-card:hover .stat-icon-wrap {
-  opacity: 0.15;
-}
-.stat-icon-wrap .el-icon {
-  color: var(--accent);
-  opacity: 1;
+  padding: 20px 22px 22px;
+  min-height: 96px;
 }
 .stat-body {
-  flex: 1;
+  min-width: 0;
 }
 .stat-value {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  /* 等宽数字：四张卡片的数字在视觉上对齐 */
+  font-variant-numeric: tabular-nums;
 }
 .stat-label {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 6px;
   font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+.stat-icon-wrap {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 半透明强调色做底、实色图标在上；两者都来自行内 CSS 变量 */
+  background: var(--accent-tint, var(--bg-hover));
+  color: var(--accent, var(--text-muted));
+  transition: transform 0.25s ease;
+}
+.stat-icon-wrap .el-icon {
+  color: inherit;
+}
+.stat-card:hover .stat-icon-wrap {
+  transform: scale(1.06);
 }
 .stat-accent-bar {
   position: absolute;
@@ -606,7 +654,7 @@ onMounted(() => {
   left: 0;
   right: 0;
   height: 3px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* ========== 数据卡片 ========== */
@@ -661,7 +709,7 @@ onMounted(() => {
 
 /* 表格包裹 */
 .table-wrap {
-  padding: 0 4px;
+  padding: 0;
   overflow-x: auto; /* 窄屏表格横向滚动，避免内容溢出 */
 }
 .list-skeleton {
@@ -752,6 +800,10 @@ onMounted(() => {
 .gender-female {
   background: rgba(219, 39, 119, 0.08);
   color: #db2777;
+}
+.gender-unknown {
+  background: var(--bg-hover);
+  color: var(--text-muted);
 }
 
 /* 年龄 */
@@ -852,17 +904,22 @@ onMounted(() => {
   border-radius: var(--radius-sm);
   border: none;
   background: transparent;
-  color: var(--text-muted);
+  /* 原来是 --text-muted(#94a3b8)，在白底上对比度太低，看起来像"灰到看不见" */
+  color: var(--text-secondary);
   display: inline-flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, color 0.2s ease;
   font-size: 15px;
 }
 .icon-btn:hover {
-  background: var(--bg-hover);
+  background: var(--bg-tag-info);
   color: var(--primary);
+}
+.icon-btn:focus-visible {
+  outline: 2px solid var(--primary);
+  outline-offset: 1px;
 }
 .icon-btn.danger:hover {
   background: var(--bg-tag-danger);

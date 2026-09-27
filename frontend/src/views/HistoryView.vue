@@ -12,12 +12,16 @@
     <div class="stats-row">
       <div class="stat-card" v-for="(stat, idx) in statItems" :key="idx">
         <div class="stat-card-inner">
-          <div class="stat-icon-wrap" :style="{ '--accent': stat.color }">
-            <el-icon :size="22"><component :is="stat.icon" /></el-icon>
-          </div>
           <div class="stat-body">
             <div class="stat-value">{{ stat.value }}</div>
             <div class="stat-label">{{ stat.label }}</div>
+          </div>
+          <!-- 卡片版式与「患者管理」保持一致：数字在左、图标片在右 -->
+          <div
+            class="stat-icon-wrap"
+            :style="{ '--accent': stat.color, '--accent-tint': `var(${stat.tint})` }"
+          >
+            <el-icon :size="20"><component :is="stat.icon" /></el-icon>
           </div>
         </div>
         <div class="stat-accent-bar" :style="{ background: stat.color }"></div>
@@ -42,7 +46,7 @@
           <el-icon class="search-icon"><Search /></el-icon>
           <el-input v-model="search" placeholder="按患者姓名搜索..." clearable @keyup.enter="handleSearch" />
         </div>
-        <el-select v-model="classification" placeholder="按诊断分类筛选" clearable style="width: 180px" @change="handleSearch">
+        <el-select v-model="classification" placeholder="按诊断结论筛选" clearable style="width: 180px" @change="handleSearch">
           <el-option label="肠套叠阳性" value="肠套叠阳性" />
           <el-option label="肠套叠阴性" value="肠套叠阴性" />
           <el-option label="图像质量不佳" value="图像质量不佳" />
@@ -81,14 +85,18 @@
             </template>
           </el-table-column>
 
-          <el-table-column label="置信度" width="140">
+          <!-- 展示模型真实输出「检测证据分」；不再展示由精度表换算的置信度百分比 -->
+          <el-table-column label="证据分" width="140">
             <template #default="{ row }">
               <div class="confidence-cell">
-                <span class="confidence-text">{{ confidenceText(row.confidence) }}</span>
+                <span class="confidence-text">{{ evidenceText(row.detection_score) }}</span>
                 <div class="confidence-bar">
                   <div
                     class="confidence-fill"
-                    :style="{ width: confidenceText(row.confidence), background: confidenceColor(row.confidence) }"
+                    :style="{
+                      width: evidenceBarWidth(row.detection_score),
+                      background: evidenceColor(row.detection_score),
+                    }"
                   />
                 </div>
               </div>
@@ -142,7 +150,7 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import { ElMessage } from 'element-plus'
-import { Document, Warning, Select, DataLine, Clock, View, Download, Search } from '@element-plus/icons-vue'
+import { Document, Warning, Select, Clock, View, Download, Search } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import { getResults, getResultsStats, exportResults } from '../api/results'
 import { formatDateTime } from '../utils/time'
@@ -176,25 +184,24 @@ const statItems = computed(() => [
     value: stats.value.total,
     icon: Document,
     color: 'var(--primary)',
+    tint: '--bg-tag-info',
   },
   {
     label: `阳性病例 (${pct(stats.value.positive_rate)})`,
     value: stats.value.positive,
     icon: Warning,
     color: 'var(--danger)',
+    tint: '--bg-tag-danger',
   },
   {
     label: `阴性病例 (${pct(stats.value.negative_rate)})`,
     value: stats.value.negative,
     icon: Select,
     color: 'var(--success)',
+    tint: '--bg-tag-success',
   },
-  {
-    label: '平均置信度',
-    value: pct(stats.value.avg_confidence),
-    icon: DataLine,
-    color: 'var(--warning)',
-  },
+  // 概览不再显示「平均参考精度」：该值是用评估集精度表换算出来的查表值，
+  // 全平台共用一张表求和取均值没有临床含义（见 docs/准确率与置信度核实.md）
 ])
 
 function resultClass(classification) {
@@ -204,17 +211,25 @@ function resultClass(classification) {
   return 'status-default'
 }
 
-function confidenceText(val) {
+// ── 「检测证据分」展示：模型真实输出，非查表换算的百分比 ──
+// 本平台实测参考区间：真实超声阳性约 0.76~0.91，阴性约 0；判界阈值仅 0.0145，
+// 因此条形图按 1.0 满量程显示（不要把 0.8 读成"80% 把握"）。
+function evidenceText(val) {
   if (val === null || val === undefined) return '—'
-  return Math.round(val * 100) + '%'
+  return Number(val).toFixed(3)
 }
 
-function confidenceColor(val) {
+function evidenceBarWidth(val) {
+  if (val == null) return '0%'
+  return Math.max(0, Math.min(1, Number(val))) * 100 + '%'
+}
+
+function evidenceColor(val) {
   if (val == null) return 'var(--text-muted)'
-  const pct = val * 100
-  if (pct >= 80) return 'var(--success)'
-  if (pct >= 50) return 'var(--warning)'
-  return 'var(--danger)'
+  const v = Number(val)
+  if (v >= 0.5) return 'var(--success)'
+  if (v >= 0.014451) return 'var(--warning)'   // 达到判界阈值
+  return 'var(--text-muted)'
 }
 
 async function fetchData() {
@@ -305,42 +320,50 @@ onMounted(fetchData)
 .stat-card-inner {
   display: flex;
   align-items: center;
+  justify-content: space-between;
   gap: 16px;
-  padding: 22px 20px;
+  padding: 20px 22px 22px;
+  min-height: 96px;
 }
 .stat-icon-wrap {
-  width: 48px;
-  height: 48px;
-  border-radius: var(--radius-sm);
-  background: var(--accent);
-  opacity: 0.1;
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  /* 半透明底色 + 实色图标；不能对容器用 opacity，否则图标会一起变透明 */
+  background: var(--accent-tint, var(--bg-hover));
+  color: var(--accent);
   display: flex;
   align-items: center;
   justify-content: center;
   flex-shrink: 0;
-  transition: opacity 0.2s ease;
+  transition: transform 0.25s ease;
 }
 .stat-card:hover .stat-icon-wrap {
-  opacity: 0.15;
+  transform: scale(1.06);
 }
 .stat-icon-wrap .el-icon {
-  color: var(--accent);
+  color: inherit;
 }
 .stat-body {
   flex: 1;
+  min-width: 0;
 }
 .stat-value {
   font-family: var(--font-display);
-  font-size: 28px;
+  font-size: 32px;
   font-weight: 700;
   color: var(--text-primary);
-  line-height: 1.2;
+  line-height: 1.05;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
 .stat-label {
-  font-size: 12px;
+  font-size: 13px;
   color: var(--text-muted);
-  margin-top: 2px;
+  margin-top: 6px;
   font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
 }
 .stat-accent-bar {
   position: absolute;
@@ -348,7 +371,7 @@ onMounted(fetchData)
   left: 0;
   right: 0;
   height: 3px;
-  opacity: 0.8;
+  opacity: 0.9;
 }
 
 /* 数据卡片 */
