@@ -54,7 +54,7 @@
                 <span class="model-role">检测</span>
                 <span class="model-name">{{ result.detection_model_name }}<template v-if="result.detection_model_version"> v{{ result.detection_model_version }}</template></span>
                 <span v-if="result.detection_ms != null" class="model-meta">{{ result.detection_ms }}ms</span>
-                <span v-if="result.detection_score != null" class="model-meta">score {{ result.detection_score }}</span>
+                <span v-if="result.detection_score != null" class="model-meta">证据分 {{ result.detection_score.toFixed(3) }}</span>
               </span>
               <span v-if="result.classification_model_name" class="model-line">
                 <span class="model-role">分类</span>
