@@ -17,8 +17,7 @@ uploads/
 /frontend/frontend.log
 /backend/.venv/
 
-# 模型权重：体积大（约 150MB），不进 Git。需要单独拷贝到 backend/algorithm/weights/
-/backend/algorithm/weights/
-*.pt
-*.pth
-*.onnx
+# 模型权重（约 248MB）：已纳入 Git LFS，见 .gitattributes。
+# 新环境直接 git clone + git lfs pull 即可，不需要手动拷贝权重。
+# 若所在环境 LFS 不可用，可退回"手动放置"：把权重放到 backend/algorithm/weights/ 下，
+# 并用 backend/algorithm/weights.md5 校验完整性（scripts/setup-windows.ps1 会做这件事）。
