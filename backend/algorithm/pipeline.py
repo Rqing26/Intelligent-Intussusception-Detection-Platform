@@ -190,6 +190,35 @@ def _attach_prognosis(base: DetectionResult, image_path: Path) -> DetectionResul
     )
 
 
+def _clamp_box(box, img):
+    """把病灶框裁到图像范围内。
+
+    算法侧给出的框可能越界（实测噪声图得到 `(-12,-22,239,201)`、真实影像得到
+    `(62,-14,308,201)`），越界框在前端叠加显示与报告里都是错的，这里统一裁掉。
+    裁完若没有有效区域，则视为"没有框"（返回 None）。
+    """
+    if not box:
+        return box
+    try:
+        # 只对"单帧图像"裁切：RGB(H,W,3) / 灰度(H,W)；多帧 DICOM (F,H,W) 不做处理
+        if img is None:
+            return box
+        shape = getattr(img, "shape", None)
+        if not shape or len(shape) < 2:
+            return box
+        if len(shape) == 3 and shape[2] not in (1, 3, 4):
+            return box                      # 多帧序列，跳过
+        h, w = int(shape[0]), int(shape[1])
+        x1, y1, x2, y2 = (int(v) for v in box)
+        x1, x2 = sorted((max(0, min(x1, w)), max(0, min(x2, w))))
+        y1, y2 = sorted((max(0, min(y1, h)), max(0, min(y2, h))))
+        if x2 - x1 < 1 or y2 - y1 < 1:
+            return None
+        return (x1, y1, x2, y2)
+    except (TypeError, ValueError):
+        return box
+
+
 def _run_ab_pipeline(image_path: Path) -> DetectionResult:
     """A/B 真实流水线：读图 → 检测(A) → 分类(B) → 组装结果。"""
     # ---- 真实流水线 ----
@@ -207,7 +236,7 @@ def _run_ab_pipeline(image_path: Path) -> DetectionResult:
     classification_ms = round((perf_counter() - t_cls) * 1000, 2)
 
     # 4) 组装成平台契约（validate_result 会做合法性校验与兜底）
-    #    双模型溯源：读取 A/B 各自模块里的 NAME/VERSION 常量（没定义则为空，
+    #    多模型溯源：读取 A/B 各自模块里的 NAME/VERSION 常量（没定义则为空，
     #    前端会回退显示整体 pipeline 名称，不会报错）。
     return validate_result(DetectionResult(
         classification=outcome.classification,
@@ -225,7 +254,7 @@ def _run_ab_pipeline(image_path: Path) -> DetectionResult:
         detection_ms=detection_ms,
         classification_ms=classification_ms,
         detection_score=getattr(roi, "score", None),
-        roi_box=getattr(roi, "box", None),
+        roi_box=_clamp_box(getattr(roi, "box", None), img),   # 越界框裁到图内
         # A 若回传了带病灶框的标注图，一并交给平台存盘/展示
         result_image=getattr(roi, "annotated_image", None),
     ))

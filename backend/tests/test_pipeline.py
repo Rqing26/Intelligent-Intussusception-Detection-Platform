@@ -400,6 +400,29 @@ def test_prognosis_mode_is_opt_in(monkeypatch):
     assert team_model.decide_classification(0) == "肠套叠阴性"
 
 
+def test_clamp_box_keeps_box_inside_image():
+    """算法侧可能给出越界病灶框（实测有 (-12,-22,239,201)），平台必须裁到图内。"""
+    import numpy as np
+
+    from algorithm.pipeline import _clamp_box
+
+    img = np.zeros((224, 224, 3), dtype=np.uint8)
+    # 越界 → 裁到边界
+    assert _clamp_box((-12, -22, 239, 201), img) == (0, 0, 224, 201)
+    assert _clamp_box((10, 20, 300, 500), img) == (10, 20, 224, 224)
+    # 图内框原样保留
+    assert _clamp_box((37, 16, 126, 92), img) == (37, 16, 126, 92)
+    # 坐标颠倒也能规整
+    assert _clamp_box((126, 92, 37, 16), img) == (37, 16, 126, 92)
+    # 裁完没有有效区域 → 视为无框
+    assert _clamp_box((300, 300, 400, 400), img) is None
+    # 多帧 DICOM (F,H,W) 不做裁切；非法输入原样返回
+    frames = np.zeros((5, 224, 224), dtype=np.uint16)
+    assert _clamp_box((1, 2, 3, 4), frames) == (1, 2, 3, 4)
+    assert _clamp_box(None, img) is None
+    assert _clamp_box("bad", img) == "bad"
+
+
 def test_negative_classification_drops_treatment_success_rate():
     """阴性结果不应带严重度/成功率（平台契约：这两项仅阳性有意义）。
 
