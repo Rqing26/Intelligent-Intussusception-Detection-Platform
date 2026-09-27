@@ -1,20 +1,25 @@
-"""薄适配层：把「检测(A) + 分类(B)」串成平台唯一入口
-=====================================================
+"""薄适配层：把「检测(A) + 分类(B)」与「预后」串成平台唯一入口
+=====================================================================
 
 平台只依赖这一个函数：
     detect_intussusception(image_path: Path) -> DetectionResult
 
-工作方式（**自动切换，不需要改平台代码**），按优先级从高到低：
+执行顺序（2026-09-27 确认，**串行**，不是二选一）：
 
-    1) detection.READY 且 classification.READY 都为 True
-         → A/B 真实流水线：读图 → 检测(A) → 分类(B) → 组装结果
-    2) team_model 可用（依赖齐全 + 权重齐全）
-         → 队友交付的融合模型：切面 YOLO + 横/纵切 5 折 YOLO 集成 + ResNet18
-    3) 以上都不满足
-         → 自动回退到 interface.py 里的 Mock（保证平台随时能跑通）
+    1) 检测(A) + 分类(B)           → 阴阳性、置信度、病灶框、标注图
+       （detection.READY 与 classification.READY 都为 True 时才可用）
+    2) 若结论为「肠套叠阳性」        → 再跑预后模型
+       → 灌肠复位成功率、严重程度、处置建议
+       （阴性 / 图像质量不佳 **不跑预后**：没有肠套叠就谈不上"复位成功率"）
 
-真实入口的判定在启动/每次请求时都会重新求值：把权重放进
-`algorithm/weights/`、把 READY 改成 True，对应模型就自动生效。
+降级策略（任一环节缺失都不影响平台可用）：
+
+    A/B 未就绪            → 只用预后模型（只出预后字段，没有诊断结论）
+    两者都不可用           → 回退到 interface.py 的 Mock
+    预后执行失败           → 只记日志，诊断结果照常返回
+
+真实入口的判定在每次请求时重新求值：把权重放进 `algorithm/weights/`、
+把 READY 改成 True，对应环节就自动生效。
 
 本文件是各方代码的**唯一交汇点**，保持轻薄、写完基本不动。
 """
@@ -70,20 +75,26 @@ def is_team_model_ready() -> bool:
 
 
 def _log_source_once(source: str) -> None:
-    """首次走某个入口时打一条日志，方便排查"到底用的哪个模型"。"""
+    """首次走某个入口（或入口变化）时打一条日志，方便排查"到底用了哪个模型"。"""
     global _logged_source
     if _logged_source == source:
         return
     _logged_source = source
-    if source == "team_model":
-        logger.info("检测入口：队友融合模型 team_model（YOLO5Fold+ResNet18）")
+
+    if source == "pipeline+prognosis":
+        logger.info("检测入口：A/B 真实流水线 + 预后模型（阳性病例）")
     elif source == "pipeline":
-        logger.info("检测入口：A/B 真实流水线")
-    else:
+        logger.info("检测入口：A/B 真实流水线（阴性 / 质量不佳，按约定不跑预后）")
+    elif source == "team_model":
+        logger.info("检测入口：仅预后模型 team_model（A/B 未就绪，本次没有诊断结论）")
+    elif source == "mock":
         logger.warning(
-            "检测入口：Mock 占位结果（A/B 模块未就绪，且 team_model 不可用）。"
+            "检测入口：Mock 占位结果（A/B 模块未就绪，且预后模型不可用）。"
             "把权重放到 algorithm/weights/ 并安装依赖后自动启用真实模型。"
         )
+    else:
+        # 防御：新增入口忘了登记时，别误报成 Mock
+        logger.info("检测入口：%s", source)
 
 
 def load_image(image_path: Path):
@@ -114,23 +125,69 @@ def load_image(image_path: Path):
 
 
 def detect_intussusception(image_path: Path) -> DetectionResult:
-    """平台调用的唯一入口。"""
-    # ---- 1) A/B 真实流水线（优先级最高）----
+    """平台调用的唯一入口。
+
+    执行顺序（2026-09-27 确认）：
+      1. **检测(A) + 分类(B)**：识图 → 判阴阳性 → 病灶框 / 标注图
+      2. **仅当结论为「肠套叠阳性」时**，再跑**预后**模型，补灌肠复位成功率 / 严重度 / 处置建议
+         —— 阴性或质量不佳不跑预后：没有肠套叠就谈不上"复位成功率"
+      3. 降级策略：A/B 未就绪 → 只用预后模型（只出预后字段）；两者都不可用 → Mock
+
+    任一环节失败都不会丢掉已有结论（预后失败只记日志，诊断结果照常返回）。
+    """
+    # ---- A/B 未就绪：退化为"只用预后模型"或 Mock ----
     if not is_real_ready():
-        # ---- 2) 队友交付的融合模型 ----
         if is_team_model_ready():
             from algorithm import team_model  # noqa: WPS433
 
             _log_source_once("team_model")
-            raw = team_model.detect_intussusception(image_path)
-            return validate_result(raw)
+            return validate_result(team_model.detect_intussusception(image_path))
 
-        # ---- 3) Mock 兜底 ----
         _log_source_once("mock")
         return _mock_detect(image_path)
 
+    # ---- 1) 检测 + 分类（诊断）----
+    base = _run_ab_pipeline(image_path)
+
+    # ---- 2) 阳性才追加预后 ----
+    if base.classification == "肠套叠阳性" and is_team_model_ready():
+        return _attach_prognosis(base, image_path)
+
     _log_source_once("pipeline")
-    return _run_ab_pipeline(image_path)
+    return base
+
+
+def _attach_prognosis(base: DetectionResult, image_path: Path) -> DetectionResult:
+    """在阳性结论上追加预后（灌肠复位成功率 / 严重度 / 处置建议）。
+
+    只**追加**预后字段，不碰诊断结论（`classification` / `confidence` / 病灶框由检测槽位负责）。
+    """
+    from dataclasses import replace
+    from algorithm import team_model  # noqa: WPS433
+
+    try:
+        prognosis = validate_result(team_model.detect_intussusception(image_path))
+    except Exception as exc:  # noqa: BLE001 —— 预后失败绝不能影响诊断结果
+        logger.warning("预后模型执行失败，本次结果不含预后字段：%s", exc)
+        _log_source_once("pipeline")
+        return base
+
+    _log_source_once("pipeline+prognosis")
+    logger.info(
+        "检测+预后完成：诊断=%s，预后成功率=%s（%s）",
+        base.classification, prognosis.treatment_success_rate, prognosis.prognosis_model_name,
+    )
+    return replace(
+        base,
+        severity=prognosis.severity,
+        treatment_success_rate=prognosis.treatment_success_rate,
+        # 预后模型给的是"针对治疗"的建议，比检测侧的通用建议更具体，故在阳性时采用它；
+        # 若预后模型没给建议，则保留检测侧的建议。
+        treatment_advice=prognosis.treatment_advice or base.treatment_advice,
+        prognosis_model_name=prognosis.prognosis_model_name or _module_meta(team_model, "NAME"),
+        prognosis_model_version=prognosis.prognosis_model_version or _module_meta(team_model, "VERSION"),
+        prognosis_ms=prognosis.prognosis_ms,
+    )
 
 
 def _run_ab_pipeline(image_path: Path) -> DetectionResult:

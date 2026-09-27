@@ -102,9 +102,11 @@ def test_mock_leaves_model_slots_empty(monkeypatch, no_team_model):
     monkeypatch.setattr(classification, "READY", False)
 
     result = pipeline.detect_intussusception(Path("not-used.jpg"))
-    assert result.model_name == "Mock"
+    # 算法侧把 Mock 标识改成"Mock（占位实现·非真实模型）"，便于与真实模型区分
+    assert result.model_name.startswith("Mock")
     assert result.detection_model_name == ""
     assert result.classification_model_name == ""
+    assert result.prognosis_model_name == ""
     assert result.detection_ms is None
     assert result.classification_ms is None
 
@@ -232,7 +234,7 @@ def test_team_model_used_when_ab_not_ready(monkeypatch):
 
 
 def test_ab_pipeline_wins_over_team_model(monkeypatch):
-    """A/B 就绪时优先级高于融合模型。"""
+    """A/B 就绪时以 A/B 为诊断来源，且阴性不调用预后模型。"""
     monkeypatch.setattr(pipeline, "load_image", lambda p: "IMG")
     monkeypatch.setattr(detection, "READY", True)
     monkeypatch.setattr(classification, "READY", True)
@@ -244,9 +246,109 @@ def test_ab_pipeline_wins_over_team_model(monkeypatch):
         lambda roi: ClassificationOutcome(classification="肠套叠阴性", confidence=0.6),
     )
 
+    from algorithm import team_model
+
+    def _must_not_run(_path):
+        raise AssertionError("阴性病例不应调用预后模型")
+
+    monkeypatch.setattr(team_model, "detect_intussusception", _must_not_run)
+
     result = pipeline.detect_intussusception(Path("x.jpg"))
     assert result.model_name == "team-pipeline"
     assert result.detection_model_name == "DetA"
+    assert result.classification == "肠套叠阴性"
+    assert result.prognosis_model_name == ""        # 阴性不跑预后
+    assert result.treatment_success_rate is None
+
+
+# ---------------- 顺序执行：检测 →阳性→ 预后 ----------------
+
+
+def _stub_ab(monkeypatch, classification_value):
+    """把 A/B 桩成固定结论，便于只测"阳性才跑预后"这一条链。"""
+    monkeypatch.setattr(pipeline, "load_image", lambda p: "IMG")
+    monkeypatch.setattr(detection, "READY", True)
+    monkeypatch.setattr(classification, "READY", True)
+    monkeypatch.setattr(detection, "NAME", "DetA")
+    monkeypatch.setattr(detection, "VERSION", "1.2.3")
+    monkeypatch.setattr(classification, "NAME", "ClsB")
+    monkeypatch.setattr(detection, "detect", lambda img: ROI(image="ROI", box=(1, 2, 3, 4), score=0.88))
+    monkeypatch.setattr(
+        classification, "classify",
+        lambda roi: ClassificationOutcome(
+            classification=classification_value, confidence=0.9,
+            treatment_advice="【检测侧建议】结合临床评估。",
+        ),
+    )
+    monkeypatch.setattr(pipeline, "is_team_model_ready", lambda: True)
+
+
+def test_positive_runs_prognosis_and_keeps_diagnosis(monkeypatch):
+    """阳性：追加预后字段，但**不改**诊断结论与病灶框。"""
+    from algorithm import team_model
+    from algorithm.interface import DetectionResult
+
+    _stub_ab(monkeypatch, "肠套叠阳性")
+    monkeypatch.setattr(team_model, "detect_intussusception", lambda _p: DetectionResult(
+        classification="肠套叠阳性",            # 预后模型的占位分类，不应覆盖诊断
+        confidence=0.99,
+        severity="轻度",
+        treatment_success_rate=0.9783,
+        treatment_advice="【预后建议】建议立即行空气灌肠复位术。",
+        prognosis_model_name=team_model.NAME,
+        prognosis_model_version=team_model.VERSION,
+        prognosis_ms=2207.0,
+    ))
+
+    result = pipeline.detect_intussusception(Path("x.jpg"))
+
+    # 诊断侧：来自 A/B，未被预后覆盖
+    assert result.classification == "肠套叠阳性"
+    assert result.confidence == 0.9
+    assert result.detection_model_name == "DetA"
+    assert result.classification_model_name == "ClsB"
+    assert result.roi_box == (1, 2, 3, 4)
+    # 预后侧：来自预后模型
+    assert result.severity == "轻度"
+    assert result.treatment_success_rate == 0.9783
+    assert result.prognosis_model_name == team_model.NAME
+    assert result.prognosis_ms == 2207.0
+    assert "预后建议" in result.treatment_advice      # 阳性时采用更具体的预后建议
+
+
+def test_prognosis_failure_does_not_lose_diagnosis(monkeypatch):
+    """预后模型抛异常时，诊断结果必须照常返回（只是没有预后字段）。"""
+    from algorithm import team_model
+
+    _stub_ab(monkeypatch, "肠套叠阳性")
+
+    def _boom(_path):
+        raise RuntimeError("权重损坏")
+
+    monkeypatch.setattr(team_model, "detect_intussusception", _boom)
+
+    result = pipeline.detect_intussusception(Path("x.jpg"))
+    assert result.classification == "肠套叠阳性"      # 诊断仍在
+    assert result.confidence == 0.9
+    assert result.treatment_success_rate is None      # 预后缺失
+    assert result.prognosis_model_name == ""
+    assert "检测侧建议" in result.treatment_advice     # 保留检测侧建议
+
+
+def test_poor_quality_does_not_run_prognosis(monkeypatch):
+    """质量不佳同样不跑预后（与阴性同等对待）。"""
+    from algorithm import team_model
+
+    _stub_ab(monkeypatch, "图像质量不佳")
+
+    def _must_not_run(_path):
+        raise AssertionError("质量不佳不应调用预后模型")
+
+    monkeypatch.setattr(team_model, "detect_intussusception", _must_not_run)
+
+    result = pipeline.detect_intussusception(Path("x.jpg"))
+    assert result.classification == "图像质量不佳"
+    assert result.prognosis_model_name == ""
 
 
 def test_team_model_import_failure_is_safe(monkeypatch):

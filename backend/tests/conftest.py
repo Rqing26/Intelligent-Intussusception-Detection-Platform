@@ -33,14 +33,22 @@ def setup_db():
 
 
 @pytest.fixture(autouse=True)
-def disable_team_model(monkeypatch):
-    """默认屏蔽队友融合模型（team_model）。
+def disable_real_models(monkeypatch):
+    """默认屏蔽所有真实模型，让测试稳定走 Mock。
 
-    它需要加载 12 个权重（约 150MB）并在 CPU 上推理，测试里既慢又不该依赖权重文件。
-    需要验证 team_model 调度行为的用例，可在用例内自行 monkeypatch 覆盖本设置。
+    原因：算法侧交付后 `detection.READY` / `classification.READY` 都是 True，
+    若不屏蔽，凡是调用 `/api/images/{id}/detect` 的用例都会：
+      · 加载真实的 OBB 权重（约 93MB）与 torch/ultralytics
+      · 对测试用的 120 字节假 JPEG 真跑推理 → 直接 500
+    另外预后模型（team_model）要加载 12 个权重（约 150MB），同样不该进测试。
+
+    需要验证 A/B 流水线或预后调度的用例，在用例内自行 monkeypatch 覆盖即可
+    （见 tests/test_pipeline.py）。
     """
-    from algorithm import pipeline
+    from algorithm import pipeline, detection, classification
 
+    monkeypatch.setattr(detection, "READY", False)
+    monkeypatch.setattr(classification, "READY", False)
     monkeypatch.setattr(pipeline, "is_team_model_ready", lambda: False, raising=False)
     yield
 
