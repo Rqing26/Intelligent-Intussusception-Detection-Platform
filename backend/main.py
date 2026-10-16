@@ -42,6 +42,12 @@ async def lifespan(app: FastAPI):
         "exam_part": "VARCHAR(100)",
         "birth_date": "VARCHAR(20)",
     })
+    # 去标识裁剪元数据（医学图像进模型前去除患者信息）：None/auto/manual
+    ensure_columns("images", {
+        "crop_mode": "VARCHAR(16)",
+        "crop_box": "TEXT",
+        "cropped_at": "DATETIME",
+    })
     db = SessionLocal()
     try:
         if db.query(User).count() == 0:

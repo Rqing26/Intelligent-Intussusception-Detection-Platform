@@ -12,8 +12,9 @@
 
     <div class="workflow-strip" aria-label="影像检测流程">
       <div class="workflow-step" :class="{ current: !uploading }"><span class="step-number">01</span><div><strong>选择影像</strong><span>支持多张文件上传</span></div></div>
-      <div class="workflow-step" :class="{ current: uploading }"><span class="step-number">02</span><div><strong>智能检测</strong><span>自动分析超声影像</span></div></div>
-      <div class="workflow-step"><span class="step-number">03</span><div><strong>查看结果</strong><span>查看分析与打印报告</span></div></div>
+      <div class="workflow-step" :class="{ current: uploading && cropMode !== 'none' }"><span class="step-number">02</span><div><strong>去标识裁剪</strong><span>去除影像中的患者信息</span></div></div>
+      <div class="workflow-step" :class="{ current: uploading && cropMode === 'none' }"><span class="step-number">03</span><div><strong>智能检测</strong><span>自动分析超声影像</span></div></div>
+      <div class="workflow-step"><span class="step-number">04</span><div><strong>查看结果</strong><span>查看分析与打印报告</span></div></div>
     </div>
 
     <!-- 上传卡片 -->
@@ -31,6 +32,28 @@
 
         <div class="card-body">
           <UploadZone :disabled="uploading" @file-selected="onFileSelected" />
+
+          <!-- 去标识（裁剪）设置：医学图像进模型前去除患者信息 -->
+          <div class="crop-settings">
+            <div class="crop-settings-title">
+              <el-icon><Scissor /></el-icon>
+              <span>去标识裁剪</span>
+              <el-tooltip
+                content="B 超整帧截图常在顶栏/侧栏带有患者姓名、ID 等信息。进入 AI 模型前可裁掉这些区域，只保留中间的超声图像区。"
+                placement="top"
+              >
+                <el-icon class="crop-help"><QuestionFilled /></el-icon>
+              </el-tooltip>
+            </div>
+            <el-radio-group v-model="cropMode" :disabled="uploading" class="crop-radio-group">
+              <el-radio-button value="none">不裁剪</el-radio-button>
+              <el-radio-button value="auto">自动裁剪</el-radio-button>
+              <el-radio-button value="manual">手动裁剪</el-radio-button>
+            </el-radio-group>
+            <p class="crop-settings-desc">
+              {{ cropModeDesc }}
+            </p>
+          </div>
         </div>
       </div>
 
@@ -56,11 +79,20 @@
           </li>
           <li>
             <span class="tip-num">4</span>
-            上传后系统将自动进行AI检测分析
+            整帧截图含患者信息时，建议开启「去标识裁剪」
           </li>
         </ul>
       </div>
     </div>
+
+    <!-- 手动裁剪（去标识）对话框：逐张弹出 -->
+    <CropDialog
+      :visible="cropDialogVisible"
+      :image-id="cropDialogImageId"
+      :file-name="cropDialogFileName"
+      @confirm="onCropConfirm"
+      @cancel="onCropCancel"
+    />
     <div class="action-bar" role="region" aria-label="检测操作">
       <div class="selection-summary" aria-live="polite">
         <strong>{{ uploading ? `已完成 ${doneCount} / ${files.length} 张` : files.length ? `已选择 ${files.length} 张影像` : '尚未选择影像' }}</strong>
@@ -85,10 +117,11 @@
 import { ref, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { ElMessage } from 'element-plus'
-import { Upload, InfoFilled, Back, Right } from '@element-plus/icons-vue'
+import { Upload, InfoFilled, Back, Right, Scissor, QuestionFilled } from '@element-plus/icons-vue'
 import AppLayout from '../components/AppLayout.vue'
 import UploadZone from '../components/UploadZone.vue'
-import { uploadImage, runDetection, createDetectionTask, getDetectionTask } from '../api/images'
+import CropDialog from '../components/CropDialog.vue'
+import { uploadImage, runDetection, createDetectionTask, getDetectionTask, cropImage } from '../api/images'
 
 const route = useRoute()
 const router = useRouter()
@@ -98,6 +131,63 @@ const files = ref([])
 const uploading = ref(false)
 const detectProgress = ref(0)          // 当前张的检测进度
 const doneCount = ref(0)               // 已完成张数
+
+// ---- 去标识裁剪设置：none 不裁剪 | auto 模型自动 | manual 逐张手动框选 ----
+const cropMode = ref('none')
+const cropModeDesc = computed(() => ({
+  none: '影像按原样送入 AI 检测（适用于已去除信息或不含患者信息的影像）',
+  auto: 'AI 模型自动识别并去除患者信息条、参数栏、深度刻度条，只保留超声图像区（推荐整帧截图）',
+  manual: '每张影像上传后弹出框选界面，由医生手动框定要保留的超声图像区',
+}[cropMode.value]))
+
+// 手动裁剪对话框状态
+const cropDialogVisible = ref(false)
+const cropDialogImageId = ref(null)
+const cropDialogFileName = ref('')
+let cropDialogResolve = null          // 当前等待框选结果的 Promise
+
+function isDicomFile(f) {
+  return (f.name || '').toLowerCase().endsWith('.dcm')
+}
+
+/**
+ * 手动裁剪一张影像：打开对话框等待医生框选。
+ * 返回 true=已裁剪 / false=跳过。
+ */
+function manualCropOne(imageId, fileName) {
+  return new Promise((resolve) => {
+    cropDialogImageId.value = imageId
+    cropDialogFileName.value = fileName
+    cropDialogVisible.value = true
+    cropDialogResolve = resolve
+  })
+}
+
+async function onCropConfirm(box) {
+  const imageId = cropDialogImageId.value
+  cropDialogVisible.value = false
+  try {
+    const res = await cropImage(imageId, 'manual', box)
+    if (res.data?.applied) {
+      ElMessage.success('已按框选区域完成去标识裁剪')
+      cropDialogResolve?.(true)
+    } else {
+      ElMessage.warning(res.data?.detail || '裁剪未生效，将按原图检测')
+      cropDialogResolve?.(false)
+    }
+  } catch (e) {
+    ElMessage.error(e?.response?.data?.detail || '手动裁剪失败，将按原图检测')
+    cropDialogResolve?.(false)
+  } finally {
+    cropDialogResolve = null
+  }
+}
+
+function onCropCancel() {
+  cropDialogVisible.value = false
+  cropDialogResolve?.(false)
+  cropDialogResolve = null
+}
 
 function onFileSelected(filesList) {
   files.value = filesList || []
@@ -146,12 +236,28 @@ async function handleUpload() {
   try {
     for (let i = 0; i < files.value.length; i++) {
       const f = files.value[i]
-      // 逐张上传
-      const uploadRes = await uploadImage(patientId.value, f)
+      // DICOM 平台不做在线裁剪（像素解析在算法侧），选择裁剪时单独提示
+      const wantCrop = cropMode.value !== 'none' && !isDicomFile(f)
+      if (cropMode.value !== 'none' && isDicomFile(f)) {
+        ElMessage.warning(`第 ${i + 1} 张为 DICOM，暂不支持在线裁剪，将按原图检测`)
+      }
+      // 逐张上传（自动裁剪模式：上传即去标识）
+      const uploadRes = await uploadImage(patientId.value, f, cropMode.value === 'auto')
       const imageId = uploadRes.data.id ?? uploadRes.data.image_id
       if (!imageId) {
         ElMessage.error(`第 ${i + 1} 张上传响应异常`)
         continue
+      }
+      // 自动裁剪结果提示（未识别到超声区 → 保留原图，建议改手动）
+      if (wantCrop && cropMode.value === 'auto') {
+        const meta = uploadRes.data.auto_crop_meta
+        if (meta && meta.applied === false) {
+          ElMessage.warning(`第 ${i + 1} 张未识别到超声区域，已保留原图${meta.error ? '（' + meta.error + '）' : ''}，可到影像详情手动裁剪`)
+        }
+      }
+      // 手动裁剪模式：逐张弹出框选
+      if (wantCrop && cropMode.value === 'manual') {
+        await manualCropOne(imageId, f.name)
       }
       // 逐张检测
       const result = await detectOne(imageId)
@@ -211,9 +317,9 @@ async function handleUpload() {
 /* Upload workflow */
 .workflow-strip {
   display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 24px;
-  max-width: 900px;
+  max-width: 1100px;
   margin: 0 0 30px;
 }
 .workflow-step { display: flex; align-items: center; gap: 12px; color: var(--text-muted); }
@@ -247,6 +353,33 @@ async function handleUpload() {
 .header-text h3 { font-size: 16px; font-weight: 650; color: var(--text-primary); margin: 0 0 5px; }
 .header-text p { font-size: 12px; line-height: 1.5; color: var(--text-muted); margin: 0; }
 .card-body { padding: 28px; }
+/* 去标识裁剪设置区 */
+.crop-settings {
+  margin-top: 22px;
+  padding: 18px 20px;
+  background: var(--bg-page);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md, 12px);
+}
+.crop-settings-title {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 650;
+  color: var(--text-primary);
+  margin-bottom: 12px;
+}
+.crop-settings-title .el-icon { color: var(--primary); }
+.crop-help { color: var(--text-muted); cursor: help; }
+.crop-radio-group { display: flex; }
+.crop-radio-group .el-radio-button { flex: 1; }
+.crop-settings-desc {
+  margin: 12px 0 0;
+  font-size: 12px;
+  line-height: 1.7;
+  color: var(--text-muted);
+}
 .action-bar { position: sticky; bottom: 12px; z-index: 8; display: flex; align-items: center; justify-content: space-between; gap: 20px; margin-top: 24px; padding: 18px 24px; background: var(--bg-card); border: 1px solid var(--border-color); border-radius: 16px; box-shadow: 0 -5px 24px rgba(23, 50, 57, .06); }
 .selection-summary { display: flex; flex-direction: column; gap: 5px; min-width: 0; }
 .selection-summary strong { font-size: 13px; font-weight: 600; color: var(--text-primary); }

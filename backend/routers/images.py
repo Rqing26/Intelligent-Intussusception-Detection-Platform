@@ -6,9 +6,10 @@ from sqlalchemy.orm import Session
 from config import UPLOAD_DIR, ALLOWED_IMAGE_TYPES, MAX_UPLOAD_SIZE
 from database import get_db
 from models import Image, Patient, User, DetectionResult as DetectionResultModel
-from schemas import ImageInfo, DetectionResultOut, detection_result_out
+from schemas import ImageInfo, DetectionResultOut, CropRequest, CropResultOut, detection_result_out
 from auth import get_current_user, can_manage
 from services.detection import DetectionService
+from services.cropping import auto_crop_image, CropError
 from services.result_images import remove_result_image
 from services.audit import record_audit
 
@@ -42,6 +43,7 @@ def _is_dicom(content: bytes) -> bool:
 async def upload_image(
     file: UploadFile = File(...),
     patient_id: int = Form(...),
+    auto_crop: bool = Form(False),
     request: Request = None,
     db: Session = Depends(get_db),
     current_user: User = Depends(get_current_user),
@@ -85,6 +87,24 @@ async def upload_image(
     db.refresh(image)
     result = ImageInfo.model_validate(image)
     result.has_result = False
+    # 上传即自动去标识（可选）：检不到目标时保留原图，把元信息带回给前端提示
+    if auto_crop:
+        try:
+            meta = auto_crop_image(image, db)
+            if meta.get("applied"):
+                record_audit(db, current_user, action="crop", resource="image", resource_id=image.id,
+                             detail=f"上传时自动裁剪：{image.filename}", request=request)
+            db.commit()
+            db.refresh(image)
+            result = ImageInfo.model_validate(image)
+            result.has_result = False
+            result.auto_crop_meta = meta
+        except CropError as exc:
+            db.rollback()
+            db.refresh(image)
+            # 自动裁剪失败不阻断上传，前端按 auto_crop_meta 提示医生改用手动裁剪
+            result.auto_crop_meta = {"applied": False, "mode": "auto",
+                                     "detected": False, "error": str(exc)}
     return result
 
 
@@ -138,6 +158,54 @@ def delete_image(image_id: int, request: Request, db: Session = Depends(get_db),
     db.delete(image)
     db.commit()
     return None
+
+
+@router.post("/{image_id}/crop", response_model=CropResultOut)
+def crop_image(
+    image_id: int,
+    payload: CropRequest,
+    request: Request,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """去标识裁剪：去掉整帧截图里的患者信息条/参数栏/刻度条，只保留超声图像区。
+
+    - mode="auto"   调用自动裁剪模型；检不到目标时保留原图（applied=False）
+    - mode="manual" 按医生框选的 box=[x0,y0,x1,y1]（原图坐标）裁剪
+    裁剪会**覆盖存储的原图**（去标识后原图不再留存），并删除已过期的检测结果。
+    """
+    from services.cropping import manual_crop
+
+    image = db.query(Image).filter(Image.id == image_id).first()
+    if not image:
+        raise HTTPException(status_code=404, detail="Image not found")
+    if not can_manage(image.uploaded_by, current_user):
+        raise HTTPException(status_code=403, detail="仅该影像的上传医生或管理员可裁剪")
+    if payload.mode == "manual" and not payload.box:
+        raise HTTPException(status_code=400, detail="手动裁剪必须提供 box=[x0,y0,x1,y1]")
+
+    try:
+        meta = (manual_crop(image, payload.box, db)
+                if payload.mode == "manual" else auto_crop_image(image, db))
+    except CropError as exc:
+        db.rollback()
+        raise HTTPException(status_code=exc.status_code, detail=str(exc))
+
+    if meta.get("applied"):
+        record_audit(db, current_user, action="crop", resource="image", resource_id=image_id,
+                     detail=f"{'手动' if payload.mode == 'manual' else '自动'}裁剪影像：{image.filename}"
+                            f"（框 {meta.get('box')}）", request=request)
+    db.commit()
+    db.refresh(image)
+    return CropResultOut(
+        image_id=image_id,
+        applied=meta["applied"],
+        mode=payload.mode,
+        box=meta.get("box"),
+        detected=meta.get("detected"),
+        ms=meta.get("ms"),
+        file_size=image.file_size,
+    )
 
 
 @router.post("/{image_id}/detect", response_model=DetectionResultOut)

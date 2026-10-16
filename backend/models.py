@@ -55,6 +55,12 @@ class Image(Base):
     file_size = Column(Integer, nullable=False)
     uploaded_by = Column(Integer, ForeignKey("users.id"), nullable=False)
     uploaded_at = Column(DateTime, default=utcnow)
+    # ---- 去标识裁剪（医学图像进模型前去除患者信息条/参数栏/刻度条）----
+    # crop_mode: None=未裁剪 | "auto"=模型自动裁剪 | "manual"=医生手动框选
+    crop_mode = Column(String(16), nullable=True)
+    # crop_box: 裁剪框 JSON 文本 [x0, y0, x1, y1]（原上传图像素坐标，开区间）
+    crop_box = Column(Text, nullable=True)
+    cropped_at = Column(DateTime, nullable=True)
 
     patient = relationship("Patient", back_populates="images")
     uploader = relationship("User", back_populates="images")

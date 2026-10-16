@@ -1,6 +1,6 @@
 from datetime import datetime, timezone
 from typing import Optional, List
-from pydantic import BaseModel, field_serializer, field_validator
+from pydantic import BaseModel, Field, field_serializer, field_validator
 
 
 def _as_utc(dt: datetime) -> str:
@@ -97,10 +97,32 @@ class ImageOut(BaseModel):
     filename: str
     file_size: int
     uploaded_at: datetime
+    # 去标识裁剪信息（旧数据 / 未裁剪为 None）
+    crop_mode: Optional[str] = None
+    crop_box: Optional[List[int]] = None
 
     @field_serializer("uploaded_at")
     def _ser_uploaded_at(self, v: datetime) -> str:
         return _as_utc(v)
+
+    @field_validator("crop_box", mode="before")
+    @classmethod
+    def _parse_crop_box(cls, v):
+        # 数据库存的是 JSON 字符串，出参前解析成 4 个整数
+        if v is None:
+            return None
+        if isinstance(v, str):
+            import json
+            try:
+                v = json.loads(v)
+            except (ValueError, TypeError):
+                return None
+        if not isinstance(v, (list, tuple)) or len(v) != 4:
+            return None
+        try:
+            return [int(x) for x in v]
+        except (TypeError, ValueError):
+            return None
 
     model_config = {"from_attributes": True}
 
@@ -109,6 +131,25 @@ class ImageInfo(ImageOut):
     has_result: bool = False
     result_id: Optional[int] = None
     media_type: Optional[str] = None
+    # 最近一次自动裁剪的元信息（仅上传接口开启 auto_crop 时返回，便于前端提示）
+    auto_crop_meta: Optional[dict] = None
+
+
+class CropRequest(BaseModel):
+    """去标识裁剪请求：mode=auto 走模型；mode=manual 需给 box（原图坐标 [x0,y0,x1,y1]）。"""
+    mode: str = Field(pattern="^(auto|manual)$")
+    box: Optional[List[int]] = None
+
+
+class CropResultOut(BaseModel):
+    """裁剪结果：applied=False 表示模型未识别到超声区（保留了原图）。"""
+    image_id: int
+    applied: bool
+    mode: str
+    box: Optional[List[int]] = None
+    detected: Optional[bool] = None      # 仅 auto：模型是否识别到超声区域
+    ms: Optional[float] = None           # 仅 auto：模型耗时
+    file_size: int
 
 
 class PatientDetail(PatientOut):
