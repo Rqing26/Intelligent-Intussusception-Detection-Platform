@@ -93,7 +93,7 @@ def get_image_file(image_id: int, db: Session = Depends(get_db), current_user: U
     image = db.query(Image).filter(Image.id == image_id).first()
     if not image or not os.path.exists(image.filepath):
         raise HTTPException(status_code=404, detail="Image not found")
-    return FileResponse(image.filepath)
+    return FileResponse(image.filepath, media_type=_media_type_from_path(image.filepath) or None)
 
 
 @router.get("/{image_id}/info", response_model=ImageInfo)

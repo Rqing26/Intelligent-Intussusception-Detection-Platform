@@ -91,6 +91,7 @@ class DetectionResult(Base):
     prognosis_ms = Column(Float, nullable=True)                        # 预后模型耗时(毫秒)
     detection_score = Column(Float, nullable=True)                     # A：检测置信度 0~1
     roi_box = Column(Text, nullable=True)                              # A：病灶框 JSON 文本 [x1,y1,x2,y2]
+    roi_polygon = Column(Text, nullable=True)                          # A：旋转框四角点 JSON 文本 [x1,y1,...,x4,y4]
     result_image_path = Column(String(500), nullable=True)             # A：带病灶框的标注图存盘路径
     created_at = Column(DateTime, default=utcnow)
 

@@ -121,7 +121,17 @@ def load_image(image_path: Path):
         from PIL import Image  # noqa: WPS433
     except ImportError as exc:  # pragma: no cover
         raise RuntimeError("读取图片需要安装 Pillow 与 numpy：pip install pillow numpy") from exc
-    return np.array(Image.open(image_path).convert("RGB"))
+    with Image.open(image_path) as im:
+        # >8 位图像（如 16 位灰度 PNG，常见于 DICOM 阅片器导出）不能直接 convert("RGB")：
+        # Pillow 会把 >255 的值**截断**到 255，整幅图会变成大片纯白、信息几乎全失。
+        # 先按 min-max 归一化到 8 位再转 RGB（对 8 位图像是恒等变换，行为不变）。
+        if im.mode in ("I", "I;16", "I;16B", "I;16L", "I;16N", "F"):
+            a = np.asarray(im).astype(np.float32)
+            lo, hi = float(np.nanmin(a)), float(np.nanmax(a))
+            arr8 = (((a - lo) / (hi - lo) * 255).astype(np.uint8)
+                    if hi > lo else np.zeros(a.shape, np.uint8))
+            im = Image.fromarray(arr8)
+        return np.array(im.convert("RGB"))
 
 
 def detect_intussusception(image_path: Path) -> DetectionResult:
@@ -219,6 +229,37 @@ def _clamp_box(box, img):
         return box
 
 
+def _clamp_polygon(polygon, img):
+    """把旋转框（OBB）的四个角点裁到图像范围内（与 _clamp_box 同口径）。
+
+    roi_polygon 是 8 个数 (x1,y1,...,x4,y4)。角点越界时逐点夹到 [0,w]x[0,h]，
+    避免前端画多边形/按框算指标时出界；形状发生轻微形变可接受（越界部分本就不存在）。
+    全部点被夹到一起（退化成没有面积）时视为"没有多边形"，返回 None，
+    让下游回退用 roi_box 外接矩形。
+    """
+    if not polygon:
+        return polygon
+    try:
+        if img is None:
+            return polygon
+        shape = getattr(img, "shape", None)
+        if not shape or len(shape) < 2:
+            return polygon
+        if len(shape) == 3 and shape[2] not in (1, 3, 4):
+            return polygon                  # 多帧序列，跳过
+        h, w = int(shape[0]), int(shape[1])
+        pts = [int(v) for v in polygon]
+        if len(pts) != 8:
+            return polygon
+        xs = [max(0, min(x, w)) for x in pts[0::2]]
+        ys = [max(0, min(y, h)) for y in pts[1::2]]
+        if max(xs) - min(xs) < 1 or max(ys) - min(ys) < 1:
+            return None                     # 夹完退化，回退用 roi_box
+        return tuple(v for pair in zip(xs, ys) for v in pair)
+    except (TypeError, ValueError):
+        return polygon
+
+
 def _run_ab_pipeline(image_path: Path) -> DetectionResult:
     """A/B 真实流水线：读图 → 检测(A) → 分类(B) → 组装结果。"""
     # ---- 真实流水线 ----
@@ -256,6 +297,8 @@ def _run_ab_pipeline(image_path: Path) -> DetectionResult:
         classification_ms=classification_ms,      # 判定耗时仍记录（排查用，不单独展示）
         detection_score=getattr(roi, "score", None),
         roi_box=_clamp_box(getattr(roi, "box", None), img),   # 越界框裁到图内
+        # 旋转框四角点（像素，8 个数）：保留 OBB 真实形状，避免下游按外接矩形算指标时白掉精度
+        roi_polygon=_clamp_polygon(getattr(roi, "polygon", None), img),  # 与 box 同口径裁到图内
         # A 若回传了带病灶框的标注图，一并交给平台存盘/展示
         result_image=getattr(roi, "annotated_image", None),
     ))

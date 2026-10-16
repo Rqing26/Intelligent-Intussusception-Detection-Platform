@@ -41,7 +41,7 @@ READY = True
 # 适配层会读取这两个常量，前端检测结果页会单独显示「分类模型」标签。
 # 本项目是**联合的 OBB 检测+分类模型**，这里填分类侧（阈值判定 + 概率标定 + 安全网）的名称。
 NAME = "intussusception-obb-decider"
-VERSION = "1.0.0"
+VERSION = "1.0.1"
 
 
 def classify(roi: ROI) -> ClassificationOutcome:

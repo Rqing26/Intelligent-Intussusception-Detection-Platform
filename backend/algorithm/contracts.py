@@ -23,6 +23,13 @@ class ROI:
            - 若检测模块不方便裁剪，也可直接放原图（约定"全图送分类"）
     box:   病灶在原图中的框 (x1, y1, x2, y2)，**可选**。
            只给坐标时，平台前端会在原图上叠加显示病灶框。
+           ⚠️ 这是**外接矩形**，会丢掉旋转信息；旋转框请同时给下面的 polygon。
+    polygon: **旋转框的四个角点**（可选）：(x1, y1, x2, y2, x3, y3, x4, y4)，
+           原图像素坐标，按顺序围成四边形。
+           实测（test190 留出集 190 张 + 语料 800 张，两批独立数据一致）：
+           只保留外接矩形会让 Recall@IoU 0.75 掉 **10.5~11.0pp**（67.7% → 56.8%），
+           因为模型输出的本就是旋转框，压成外接矩形后必然变大。
+           给了它，下游（入库/前端叠加/按框算指标）应优先用它，box 仅作兼容。
     score: 检测置信度（0~1），**可选**。
     annotated_image: **带病灶框的标注图**，可选，支持三种形态：
            - bytes / bytearray  已编码的 JPEG/PNG 字节（推荐，零依赖）
@@ -33,6 +40,7 @@ class ROI:
     """
     image: Any
     box: Optional[Tuple[int, int, int, int]] = None
+    polygon: Optional[Tuple[int, int, int, int, int, int, int, int]] = None
     score: Optional[float] = None
     annotated_image: Any = None
 

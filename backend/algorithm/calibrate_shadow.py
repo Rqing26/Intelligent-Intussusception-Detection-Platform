@@ -138,7 +138,13 @@ def _boot(pos, neg, thr, n=BOOTSTRAP, seed=0):
 def cmd_fit(min_lower: float = TARGET, use_point: bool = False, mode: str = "relative"):
     recs = load_records()
     lab = load_labels()
-    rows = [r for r in recs if r["md5"] in lab]
+    all_lab = [r for r in recs if r["md5"] in lab]
+    # ★ 只用「模型训练时没见过」的影像标定：样本内影像的候选策略分数被系统性压低，
+    #   据此定出的阈值会偏低、真实 Precision 不达标。（旧记录没有该字段时按"未见过的"处理）
+    rows = [r for r in all_lab if not r.get("in_sample")]
+    n_in = len(all_lab) - len(rows)
+    if n_in:
+        print(f"[提示] 已排除 {n_in} 条「样本内」记录（训练语料里出现过），它们不参与标定。")
     if not rows:
         print("[错误] 还没有任何标注。先 --export，再填 labels.csv 的 label 列，然后 --fit")
         return 2

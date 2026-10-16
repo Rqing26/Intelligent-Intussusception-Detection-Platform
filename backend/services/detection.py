@@ -64,6 +64,8 @@ class DetectionService:
             prognosis_ms=result.prognosis_ms,
             detection_score=result.detection_score,
             roi_box=json.dumps(list(result.roi_box)) if result.roi_box else None,
+            # 旋转框四角点：保留 OBB 真实形状（roi_box 只是外接矩形）
+            roi_polygon=json.dumps(list(result.roi_polygon)) if getattr(result, "roi_polygon", None) else None,
             result_image_path=result_image_path,
         )
         db.add(detection)

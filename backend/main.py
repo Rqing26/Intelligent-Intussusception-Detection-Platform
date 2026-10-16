@@ -33,6 +33,8 @@ async def lifespan(app: FastAPI):
         "prognosis_ms": "FLOAT",
         "detection_score": "FLOAT",
         "roi_box": "TEXT",
+        # 旋转框四角点（8 个数）：roi_box 只是它的外接矩形，会丢旋转
+        "roi_polygon": "TEXT",
         "result_image_path": "VARCHAR(500)",
     })
     ensure_columns("patients", {

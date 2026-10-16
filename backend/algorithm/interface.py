@@ -103,6 +103,10 @@ class DetectionResult:
     # 检测原始输出（可选）：A 给出的检测置信度与病灶框 (x1,y1,x2,y2) 原图坐标
     detection_score: Optional[float] = None
     roi_box: Optional[tuple] = None
+    # 旋转框四角点（可选）：(x1,y1,x2,y2,x3,y3,x4,y4) 原图像素坐标。
+    # roi_box 只是它的外接矩形；实测只保留外接矩形会让 Recall@IoU 0.75 掉 10.5~11.0pp，
+    # 因此下游（入库/前端/按框算指标）应优先用 roi_polygon，roi_box 仅作兼容。
+    roi_polygon: Optional[tuple] = None
     # 带病灶框的标注图（可选）：bytes / 文件路径 / numpy.ndarray，
     # 平台负责存盘与展示，形态由 services/result_images.py 统一处理。
     result_image: Any = None
@@ -146,6 +150,22 @@ def _clean_box(box) -> Optional[tuple]:
     except (TypeError, ValueError):
         return None
     return (x1, y1, x2, y2)
+
+
+def _clean_polygon(poly) -> Optional[tuple]:
+    """旋转框四角点规整成 8 个整数的元组；长度/类型不对则丢弃。
+
+    必须是 **恰好 8 个** 才收，避免把 4 元组的 roi_box 误当多边形存下去。
+    """
+    if poly is None:
+        return None
+    try:
+        vals = tuple(int(float(v)) for v in poly)
+    except (TypeError, ValueError):
+        return None
+    if len(vals) != 8:
+        return None
+    return vals
 
 
 def _default_advice(classification: str, severity: Optional[str] = None,
@@ -208,6 +228,7 @@ def validate_result(result: DetectionResult) -> DetectionResult:
         prognosis_ms=_clean_ms(result.prognosis_ms),
         detection_score=score,
         roi_box=_clean_box(result.roi_box),
+        roi_polygon=_clean_polygon(result.roi_polygon),
         # 标注图原样透传（图片数据的合法性/存盘由 services/result_images.py 负责）
         result_image=result.result_image,
     )
@@ -288,8 +309,10 @@ def detect_intussusception(image_path: Path) -> DetectionResult:
         severity=severity,
         treatment_success_rate=treatment_success_rate,
         treatment_advice=advice,
-        model_name="Mock（占位实现·非真实模型）",
-        model_version="mock-1.0.0",
+        # model_name 保持平台约定的 "Mock"（平台测试与前端都会按此识别占位实现）；
+        # 「非真实模型」的显式标识放在 model_version 与建议文本前缀里，两者都会展示给用户。
+        model_name="Mock",
+        model_version="mock-1.0.0（占位实现·非真实模型）",
         class_probabilities=probs,
         # Mock 是整条流水线的占位实现（没有真正的检测/分类模型），
         # 因此 detection_* / classification_* 一律留空：

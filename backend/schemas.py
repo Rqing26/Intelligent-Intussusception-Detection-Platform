@@ -139,6 +139,9 @@ class DetectionResultOut(BaseModel):
     prognosis_ms: Optional[float] = None
     detection_score: Optional[float] = None
     roi_box: Optional[List[int]] = None
+    # 旋转框四角点 [x1,y1,x2,y2,x3,y3,x4,y4]：roi_box 只是外接矩形，会丢旋转；
+    # 下游画框/算指标应优先用 roi_polygon
+    roi_polygon: Optional[List[int]] = None
     # 算法是否回传了带病灶框的标注图（前端据此显示「AI 标注图」切换）
     has_result_image: bool = False
     created_at: datetime
@@ -157,6 +160,25 @@ class DetectionResultOut(BaseModel):
             except (ValueError, TypeError):
                 return None
         if not isinstance(v, (list, tuple)) or len(v) != 4:
+            return None
+        try:
+            return [int(x) for x in v]
+        except (TypeError, ValueError):
+            return None
+
+    @field_validator("roi_polygon", mode="before")
+    @classmethod
+    def _parse_roi_polygon(cls, v):
+        # 数据库存的是 JSON 字符串，这里在类型校验前解析成 8 个整数
+        if v is None:
+            return None
+        if isinstance(v, str):
+            import json
+            try:
+                v = json.loads(v)
+            except (ValueError, TypeError):
+                return None
+        if not isinstance(v, (list, tuple)) or len(v) != 8:
             return None
         try:
             return [int(x) for x in v]
