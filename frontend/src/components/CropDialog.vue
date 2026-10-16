@@ -32,8 +32,10 @@
             draggable="false"
             @load="onImageLoad"
           />
-          <!-- 四周半透明遮罩 + 保留区挖空：直观呈现「裁掉的是什么」 -->
-          <div v-if="sel" class="crop-mask" :style="maskStyle" />
+          <!-- 四条遮罩带（上/下/左/右）：只暗化图片内选框之外的区域，不溢出到弹窗和页面 -->
+          <template v-if="sel">
+            <div v-for="(b, i) in maskBands" :key="i" class="crop-mask-band" :style="b" />
+          </template>
           <div v-if="sel" class="crop-rect" :style="rectStyle">
             <span class="crop-rect-size">{{ Math.round(sel.w / scale) }} × {{ Math.round(sel.h / scale) }} px</span>
             <i class="crop-handle crop-handle-tl" /><i class="crop-handle crop-handle-tr" />
@@ -116,12 +118,19 @@ const rectStyle = computed(() => sel.value && ({
   left: `${sel.value.x}px`, top: `${sel.value.y}px`,
   width: `${sel.value.w}px`, height: `${sel.value.h}px`,
 }))
-// 用巨大的 box-shadow 做四周遮罩：保留区被 rect 盖住不受影响
-const maskStyle = computed(() => sel.value && ({
-  left: `${sel.value.x}px`, top: `${sel.value.y}px`,
-  width: `${sel.value.w}px`, height: `${sel.value.h}px`,
-  'box-shadow': '0 0 0 9999px rgba(15, 26, 32, 0.55)',
-}))
+// 上/下/左/右四条遮罩带，全部约束在 stage（图片区域）内：
+// 用 calc(100% - n px) 表达贴边尺寸，避免依赖 JS 读取容器尺寸
+const maskBands = computed(() => {
+  if (!sel.value) return []
+  const { x, y, w, h } = sel.value
+  const bg = 'rgba(15, 26, 32, 0.55)'
+  return [
+    { left: '0', top: '0', width: '100%', height: `${y}px`, background: bg },                                            // 选区上方
+    { left: '0', top: `${y + h}px`, width: '100%', height: `calc(100% - ${y + h}px)`, background: bg },                  // 选区下方
+    { left: '0', top: `${y}px`, width: `${x}px`, height: `${h}px`, background: bg },                                     // 选区左侧
+    { left: `${x + w}px`, top: `${y}px`, width: `calc(100% - ${x + w}px)`, height: `${h}px`, background: bg },           // 选区右侧
+  ]
+})
 
 watch(() => props.visible, async (v) => {
   if (!v) return
@@ -239,7 +248,7 @@ onUnmounted(() => {
   display: block;
   pointer-events: none;      /* 拖拽事件全部走 stage，避免 img 拦截 */
 }
-.crop-mask {
+.crop-mask-band {
   position: absolute;
   pointer-events: none;
 }

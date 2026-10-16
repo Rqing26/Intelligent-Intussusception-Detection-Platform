@@ -16,6 +16,8 @@ uploads/
 /frontend/frontend.err
 /frontend/frontend.log
 /backend/.venv/
+# WorkBuddy 本地工作记忆目录（AI 协作产生的会话/日志数据，不属于项目源码）
+.workbuddy/
 
 # 模型权重（约 248MB）：已纳入 Git LFS，见 .gitattributes。
 # 新环境直接 git clone + git lfs pull 即可，不需要手动拷贝权重。
