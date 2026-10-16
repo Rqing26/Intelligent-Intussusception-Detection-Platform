@@ -222,7 +222,6 @@ async function waitForTask(taskId) {
     const res = await getDetectionTask(taskId)
     const t = res.data?.task
     if (!t) return null
-    detectProgress.value = t.progress || 0
     if (t.status === 'done') {
       return res.data?.result || { id: t.result_id }
     }
