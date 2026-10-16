@@ -98,11 +98,14 @@ def export_results(
         "ID", "患者", "性别", "年龄(月)", "病历号",
         "分类", "置信度", "严重度", "成功率", "治疗建议",
         "检测模型", "检测版本", "分类模型", "分类版本", "预后模型", "预后版本",
-        "模型", "版本", "检测时间(UTC)",
+        "模型", "版本", "去标识裁剪", "检测时间(UTC)",
     ])
+    _CROP_LABEL = {"auto": "自动", "manual": "手动"}
     for r in items:
         patient = r.image.patient if r.image and r.image.patient else None
         created = r.created_at.replace(tzinfo=timezone.utc).isoformat() if r.created_at else ""
+        # 去标识裁剪方式（旧数据/未裁剪为空）：合规追溯用
+        crop_mode = getattr(r.image, "crop_mode", None) if r.image else None
         writer.writerow([
             r.id,
             patient.name if patient else "",
@@ -122,6 +125,7 @@ def export_results(
             r.prognosis_model_version or "",
             r.model_name or "",
             r.model_version or "",
+            _CROP_LABEL.get(crop_mode, "未裁剪"),
             created,
         ])
     buf.seek(0)
