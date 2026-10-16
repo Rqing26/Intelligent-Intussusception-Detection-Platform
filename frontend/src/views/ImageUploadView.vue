@@ -95,8 +95,8 @@
     />
     <div class="action-bar" role="region" aria-label="检测操作">
       <div class="selection-summary" aria-live="polite">
-        <strong>{{ uploading ? `已完成 ${doneCount} / ${files.length} 张` : files.length ? `已选择 ${files.length} 张影像` : '尚未选择影像' }}</strong>
-        <span>{{ uploading ? '正在上传与分析，请稍候' : files.length ? '确认文件后，即可开始本次检测' : '先选择影像，再开始检测' }}</span>
+        <strong>{{ uploading ? phaseTitle : files.length ? `已选择 ${files.length} 张影像` : '尚未选择影像' }}</strong>
+        <span>{{ uploading ? phaseHint : files.length ? '确认文件后，即可开始本次检测' : '先选择影像，再开始检测' }}</span>
       </div>
       <el-button
         class="start-detection-button"
@@ -129,8 +129,6 @@ const router = useRouter()
 const patientId = computed(() => route.params.id)
 const files = ref([])
 const uploading = ref(false)
-const detectProgress = ref(0)          // 当前张的检测进度
-const doneCount = ref(0)               // 已完成张数
 
 // ---- 去标识裁剪设置：none 不裁剪 | auto 模型自动 | manual 逐张手动框选 ----
 const cropMode = ref('none')
@@ -139,6 +137,23 @@ const cropModeDesc = computed(() => ({
   auto: 'AI 模型自动识别并去除患者信息条、参数栏、深度刻度条，只保留超声图像区（推荐整帧截图）',
   manual: '每张影像上传后弹出框选界面，由医生手动框定要保留的超声图像区',
 }[cropMode.value]))
+
+// ---- 分阶段处理：上传 → （手动模式）逐张裁剪 → 统一检测 ----
+// 方案 A 的意义：裁剪节奏与检测等待解耦——医生先一口气把所有图裁完，
+// 再统一跑检测，避免「裁一张、干等一张检测」的穿插等待。
+const uploadPhase = ref('')       // 'upload' | 'crop' | 'detect'
+const phaseDone = ref(0)
+const phaseTotal = ref(0)
+const phaseTitle = computed(() => ({
+  upload: `正在上传 ${phaseDone.value} / ${phaseTotal.value} 张`,
+  crop: '等待手动裁剪',
+  detect: `正在检测 ${phaseDone.value} / ${phaseTotal.value} 张`,
+}[uploadPhase.value] || '处理中'))
+const phaseHint = computed(() => ({
+  upload: '逐张上传影像到平台',
+  crop: '在弹出的窗口中框选要保留的超声区（可跳过）',
+  detect: '全部裁剪完成，统一进行 AI 检测',
+}[uploadPhase.value] || ''))
 
 // 手动裁剪对话框状态
 const cropDialogVisible = ref(false)
@@ -191,7 +206,7 @@ function onCropCancel() {
 
 function onFileSelected(filesList) {
   files.value = filesList || []
-  doneCount.value = 0
+  phaseDone.value = 0
 }
 
 function formatFileSize(bytes) {
@@ -231,9 +246,13 @@ async function detectOne(imageId) {
 async function handleUpload() {
   if (!files.value.length || uploading.value) return
   uploading.value = true
-  doneCount.value = 0
   const results = []
   try {
+    // ---- 阶段 1：逐张上传（自动裁剪模式随上传一起完成去标识）----
+    uploadPhase.value = 'upload'
+    phaseDone.value = 0
+    phaseTotal.value = files.value.length
+    const uploaded = []                  // [{id, name, wantCrop, autoMeta}]
     for (let i = 0; i < files.value.length; i++) {
       const f = files.value[i]
       // DICOM 平台不做在线裁剪（像素解析在算法侧），选择裁剪时单独提示
@@ -241,29 +260,47 @@ async function handleUpload() {
       if (cropMode.value !== 'none' && isDicomFile(f)) {
         ElMessage.warning(`第 ${i + 1} 张为 DICOM，暂不支持在线裁剪，将按原图检测`)
       }
-      // 逐张上传（自动裁剪模式：上传即去标识）
       const uploadRes = await uploadImage(patientId.value, f, cropMode.value === 'auto')
       const imageId = uploadRes.data.id ?? uploadRes.data.image_id
       if (!imageId) {
         ElMessage.error(`第 ${i + 1} 张上传响应异常`)
         continue
       }
-      // 自动裁剪结果提示（未识别到超声区 → 保留原图，建议改手动）
-      if (wantCrop && cropMode.value === 'auto') {
-        const meta = uploadRes.data.auto_crop_meta
-        if (meta && meta.applied === false) {
-          ElMessage.warning(`第 ${i + 1} 张未识别到超声区域，已保留原图${meta.error ? '（' + meta.error + '）' : ''}，可到影像详情手动裁剪`)
+      uploaded.push({ id: imageId, name: f.name, wantCrop, autoMeta: uploadRes.data.auto_crop_meta })
+      phaseDone.value = i + 1
+    }
+    if (!uploaded.length) {
+      ElMessage.error('没有影像上传成功')
+      return
+    }
+
+    // 自动裁剪未识别到超声区的，提前汇总提示（保留原图，医生可到影像详情手动裁剪）
+    if (cropMode.value === 'auto') {
+      for (const img of uploaded) {
+        if (img.wantCrop && img.autoMeta && img.autoMeta.applied === false) {
+          ElMessage.warning(`${img.name} 未识别到超声区域，已保留原图检测`)
         }
       }
-      // 手动裁剪模式：逐张弹出框选
-      if (wantCrop && cropMode.value === 'manual') {
-        await manualCropOne(imageId, f.name)
+    }
+
+    // ---- 阶段 2：手动模式——全部上传完后，逐张弹出框选窗口 ----
+    if (cropMode.value === 'manual') {
+      uploadPhase.value = 'crop'
+      for (const img of uploaded) {
+        if (!img.wantCrop) continue
+        await manualCropOne(img.id, img.name)   // 确认/跳过，失败不阻断后续
       }
-      // 逐张检测
-      const result = await detectOne(imageId)
+    }
+
+    // ---- 阶段 3：统一发起检测（裁剪已全部就位，进模型的图必是去标识后的）----
+    uploadPhase.value = 'detect'
+    phaseDone.value = 0
+    phaseTotal.value = uploaded.length
+    for (const img of uploaded) {
+      const result = await detectOne(img.id)
       const resultId = result?.id ?? result?.result_id
       if (resultId) results.push(resultId)
-      doneCount.value = i + 1
+      phaseDone.value += 1
     }
 
     if (results.length) {
